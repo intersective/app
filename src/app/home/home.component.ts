@@ -3,6 +3,7 @@ import { HomeService, TodoItem } from './home.service';
 import { Router } from '@angular/router';
 import { Activity } from '../project/project.service';
 import { UtilsService } from '@services/utils.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ export class HomeComponent implements OnInit {
   constructor (
     private router: Router,
     private homeService: HomeService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -69,5 +71,29 @@ export class HomeComponent implements OnInit {
 
   goToChat() {
     this.router.navigateByUrl('app/(chat:chat)');
+  }
+
+  ionViewWillEnter() {
+    this.notification.alert({
+      header: 'Hello',
+      subHeader: 'World!',
+      message: 'Close me!',
+      buttons: [
+        {
+          text: 'Yes',
+          role: 'yes',
+          handler: () => {
+            console.log('yes! ', arguments);
+          }
+        },
+        {
+          text: 'Opposite of No',
+          role: 'yes',
+          handler: () => {
+            console.log('Close selected!');
+          }
+        },
+      ]
+    })
   }
 }
