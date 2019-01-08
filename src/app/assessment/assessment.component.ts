@@ -5,6 +5,7 @@ import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
   selector: 'app-assessment',
@@ -73,6 +74,7 @@ export class AssessmentComponent implements OnInit {
     private utils: UtilsService,
     private notificationService: NotificationService,
     private storage: BrowserStorageService,
+    private fastFeedbackService: FastFeedbackService
   ) {}
 
   ngOnInit() {
@@ -217,6 +219,7 @@ export class AssessmentComponent implements OnInit {
           }
           // redirect to reviews page if it is doing review
           if (this.doReview) {
+            this.displayFastFeedback();
             redirect = ['reviews'];
           }
           // display a pop up for successful submission
@@ -230,6 +233,18 @@ export class AssessmentComponent implements OnInit {
           });
         }
       });
+  }
+
+  displayFastFeedback() {
+    this.fastFeedbackService.getInstantFeedback().subscribe(res => {
+      let questions = [];
+      res.data.forEach(datum => questions.push(datum));
+
+      // popup instant feedback view if question quantity found > 0
+      if (questions.length > 0) {
+        this.fastFeedbackService.popUp({ questions });
+      }
+    });
   }
 
   reviewFeedback() {

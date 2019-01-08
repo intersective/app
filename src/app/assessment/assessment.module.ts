@@ -8,14 +8,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { AssessmentComponent } from './assessment.component';
 import { QuestionsModule } from '../questions/questions.module';
+import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 
 @NgModule({
   imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
+    FastFeedbackModule,
     AssessmentRoutingModule,
-    ReactiveFormsModule,
     QuestionsModule
   ],
   declarations: [
