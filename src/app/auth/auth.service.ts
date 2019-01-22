@@ -131,6 +131,7 @@ export class AuthService {
     // @TODO: clear ionic view history too
     this.utils.changeThemeColor('#2bbfd4');
     this.pusherService.unsubscribeChannels();
+    this.request.clearAllCache();
     this.storage.clear();
     return this.router.navigate(['/login']);
   }

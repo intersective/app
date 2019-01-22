@@ -75,6 +75,7 @@ export class SwitcherService {
       themeColor: this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '',
       activityCard: this.utils.has(programObj, 'program.config.card_style') ? programObj.program.config.card_style : ''
     });
+    this.request.clearAllCache();
     this.getTeamInfo().subscribe();
     return this.getMyInfo();
   }
