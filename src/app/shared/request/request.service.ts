@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import 'rxjs/add/operator/publishReplay';
+
 
 export class RequestConfig {
   appkey = '';
@@ -14,15 +16,12 @@ export class QueryEncoder implements HttpParameterCodec {
   encodeKey(k: string): string {
     return encodeURIComponent(k);
   }
-
   encodeValue(v: string): string {
     return encodeURIComponent(v);
   }
-
   decodeKey(k: string): string {
     return decodeURIComponent(k);
   }
-
   decodeValue(v: string): string {
     return decodeURIComponent(v);
   }
@@ -34,6 +33,7 @@ export class QueryEncoder implements HttpParameterCodec {
 export class RequestService {
   private appkey: string;
   private prefixUrl: string;
+  private cachedRequests: any = {};
 
   constructor(
     private http: HttpClient,
@@ -93,12 +93,39 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.get<any>(this.prefixUrl + endPoint, {
+
+    // cache key of a request
+    let cacheKey = endPoint + '.' + JSON.stringify(httpOptions);
+    if (this.utils.has(this.cachedRequests, cacheKey) && !this.utils.isEmpty(this.cachedRequests[cacheKey])) {
+      // use the cached observable if there is one
+      return this.cachedRequests[cacheKey];
+    }
+    let thisRequest = this.http.get<any>(this.prefixUrl + endPoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     }).pipe(
       catchError(this.handleError<any>('API Request'))
-    );
+    ).publishReplay(1).refCount();
+    // record the Observable as cached
+    this.cachedRequests[cacheKey] = thisRequest;
+    return thisRequest;
+  }
+
+  /**
+   * Clear the cache of a specific request.
+   * The cache key is in this format:
+   * `endPoint + '.' + JSON.stringify(httpOptions)`
+   *
+   * @param {string} cacheKey The cache key
+   */
+  clearCache(cacheKey) {
+    if (this.utils.has(this.cachedRequests, cacheKey) && !this.utils.isEmpty(this.cachedRequests[cacheKey])) {
+      this.cachedRequests[cacheKey] = null;
+    }
+  }
+
+  clearAllCache() {
+    this.cachedRequests = {};
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
@@ -155,10 +182,10 @@ export class RequestService {
         console.error(error); // log to console instead
         this.storage.append('errors', error);
       }
-   
+
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
-   
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
