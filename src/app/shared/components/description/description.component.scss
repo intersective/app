@@ -1,4 +1,7 @@
 .limit-height {
   max-height: 90px;
   overflow-y: hidden;
+  @media screen and (max-width: 767px) {
+    max-height: 93px;
+  }
 }
