@@ -1,14 +1,3 @@
-import { Component } from "@angular/core";
-import { HomeService, TodoItem } from "./home.service";
-import { Router, NavigationEnd } from "@angular/router";
-import { FastFeedbackService } from "../fast-feedback/fast-feedback.service";
-import { Activity } from "../project/project.service";
-import { UtilsService } from "@services/utils.service";
-import { Subscription } from "rxjs";
-import { BrowserStorageService } from "@services/storage.service";
-import { RouterEnter } from "@services/router-enter.service";
-import { PusherService } from "@shared/pusher/pusher.service";
-import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
 import { Component, OnDestroy } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
