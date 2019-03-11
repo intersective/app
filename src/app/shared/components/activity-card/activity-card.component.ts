@@ -17,9 +17,8 @@ export class ActivityCardComponent implements OnInit {
     progress?: number,
     hasFeedback?: boolean,
     leadImage?: string,
-  }
-  backgroundImageStyle: string = '';
-  activityLoading: boolean = true;
+  };
+  backgroundImageStyle = '';
   constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {

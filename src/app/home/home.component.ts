@@ -9,24 +9,37 @@ import { BrowserStorageService } from "@services/storage.service";
 import { RouterEnter } from "@services/router-enter.service";
 import { PusherService } from "@shared/pusher/pusher.service";
 import { Achievement, AchievementsService } from "@app/achievements/achievements.service";
+import { Component, OnDestroy } from '@angular/core';
+import { HomeService, TodoItem } from './home.service';
+import { Router, NavigationEnd } from '@angular/router';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { Activity } from '../project/project.service';
+import { UtilsService } from '@services/utils.service';
+import { Subscription } from 'rxjs';
+import { BrowserStorageService } from '@services/storage.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { PusherService } from '@shared/pusher/pusher.service';
+import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
+import { EventsService } from '@app/events/events.service';
 import { Intercom } from 'ng-intercom';
 
 @Component({
-  selector: "app-home",
-  templateUrl: "home.component.html",
-  styleUrls: ["home.component.scss"]
+  selector: 'app-home',
+  templateUrl: 'home.component.html',
+  styleUrls: ['home.component.scss']
 })
-export class HomeComponent extends RouterEnter {
-  routeUrl: string = "/app/home";
-  progress: number = 0;
-  loadingProgress: boolean = true;
+export class HomeComponent extends RouterEnter implements OnDestroy {
+  routeUrl = '/app/home';
+  progress = 0;
+  loadingProgress = true;
   programName: string;
   todoItems: Array<TodoItem> = [];
-  loadingTodoItems: boolean = true;
+  loadingTodoItems = true;
   activity: Activity;
-  loadingActivity: boolean = true;
+  loadingActivity = true;
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
+  haveEvents = false;
 
   constructor(
     public intercom: Intercom,
@@ -35,26 +48,27 @@ export class HomeComponent extends RouterEnter {
     private fastFeedbackService: FastFeedbackService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
-    public achievementService: AchievementsService
+    public achievementService: AchievementsService,
+    public eventService: EventsService
   ) {
     super(router);
-    let role = this.storage.getUser().role;
-    this.utils.getEvent("notification").subscribe(event => {
-      let todoItem = this.homeService.getTodoItemFromEvent(event);
+    const role = this.storage.getUser().role;
+    this.utils.getEvent('notification').subscribe(event => {
+      const todoItem = this.homeService.getTodoItemFromEvent(event);
       if (!this.utils.isEmpty(todoItem)) {
         // add todo item to the list if it is not empty
         this.todoItems.push(todoItem);
       }
     });
-    this.utils.getEvent("team-message").subscribe(event => {
+    this.utils.getEvent('team-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
         }
       });
     });
-    if (role !== "mentor") {
-      this.utils.getEvent("team-no-mentor-message").subscribe(event => {
+    if (role !== 'mentor') {
+      this.utils.getEvent('team-no-mentor-message').subscribe(event => {
         this.homeService.getChatMessage().subscribe(chatMessage => {
           if (!this.utils.isEmpty(chatMessage)) {
             this._addChatTodoItem(chatMessage);
@@ -70,8 +84,9 @@ export class HomeComponent extends RouterEnter {
     this.loadingProgress = true;
     this.loadingActivity = true;
     this.achievements = [];
+    this.haveEvents = false;
     // add a flag in local storage to indicate that is there any fast feedback open
-    this.storage.set('fastFeedbackOpening', false);    
+    this.storage.set('fastFeedbackOpening', false);
     this.intercom.boot({
       app_id: "pef1lmo8",
       name: this.storage.getUser().name, // Full name
@@ -79,14 +94,14 @@ export class HomeComponent extends RouterEnter {
       user_id: this.storage.getUser().id, // current_user_id
       // Supports all optional configuration.
       widget: {
-        "activator": "#intercom" 
+        "activator": "#intercom"
       }
     });
   }
 
   onEnter() {
     this._initialise();
-    
+
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
@@ -139,8 +154,8 @@ export class HomeComponent extends RouterEnter {
 
     this.subscriptions.push(
       this.achievementService.getAchievements('desc').subscribe(achievements => {
-        let earned = [];
-        let unEarned = [];
+        const earned = [];
+        const unEarned = [];
         achievements.forEach(item => {
           if (item.isEarned === false) {
             unEarned.push(item);
@@ -165,16 +180,22 @@ export class HomeComponent extends RouterEnter {
         }
       })
     );
+
+    this.subscriptions.push(
+      this.eventService.getEvents().subscribe(events => {
+        this.haveEvents = !this.utils.isEmpty(events);
+      })
+    );
   }
 
   goToActivity(id) {
-    this.router.navigateByUrl("app/activity/" + id);
+    this.router.navigateByUrl('app/activity/' + id);
   }
 
   goToAssessment(activityId, contextId, assessmentId) {
     this.router.navigate([
-      "assessment",
-      "assessment",
+      'assessment',
+      'assessment',
       activityId,
       contextId,
       assessmentId
@@ -183,8 +204,8 @@ export class HomeComponent extends RouterEnter {
 
   goToReview(contextId, assessmentId, submissionId) {
     this.router.navigate([
-      "assessment",
-      "review",
+      'assessment',
+      'review',
       contextId,
       assessmentId,
       submissionId
@@ -192,7 +213,7 @@ export class HomeComponent extends RouterEnter {
   }
 
   goToChat() {
-    this.router.navigateByUrl("app/chat");
+    this.router.navigateByUrl('app/chat');
   }
 
   ngOnDestroy(): void {
@@ -201,7 +222,7 @@ export class HomeComponent extends RouterEnter {
 
   private _addChatTodoItem(chatTodoItem) {
     let currentChatTodoIndex = -1;
-    let currentChatTodo = this.todoItems.find((todoItem, index) => {
+    const currentChatTodo = this.todoItems.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
         currentChatTodoIndex = index;
         return true;
