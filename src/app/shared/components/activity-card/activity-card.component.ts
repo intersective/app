@@ -19,6 +19,7 @@ export class ActivityCardComponent implements OnInit {
     leadImage?: string,
   };
   backgroundImageStyle = '';
+  activityLoading: boolean = true;
   constructor ( @Inject(DOCUMENT) private document: Document ) { }
 
   ngOnInit() {
@@ -30,6 +31,5 @@ export class ActivityCardComponent implements OnInit {
       this.backgroundImageStyle = 'url(' + this.activity.leadImage + '), linear-gradient( rgba(0, 0, 0, .4), rgba(0, 0, 0, 0.2) )';
     }
   }
-
 }
 
