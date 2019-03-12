@@ -18,7 +18,7 @@ import { LoadingController } from '@ionic/angular';
 
 export class SwitcherProgramComponent implements OnInit {
   programs: Array<ProgramObj>;
- 
+
   constructor(
     public router: Router,
     public loadingController: LoadingController,
@@ -42,7 +42,11 @@ export class SwitcherProgramComponent implements OnInit {
     this.switcherService.switchProgram(this.programs[index])
       .subscribe(() => {
         loading.dismiss();
-        this.router.navigate(['/app/home']);
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          return this.router.navigate(['/app/home']);
+        } else {
+          return this.router.navigate(['/go-mobile']);
+        }
       });
   }
 
