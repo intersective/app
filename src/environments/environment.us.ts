@@ -3,6 +3,7 @@ export const environment = {
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'live',
+  intercomAppId: '',
   APIEndpoint: 'https://us.practera.com/',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
@@ -16,5 +17,7 @@ export const environment = {
         video: '/media/fpvideo/upload/'
       }
     }
-  }
+  },
+  intercom: false,
+  goMobile: false
 };
