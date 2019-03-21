@@ -23,7 +23,7 @@ export const environment = {
     }
   },
   intercom: false,
-  goMobile: false,
+  goMobile: true,
 };
 
 /*
