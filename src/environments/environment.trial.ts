@@ -13,11 +13,11 @@ export const environment = {
       region: 'ap-southeast-2',
       paths: {
         any: '/appv2/live/uploads/',
-         image: '/appv2/live/uploads/',
+        image: '/appv2/live/uploads/',
         video: '/media/fpvideo/upload/'
       }
     }
   },
   intercom: true,
-  goMobile: true,
+  goMobile: true
 };

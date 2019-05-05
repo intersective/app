@@ -3,8 +3,8 @@ export const environment = {
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'live',
-  intercomAppId: '',
   APIEndpoint: 'https://us.practera.com/',
+  intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
