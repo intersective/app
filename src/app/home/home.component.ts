@@ -91,6 +91,7 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
 
   onEnter() {
     this._initialise();
+
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
@@ -174,6 +175,9 @@ export class HomeComponent extends RouterEnter implements OnDestroy {
     this.subscriptions.push(
       this.eventsService.getEvents().subscribe(events => {
         this.haveEvents = !this.utils.isEmpty(events);
+      }, err => {
+        // assign original value, otherwise go false
+        this.haveEvents = this.haveEvents || false;
       })
     );
 
