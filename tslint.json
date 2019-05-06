@@ -1,6 +1,7 @@
 {
+  "extends": "tslint:recommended",
   "rulesDirectory": [
-    "node_modules/codelyzer"
+    "codelyzer"
   ],
   "rules": {
     "arrow-return-shorthand": true,
@@ -14,6 +15,10 @@
     "deprecation": {
       "severity": "warn"
     },
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
     "eofline": true,
     "forin": true,
     "import-spacing": true,
@@ -22,7 +27,14 @@
       "spaces",
       2
     ],
-    "align": [true, "parameters", "statements", "arguments", "members", "elements"],
+    "align": [
+      true,
+      "parameters",
+      "statements",
+      "arguments",
+      "members",
+      "elements"
+    ],
     "interface-over-type-literal": true,
     "label-position": true,
     "max-line-length": [
@@ -72,6 +84,10 @@
     "no-unused-expression": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
     "object-literal-sort-keys": false,
     "one-line": [
       true,

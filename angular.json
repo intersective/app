@@ -43,8 +43,9 @@
               }
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
             ],
+            "es5BrowserSupport": true
           },
           "configurations": {
             "production": {
@@ -66,7 +67,12 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "budgets": {
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              }
             },
             "stage": {
               "fileReplacements": [
