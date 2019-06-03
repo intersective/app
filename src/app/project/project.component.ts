@@ -15,9 +15,6 @@ export class ProjectComponent extends RouterEnter {
   public routeUrl = '/app/project';
   public programName: string;
   public milestones: Array<Milestone | DummyMilestone> = [];
-  public loadingActivity = true;
-  public loadingMilestone = true;
-  public loadingProgress = true;
   @ViewChild('contentRef', {read: ElementRef}) contentRef: any;
   @ViewChildren('milestoneRef', {read: ElementRef}) milestoneRefs: QueryList<ElementRef>;
   public activeMilestone: Array<boolean> = [];
@@ -34,9 +31,6 @@ export class ProjectComponent extends RouterEnter {
 
   private _initialise() {
     this.milestones = [{ dummy: true }];
-    this.loadingActivity = true;
-    this.loadingMilestone = true;
-    this.loadingProgress = true;
   }
 
   onEnter() {
@@ -48,7 +42,6 @@ export class ProjectComponent extends RouterEnter {
     this.projectService.getMilestones()
       .subscribe(milestones => {
         this.milestones = milestones;
-        this.loadingMilestone = false;
         this.activeMilestone = new Array(milestones.length);
         this.activeMilestone.fill(false);
         this.activeMilestone[0] = true;
@@ -64,10 +57,8 @@ export class ProjectComponent extends RouterEnter {
             }
 
             this.milestones = this._addActivitiesToEachMilestone(this.milestones, activities);
-            this.loadingActivity = false;
             this.projectService.getProgress(this.milestones).subscribe(progresses => {
               this.milestones = this._populateMilestoneProgress(progresses, this.milestones);
-              this.loadingProgress = false;
             });
           });
       });
