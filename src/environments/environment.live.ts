@@ -21,3 +21,4 @@ export const environment = {
   intercom: true,
   goMobile: false,
 };
+ 
