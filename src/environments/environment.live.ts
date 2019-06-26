@@ -18,7 +18,7 @@ export const environment = {
       }
     }
   },
-  intercom: true,
+  intercom: false,
   goMobile: false,
 };
  
