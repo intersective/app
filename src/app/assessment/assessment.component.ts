@@ -7,6 +7,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SharedService } from '@services/shared.service';
+import { ActivityService, OverviewActivity, OverviewTask } from '../activity/activity.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
+import { interval, timer } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -42,7 +46,10 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     answers: {},
     submitterName: '',
-    modified: ''
+    modified: '',
+    isLocked: false,
+    submitterImage: '',
+    reviewerName: ''
   };
   review: Review = {
     id: 0,
@@ -57,11 +64,12 @@ export class AssessmentComponent extends RouterEnter {
   loadingAssessment = true;
   loadingSubmission = true;
   questionsForm = new FormGroup({});
-  submitting = false;
+  submitting: boolean | string = false;
   savingButtonDisabled = true;
   savingMessage: string;
   saving: boolean;
   fromPage = '';
+  markingAsReview = 'Continue';
 
   constructor (
     public router: Router,
@@ -70,7 +78,9 @@ export class AssessmentComponent extends RouterEnter {
     public utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
-    public sharedService: SharedService
+    public sharedService: SharedService,
+    private activityService: ActivityService,
+    private fastFeedbackService: FastFeedbackService
   ) {
     super(router);
   }
@@ -89,7 +99,10 @@ export class AssessmentComponent extends RouterEnter {
       status: '',
       answers: {},
       submitterName: '',
-      modified: ''
+      modified: '',
+      isLocked: false,
+      submitterImage: '',
+      reviewerName: ''
     };
     this.review = {
       id: 0,
@@ -101,6 +114,14 @@ export class AssessmentComponent extends RouterEnter {
     this.loadingSubmission = true;
     this.loadingFeedbackReviewed = true;
     this.saving = false;
+    this.doAssessment = false;
+    this.doReview = false;
+    this.feedbackReviewed = false;
+    this.questionsForm = new FormGroup({});
+    this.submitting = false;
+    this.savingButtonDisabled = true;
+    this.savingMessage = '';
+    this.markingAsReview = 'Continue';
   }
 
   onEnter() {
@@ -149,6 +170,16 @@ export class AssessmentComponent extends RouterEnter {
       .subscribe(result => {
         this.submission = result.submission;
         this.loadingSubmission = false;
+        // If team assessment locked set readonly view.
+        // set doAssessment, doReview to false - because when assessment lock we can't do both.
+        // set submission status to done - because we need to show readonly answers in question components.
+        if (this.submission.isLocked) {
+          this.doAssessment = false;
+          this.doReview = false;
+          this.savingButtonDisabled = true;
+          this.submission.status = 'done';
+          return ;
+        }
         // this page is for doing assessment if submission is empty or submission is 'in progress'
         if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
           this.doAssessment = true;
@@ -198,7 +229,7 @@ export class AssessmentComponent extends RouterEnter {
     });
   }
 
-  navigationRoute() {
+  navigationRoute(): Promise<boolean> {
     if (this.fromPage && this.fromPage === 'reviews') {
       return this.router.navigate(['app', 'reviews']);
     }
@@ -211,28 +242,38 @@ export class AssessmentComponent extends RouterEnter {
     return this.router.navigate(['app', 'home']);
   }
 
-  back() {
-    // save answer before go back (if it's not a team assessment)
-    if (this.assessment.isForTeam && !this.questionsForm.pristine) {
+  back(): Promise<void | boolean> {
+    if (this.action === 'assessment' && this.submission.status === 'published') {
       return this.notificationService.alert({
-        header: 'Confirm leaving?',
-        message: 'All the unsubmitted answers would not be saved.',
+        header: `Mark feedback as read?`,
+        message: 'Would you like to mark the feedback as read?',
         buttons: [
           {
-            text: 'Cancel',
-            role: 'cancel',
+            text: 'No',
+            handler: () => {
+              return this.router.navigate(['app', 'activity', this.activityId]);
+            },
           },
           {
-            text: 'Ok',
+            text: 'Yes',
             handler: () => {
-              return this.navigationRoute();
+              return this.markReviewFeedbackAsRead().then(() => {
+                return this.notificationService.customToast({
+                  message: 'Assessment completed! Please proceed to the next learning task.'
+                }).then(() => this.router.navigate([
+                  'app',
+                  'activity',
+                  this.activityId,
+                ]));
+              });
             }
           }
         ]
       });
     }
 
-    this.submit(true);
+    // force saving progress
+    this.submit(true , true);
     return this.navigationRoute();
   }
 
@@ -241,7 +282,7 @@ export class AssessmentComponent extends RouterEnter {
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  compulsoryQuestionsAnswered(answers) {
+  compulsoryQuestionsAnswered(answers): object[] {
     const result = [];
     const missing = [];
     if (answers && answers.length > 0) {
@@ -266,19 +307,103 @@ export class AssessmentComponent extends RouterEnter {
     return missing;
   }
 
-  submit(saveInProgress: boolean) {
-    // team submission only accept submit and no save
-    if (this.assessment.isForTeam && saveInProgress === true) {
-      return;
+  // allow progression if milestone isnt completed yet
+  async redirectToNextMilestoneTask(activity, options?: {
+    routeOnly: boolean;
+  }): Promise<any> {
+    const nextTask = await this.getNextSequence(activity);
+
+    if (this.activityId !== activity.id) {
+      await this.notificationService.alert({
+        header: 'Activity completed!',
+        message: 'You may now proceed to the next activity.',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel',
+          }
+        ]
+      });
     }
+
+    let route = ['app', 'activity', activity.id];
+
+    switch (nextTask.type) {
+      case 'assessment':
+        route = ['assessment', 'assessment', activity.id, nextTask.context_id, nextTask.id];
+        break;
+
+      case 'topic':
+        route = ['topic', activity.id, nextTask.id];
+        break;
+    }
+
+    if (options && options.routeOnly) {
+      return route;
+    }
+
+    return this.router.navigate(route);
+  }
+
+  // get sequence detail and move on to next new task
+  async skipToNextTask(options?): Promise<boolean> {
+    try {
+      const activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      return this.redirectToNextMilestoneTask(activity, options);
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Project overview API Error',
+        message: err
+      });
+
+      if (this.submitting) {
+        this.submitting = false;
+      }
+      throw new Error(err);
+    }
+  }
+
+  /**
+   * - check if fastfeedback is available
+   * - show next sequence if submission successful
+   */
+  private async pullFeedbackAndShowNext(): Promise<boolean> {
+    this.submitting = 'Retrieving new task...';
+    // check if user has new fastFeedback request
+    try {
+      await this.fastFeedbackService.pullFastFeedback().toPromise();
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving pulse check data',
+        message: err
+      });
+      this.submitting = false;
+      throw new Error(err);
+    }
+
+    await this.notificationService.customToast({
+      message: 'You may continue to the next learning task.'
+    });
+
+    const nextTask = await this.skipToNextTask();
+    this.submitting = false;
+    return nextTask;
+  }
+
+  /**
+   * handle submission and autosave
+   * @param {boolean} saveInProgress set true for autosaving or it treat the action as final submision
+   */
+  submit(saveInProgress: boolean, goBack?: boolean) {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
       this.savingButtonDisabled = true;
     } else {
-      this.submitting = true;
+      this.submitting = 'Submitting...';
       this.saving = false;
     }
+
     const answers = [];
     let questionId = 0;
     let assessment: {
@@ -287,9 +412,12 @@ export class AssessmentComponent extends RouterEnter {
       context_id?: number;
       review_id?: number;
       submission_id?: number;
-    } = {
+      unlock?: boolean;
+    };
+
+    assessment = {
       id: this.id,
-      in_progress: false,
+      in_progress: false
     };
 
     if (this.saving) {
@@ -297,13 +425,15 @@ export class AssessmentComponent extends RouterEnter {
     }
     this.saving = true;
 
-
     // form submission answers
     if (this.doAssessment) {
       assessment.context_id = this.contextId;
 
       if (saveInProgress) {
         assessment.in_progress = true;
+      }
+      if (this.assessment.isForTeam && goBack) {
+        assessment.unlock = true;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = +key.replace('q-', '');
@@ -327,12 +457,15 @@ export class AssessmentComponent extends RouterEnter {
           answer: answer
         });
       });
+
       // check if all required questions have answer when assessment done
       const requiredQuestions = this.compulsoryQuestionsAnswered(answers);
       if (!saveInProgress && requiredQuestions.length > 0) {
         this.submitting = false;
         // display a pop up if required question not answered
-        return this.notificationService.popUp('shortMessage', {message: 'Required question answer missing!'});
+        return this.notificationService.popUp('shortMessage', {
+          message: 'Required question answer missing!'
+        });
       }
     }
 
@@ -355,26 +488,13 @@ export class AssessmentComponent extends RouterEnter {
     // save the submission/feedback
     this.assessmentService.saveAnswers(assessment, answers, this.action, this.submission.id).subscribe(
       result => {
-        this.submitting = false;
         this.savingButtonDisabled = false;
         if (saveInProgress) {
+          this.submitting = false;
           // display message for successfull saved answers
           this.savingMessage = 'Last saved ' + this._getCurrentTime();
         } else {
-          // display a pop up for successful submission
-          return this.notificationService.alert({
-            message: 'Submission Successful!',
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.router.navigate(['app', 'home']);
-                  return;
-                }
-              }
-            ]
-          });
+          return this.pullFeedbackAndShowNext();
         }
       },
       err => {
@@ -386,7 +506,8 @@ export class AssessmentComponent extends RouterEnter {
         } else {
           // display a pop up if submission failed
           this.notificationService.alert({
-            message: 'Submission failed, please check that all required questions have been answered.',
+            header: 'Submission failed',
+            message: err,
             buttons: [
               {
                 text: 'OK',
@@ -394,6 +515,7 @@ export class AssessmentComponent extends RouterEnter {
               }
             ]
           });
+          throw new Error(err);
         }
       }
     );
@@ -402,15 +524,57 @@ export class AssessmentComponent extends RouterEnter {
     setTimeout(() => this.saving = false, SAVE_PROGRESS_TIMEOUT);
   }
 
-  reviewFeedback() {
-    this.feedbackReviewed = true;
-    this.assessmentService.saveFeedbackReviewed(this.submission.id).subscribe(result => {
-      // if review is successfully mark as read and program is configured to enable review rating,
-      // display review rating modal and then redirect to activity page.
-      if (result.success && this.storage.getUser().hasReviewRating === true) {
-        this.assessmentService.popUpReviewRating(this.review.id, ['app', 'home']);
+  // mark review as read
+  async markReviewFeedbackAsRead(): Promise<void> {
+    let result: { success: boolean; };
+    // allow only if it hasnt reviewed
+    if (!this.feedbackReviewed) {
+      this.markingAsReview = 'Marking as read...';
+      this.feedbackReviewed = true;
+
+      try {
+        result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+        this.loadingFeedbackReviewed = false;
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Error marking feedback as completed',
+          message: err
+        });
+
+        this.feedbackReviewed = false;
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return toasted;
       }
-    });
+    }
+
+    try {
+      // display review rating modal and then redirect to task screen under proper activity.
+      // Conditions:
+      // 1. if review is successfully mark as read (from above) and
+      // 2. program configuration is set enabled presenting review rating screen
+      if (result.success && this.storage.getUser().hasReviewRating === true) {
+        this.markingAsReview = 'Retrieving New Task...';
+
+        const nextSequence = await this.skipToNextTask({routeOnly: true});
+        const popup = await this.assessmentService.popUpReviewRating(
+          this.review.id,
+          nextSequence
+        );
+
+        this.loadingFeedbackReviewed = false;
+        this.markingAsReview = 'Continue';
+        return popup;
+      }
+    } catch (err) {
+      const toasted = await this.notificationService.alert({
+        header: 'Error retrieving rating page',
+        message: err
+      });
+      this.loadingFeedbackReviewed = false;
+      this.markingAsReview = 'Continue';
+      return toasted;
+    }
   }
 
   showQuestionInfo(info) {
@@ -423,5 +587,28 @@ export class AssessmentComponent extends RouterEnter {
       hour: 'numeric',
       minute: 'numeric'
     }).format(new Date());
+  }
+
+  private async getNextSequence(activity?): Promise<OverviewTask> {
+    let nextTask: OverviewTask;
+    const options = {
+      id: this.id,
+      teamId: this.storage.getUser().teamId
+    };
+
+    if (!activity) {
+      try {
+        activity = await this.activityService.getTasksByActivityId(this.storage.getUser().projectId, this.activityId);
+      } catch (err) {
+        const toasted = await this.notificationService.alert({
+          header: 'Project overview API Error',
+          message: err
+        });
+        throw new Error(err);
+      }
+    }
+    nextTask = this.activityService.findNext(activity.Tasks, options);
+
+    return nextTask;
   }
 }
