@@ -62,18 +62,19 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
-  onFileUploadCompleted(file, type = null) {
-    if (file.success) {
+  onFileUploadCompleted(res, type = null) {
+    if (res.success) {
       // reset errors
       this.errors = [];
       // currently we only support one file upload per question,
       // if we need to support multiple file upload later, we need to change this to:
       // this.uploadedFiles = push(file.data);
-      this.uploadedFile = file.data;
+      this.uploadedFile = res.data;
       this.onChange('', type);
     } else {
       // display error message for user
       this.errors.push('File upload failed, please try again later.');
+      throw new Error(res);
     }
   }
 

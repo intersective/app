@@ -2,6 +2,23 @@ import { Subscription } from 'rxjs/Subscription';
 import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { FilestackService } from './filestack.service';
 
+export interface FilestackUploaded {
+  handle: string;
+  url: string;
+  filename: string;
+  size: number;
+  mimetype: string;
+  key: string;
+  container: string;
+  status: string;
+
+  // flag to indicate detected virus (true: threat found, false: safe from virus/malware)
+  infected?: boolean;
+
+  // list of infected files
+  infections_list?: string[];
+}
+
 @Component({
   selector: 'file-stack',
   templateUrl: 'filestack.component.html',
@@ -25,13 +42,19 @@ export class FilestackComponent implements OnInit {
     const pickerOptions = {
       storeTo: s3Config,
       onFileUploadFailed: data => {
-        this.complete.emit({
+        if (data.infected) {
+          return this.complete.emit({
+            success: false,
+            data: data
+          });
+        }
+        return this.complete.emit({
           success: false,
           data: data
         });
       },
-      onFileUploadFinished: data => {
-        this.complete.emit({
+      onFileUploadFinished: (data: FilestackUploaded) => {
+        return this.complete.emit({
           success: true,
           data: data
         });

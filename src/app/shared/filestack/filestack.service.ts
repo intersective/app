@@ -1,4 +1,5 @@
-import { PickerInstance, PickerOptions } from 'filestack-js/src/lib/picker';
+import { PickerStoreOptions } from 'filestack-js/build/module/lib/picker';
+import { PickerInstance, PickerOptions } from 'filestack-js/build/module';
 import { Client } from 'filestack-js/build/main/lib/client';
 import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
@@ -72,7 +73,7 @@ export class FilestackService {
   }
 
   // get s3 config
-  getS3Config(fileType) {
+  getS3Config(fileType): PickerStoreOptions {
     let path = environment.filestack.s3Config.paths.any;
     // get s3 path based on file type
     if (environment.filestack.s3Config.paths[fileType]) {
@@ -84,7 +85,8 @@ export class FilestackService {
       location: environment.filestack.s3Config.location,
       container: environment.filestack.s3Config.container,
       region: environment.filestack.s3Config.region,
-      path: path
+      path: path,
+      // workflows: ['YOUR_WORKFLOW_ID'], // add workflow for virus detection
     };
   }
 
