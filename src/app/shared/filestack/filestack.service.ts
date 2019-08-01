@@ -1,3 +1,5 @@
+import { PickerInstance, PickerOptions } from 'filestack-js/src/lib/picker';
+import { Client } from 'filestack-js/build/main/lib/client';
 import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
@@ -28,7 +30,7 @@ const api = {
 
 @Injectable()
 export class FilestackService {
-  private filestack: any;
+  private filestack: Client;
 
   // file types that allowed to upload
   public fileTypes = {
@@ -60,7 +62,7 @@ export class FilestackService {
   }
 
   // get filestack config
-  getFilestackConfig() {
+  getFilestackConfig(): string {
     return environment.filestack.key;
   }
 
@@ -138,12 +140,12 @@ export class FilestackService {
       return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
     } catch (e) {
       console.log(`File url missing: ${JSON.stringify(e)}`);
-      throw e;
+      throw new Error(e);
     }
   }
 
-  async open(options = {}, onSuccess = res => res, onError = err => err) {
-    const pickerOptions: any = {
+  private createInstance(options = {}, onSuccess = res => res, onError = err => err): PickerInstance {
+    const pickerOptions: PickerOptions = {
       dropPane: {},
       fromSources: [
         'local_file_system',
@@ -154,15 +156,22 @@ export class FilestackService {
       ],
       storeTo: this.getS3Config(this.getFileTypes()),
       onFileSelected: data => {
-        // replace space with underscore '_' in file name
-        data.filename = data.filename.replace(/ /g, '_');
-        return data;
+        return new Promise(resolve => {
+          // replace space with underscore '_' in file name
+          data.filename = data.filename.replace(/ /g, '_');
+          return resolve(data);
+        });
       },
       onFileUploadFailed: onError,
       onFileUploadFinished: onSuccess,
     };
 
-    return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
+    return this.filestack.picker(Object.assign(pickerOptions, options));
+  }
+
+  async open(options = {}, onSuccess = res => res, onError = err => err): Promise<void> {
+    // return this.createInstance(options, onSuccess, onError).open();
+    return this.createInstance(options, onSuccess, onError).open();
   }
 
   async previewModal(url, filestackUploadedResponse?) {
