@@ -5,6 +5,8 @@ import { HomeService } from '../home/home.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
+import { SharedService } from '@services/shared.service';
+import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
   selector: 'app-project',
@@ -29,6 +31,8 @@ export class ProjectComponent extends RouterEnter {
     public storage: BrowserStorageService,
     private projectService: ProjectService,
     private homeService: HomeService,
+    private sharedService: SharedService,
+    public fastFeedbackService: FastFeedbackService
    ) {
     super(router);
   }
@@ -76,6 +80,8 @@ export class ProjectComponent extends RouterEnter {
             });
           });
       });
+
+    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   trackScrolling(event) {
