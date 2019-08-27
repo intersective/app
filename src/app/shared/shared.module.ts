@@ -11,6 +11,8 @@ import { CircleProgressComponent } from '@shared/components/circle-progress/circ
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { BrandingLogoComponent } from '@shared/components/branding-logo/branding-logo.component';
 import { ContactNumberFormComponent } from '@shared/components/contact-number-form/contact-number-form.component';
+import { AnimatedTickComponent } from '@shared/components/animated-tick/animated-tick.component';
+import { UnlockingComponent } from '@shared/components/unlocking/unlocking.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -44,6 +46,8 @@ const largeCircleDefaultConfig = {
     CircleProgressComponent,
     BrandingLogoComponent,
     ContactNumberFormComponent,
+    AnimatedTickComponent,
+    UnlockingComponent,
   ],
   exports: [
     ActivityCardComponent,
@@ -57,6 +61,8 @@ const largeCircleDefaultConfig = {
     FormsModule,
     BrandingLogoComponent,
     ContactNumberFormComponent,
+    AnimatedTickComponent,
+    UnlockingComponent,
   ],
 })
 export class SharedModule {}

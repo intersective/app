@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
-  selector: 'app-animated-tick',
+  selector: 'shared-animated-tick',
   templateUrl: './animated-tick.component.html',
   styleUrls: ['./animated-tick.component.scss']
 })

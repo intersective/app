@@ -66,6 +66,15 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'test',
+        children: [
+          {
+            path: '',
+            loadChildren: '../test/test.module#TestModule'
+          }
+        ]
+      },
+      {
         path: '',
         redirectTo: '/app/home',
         pathMatch: 'full'
