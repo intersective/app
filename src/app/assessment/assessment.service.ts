@@ -26,6 +26,15 @@ const api = {
   }
 };
 
+export interface AssessmentSubmission {
+  id: number;
+  in_progress: boolean;
+  context_id?: number;
+  review_id?: number;
+  submission_id?: number;
+  unlock?: boolean;
+}
+
 export interface Assessment {
   name: string;
   description: string;
@@ -304,7 +313,6 @@ export class AssessmentService {
       submitterImage: thisSubmission.Submitter.image,
       reviewerName: this.checkReviewer(thisSubmission.Reviewer)
     };
-
     // -- normalise submission answers
     if (!this.utils.has(thisSubmission, 'AssessmentSubmissionAnswer') ||
         !Array.isArray(thisSubmission.AssessmentSubmissionAnswer)
@@ -437,7 +445,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment, answers, action, submissionId?) {
+  saveAnswers(assessment: AssessmentSubmission, answers: object, action: string, submissionId?: number) {
     let postData;
     switch (action) {
       case 'assessment':
