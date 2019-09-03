@@ -35,6 +35,7 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.6.0",
     "@ionic/storage": "^2.2.0",
+    "@types/snapsvg": "^0.5.0",
     "angular-in-memory-web-api": "^0.7.0",
     "angular2-text-mask": "^9.0.0",
     "cordova-sqlite-storage": "^2.6.0",
@@ -48,6 +49,7 @@
     "pusher-js": "^4.4.0",
     "rxjs": "6.3.3",
     "rxjs-compat": "^6.3.3",
+    "snapsvg": "^0.5.1",
     "ts-md5": "^1.2.4",
     "zone.js": "^0.8.29"
   },

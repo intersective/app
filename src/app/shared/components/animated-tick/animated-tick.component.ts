@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
+import * as Snap from 'snapsvg';
 
 @Component({
   selector: 'shared-animated-tick',
@@ -9,7 +10,9 @@ import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 export class AnimatedTickComponent implements OnInit, OnDestroy, OnChanges {
   @Input() stage: number;
 
-  constructor() {}
+  constructor() {
+    const c = Snap('#animated-tick').circle(50, 50, 100);
+  }
 
   ngOnInit() {
     console.log('created tick');
