@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TestComponent } from './test.component';
 import { AnimatedBattlefieldComponent } from './animation-battlefield/animation-battlefield.component';
 import { AnimatedUnlockingComponent } from './animated-unlocking/animated-unlocking.component';
+import { AnimationDrawingComponent } from './animation-drawing/animation-drawing.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path: 'animated-unlocking',
     component: AnimatedUnlockingComponent,
+  },
+  {
+    path: 'animation-drawing',
+    component: AnimationDrawingComponent,
   }
 ];
 

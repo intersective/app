@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TestComponent } from './test.component';
 import { AnimatedBattlefieldComponent } from './animation-battlefield/animation-battlefield.component';
 import { AnimatedUnlockingComponent } from './animated-unlocking/animated-unlocking.component';
+import { AnimationDrawingComponent } from './animation-drawing/animation-drawing.component';
 import { TestRoutingModule } from './test-routing.module';
 import { SharedModule } from '@shared/shared.module';
 
@@ -18,6 +19,7 @@ import { SharedModule } from '@shared/shared.module';
     TestComponent,
     AnimatedBattlefieldComponent,
     AnimatedUnlockingComponent,
+    AnimationDrawingComponent,
   ],
   exports: [
     IonicModule,

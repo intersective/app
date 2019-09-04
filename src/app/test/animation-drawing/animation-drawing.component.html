@@ -1,0 +1,22 @@
+<ion-header mode="ios">
+  <ion-toolbar color="light">
+    <ion-title>Drawing Animating</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-textarea [(ngModel)]="path"></ion-textarea>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col [ngStyle]="{'text-align': 'center'}">
+        <svg height="400" width="400">
+          <path [attr.d]="path" />
+        </svg>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
