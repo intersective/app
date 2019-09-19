@@ -9,7 +9,7 @@
     <div class="div-activity-name">{{ event.activityName }}</div>
     <app-description *ngIf="event.description" [content]="event.description"></app-description>
   </div>
-  <h3 *ngIf="event.isPast && !event.isBooked" class="expired-text">Event Expired</h3>
+  <ion-text *ngIf="event.isPast && !event.isBooked" class="expired-text" color="medium">Event Expired</ion-text>
 
   <ion-list>
     <ion-item>

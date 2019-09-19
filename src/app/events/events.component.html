@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>Events</ion-title>
+    <ion-title text-center role="heading" aria-level="1">Events</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding color="light" text-center>
@@ -50,7 +50,9 @@
   </ion-card>
 
   <ng-container *ngFor="let eventObj of events">
-    <h4 class="date-group" text-left>{{ eventObj.date }}</h4>
+    <div text-left>
+      <b class="date-group">{{ eventObj.date }}</b>
+    </div>
     <ion-card class="practera-card">
       <ion-list>
         <clickable-item
