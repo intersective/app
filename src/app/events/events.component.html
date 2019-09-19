@@ -43,7 +43,9 @@
         aria-labelledby="activity-filter"
         [value]="selectedActivities"
         (ionChange)="onSelect(filterEle.value)"
+        aria-owns="owned_textbox"
         #filterEle>
+        <input type="hidden" role="textbox" id="owned_textbox" aria-controls="textbox">
         <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
       </ion-select>
     </clickable-item>
