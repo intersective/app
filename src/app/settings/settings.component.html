@@ -7,7 +7,7 @@
   <ion-card class="practera-card">
       <ion-item class="profile-info" lines="none">
           <ion-avatar class="profile-image" slot="start">
-            <img *ngIf="!imageUpdating" [src]="profile.image">
+            <img *ngIf="!imageUpdating" [src]="profile.image" alt="{{profile.name}}">
             <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
             <file-stack
               [accept]="acceptFileTypes"

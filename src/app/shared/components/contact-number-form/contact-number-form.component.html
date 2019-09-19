@@ -9,7 +9,7 @@
     <ion-grid class="contact-grid">
       <ion-row>
         <ion-col class="contact-label">
-            <ion-label>Contact No.</ion-label>
+            <ion-label id="contact-number">Contact No.</ion-label>
         </ion-col>
       </ion-row>
       <ion-row class="text-field" nowrap align-items-center>
@@ -19,7 +19,7 @@
               <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
             </ion-col>
             <ion-col>
-                <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
+                <input maxlength="{{activeCountryModelInfo.length}}" aria-labelledby="contact-number" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
                 class="contact-input" (keydown)="disableArrowKeys($event)" (keyup)="formatContactNumber()" />
             </ion-col>
           </ion-row>
@@ -42,7 +42,7 @@
             <p class="country-code">{{activeCountryModelInfo.countryCode}}</p>
           </ion-col>
           <ion-col>
-            <input maxlength="{{activeCountryModelInfo.length}}" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
+            <input maxlength="{{activeCountryModelInfo.length}}" aria-labelledby="contact-number" pattern="{{activeCountryModelInfo.pattern}}" placeholder="{{activeCountryModelInfo.placeholder}}" [(ngModel)]="contactNumber" type="text"
               class="contact-input" (keydown)="disableArrowKeys($event)" (blur)="formatContactNumber()" (keyup)="formatContactNumber()" />
           </ion-col>
         </ion-row>
