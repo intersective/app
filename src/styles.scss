@@ -205,6 +205,10 @@ body {
     color: var(--ion-color-primary);
     --background: white;
   }
+  ion-button:hover {
+    color: white;
+    --background: var(--ion-color-primary);
+  }
   .btn-activated{
     color: white;
     --background: var(--ion-color-primary);

@@ -16,7 +16,7 @@
     "postbuild": "npm run generate-version",
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "postdeploy": "npm run generate-version",
-    "test": "ng test",
+    "test": "ng test --no-watch",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "generate-version": "node ./hooks/post-build.js"
@@ -77,6 +77,8 @@
     "protractor": "~5.4.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
-    "typescript": "~3.1.6"
+    "typescript": "~3.1.6",
+    "karma-htmlfile-reporter": "~0.3",
+    "karma-junit-reporter": "~1.2.0"
   }
 }
