@@ -38,7 +38,7 @@
             <ion-icon name="clipboard" slot="start" [class]="(task.isDueToday && (task.status === '' || task.status === 'in progress')) ? 'pulsing ng-star-inserted ion-color ion-color-primary hydrated' : 'ng-star-inserted ion-color ion-color-primary hydrated'" color="primary"></ion-icon>
           </ng-container>
           <div class="icon-item">
-            <h4>{{ task.name }}</h4>
+            <h2 class="task-name">{{ task.name }}</h2>
             <p *ngIf="task.type === 'Assessment' && (task.status === '' || task.status === 'in progress')" [class]="task.isOverdue ? 'due-date over' : 'due-date'">
               <ng-container *ngIf="!task.loadingStatus">{{ this.sharedService.dueDateFormatter(task.dueDate) }}</ng-container>
             </p>
