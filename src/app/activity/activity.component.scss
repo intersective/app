@@ -14,3 +14,9 @@ div {
     }
   }
 }
+.task-name {
+  font-size: 14px;
+  text-overflow: ellipsis;
+  margin-bottom: 0px;
+  max-width: 80%;
+}
