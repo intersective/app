@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
     <ion-icon name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
+    <ion-title role="heading" aria-level="1" text-center>{{selectedChat.is_team ? selectedChat.team_name : selectedChat.name}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
@@ -15,7 +15,7 @@
       <ion-item color="light">
         <ng-container *ngIf="checkIsLastMessage(message)">
           <ion-avatar [ngClass]="!checkToShowMessageTime(message) && checkIsLastMessage(message) ? 'no-time': ''" slot="start">
-            <img [src]="message.sender_image">
+            <img alt="{{message.sender_name}}" [src]="message.sender_image">
           </ion-avatar>
         </ng-container>
 
@@ -121,6 +121,7 @@
         </ion-button>
       </ion-col>
       <ion-col size="9" align-self-center>
+        <ion-label hidden>message</ion-label>
         <ion-textarea
           placeholder="Enter your message"
           required="true"

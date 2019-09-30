@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
-    <ion-title>Chat</ion-title>
+    <ion-title role="heading" aria-level="1">Chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -18,7 +18,7 @@
       [ngClass]="{'unread': chat.unread_messages > 0}">
       <ion-avatar [ngClass]="{'color-team': chat.is_team}" slot="start" text-center>
         <ng-container *ngIf="chat.is_team; else avatarElseBlock"><ion-icon name="people"></ion-icon></ng-container>
-        <ng-template #avatarElseBlock><img [src]="chat.team_member_image"></ng-template>
+        <ng-template #avatarElseBlock><img alt="{{chat.name}}" [src]="chat.team_member_image"></ng-template>
       </ion-avatar>
       <ion-label>
         <div class="chat-name-container">
