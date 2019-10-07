@@ -44,7 +44,7 @@
       <ion-spinner></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
-      <h3>{{ group.name }}</h3>
+      <h2>{{ group.name }}</h2>
       <ion-text color="medium" text-left>
         <app-description class="g-description" *ngIf="group.description" [content]="group.description"></app-description>
       </ion-text>
