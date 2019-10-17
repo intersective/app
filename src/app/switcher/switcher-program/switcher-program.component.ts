@@ -9,6 +9,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { BrowserStorageService } from '@services/storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,8 @@ export class SwitcherProgramComponent implements OnInit {
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private storage: BrowserStorageService
   ) {}
 
   ngOnInit() {
@@ -79,6 +81,49 @@ export class SwitcherProgramComponent implements OnInit {
 
   logout() {
     return this.authService.logout();
+  }
+
+  getProgress() {
+    this._clearProgress();
+    console.log('get progress(normal) started......');
+    const t0 = performance.now();
+    const programs = this.storage.get('programs');
+    programs.forEach((v, i) => {
+      this.switcherService.getProgress(v.project.id).subscribe(res => {
+        this.programs[i].progress = res;
+        const t1 = performance.now();
+        console.log('progress - ', Math.round(t1 - t0), 'ms');
+      });
+      this.switcherService.getTodoItems(v.project.id).subscribe(res => {
+        this.programs[i].todoItems = res;
+        const t2 = performance.now();
+        console.log('todo item - ', Math.round(t2 - t0), 'ms');
+      });
+    });
+  }
+
+  getProgressGraphQL() {
+    this._clearProgress();
+    console.log('get progress(graphQL) started......');
+    const t0 = performance.now();
+    const programs = this.storage.get('programs');
+    const projectIds = programs.map(v => v.project.id);
+    this.switcherService.getGraphQL(projectIds).subscribe(res => {
+      res.forEach(progress => {
+        const i = this.programs.findIndex(program => program.project.id === progress.id);
+        this.programs[i].progress = progress.progress;
+        this.programs[i].todoItems = progress.todoItems;
+      });
+      const t1 = performance.now();
+      console.log('finished - ', Math.round(t1 - t0), 'ms');
+    });
+  }
+
+  private _clearProgress() {
+    this.programs.forEach((program, i) => {
+      this.programs[i].progress = undefined;
+      this.programs[i].todoItems = undefined;
+    })
   }
 
 }

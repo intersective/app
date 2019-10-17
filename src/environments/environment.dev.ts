@@ -4,6 +4,8 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
   APIEndpoint: 'https://sandbox.practera.com/',
+  domain: 'sandbox.practera.com',
+  graphQL: 'http://127.0.0.1:8000',
   intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',

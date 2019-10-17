@@ -14,7 +14,9 @@ import { SharedService } from '@services/shared.service';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json'
+  teams: 'api/teams.json',
+  todoItem: 'api/v2/motivations/todo_item/list.json',
+  progress: 'api/v2/motivations/progress/list.json'
 };
 
 export interface ProgramObj {
@@ -22,6 +24,8 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  progress?: number;
+  todoItems?: number;
 }
 
 export interface Program {
@@ -138,5 +142,45 @@ export class SwitcherService {
       }
       return response;
     }));
+  }
+
+  getTodoItems(projectId) {
+    return this.request.get(api.todoItem, {
+        params: {
+          project_id: projectId
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return response.data.length;
+        }
+      }));
+  }
+
+  getProgress(projectId) {
+    return this.request.get(api.progress, {
+        params: {
+          model: 'project',
+          model_id: projectId,
+        }
+      })
+      .pipe(map(response => {
+        if (response.success && response.data) {
+          return response.data.Project.progress;
+        }
+      }));
+  }
+
+  getGraphQL(projectIds) {
+    return this.request.postGraphQL("\"{projects(ids: " + JSON.stringify(projectIds) + ") {id progress todo_items{id}}}\"")
+      .pipe(map(res => {
+        return res.data.projects.map(v => {
+          return {
+            id: +v.id,
+            progress: v.progress,
+            todoItems: v.todo_items.length
+          };
+        });
+      }));
   }
 }
