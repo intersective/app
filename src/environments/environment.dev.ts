@@ -5,7 +5,7 @@ export const environment = {
   env: 'sandbox',
   APIEndpoint: 'https://sandbox.practera.com/',
   domain: 'sandbox.practera.com',
-  graphQL: 'https://gkrke8a4z2.execute-api.ap-southeast-2.amazonaws.com/Prod/',
+  graphQL: 'https://bfj1v3jxd5.execute-api.ap-southeast-2.amazonaws.com/Prod/',
   intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
