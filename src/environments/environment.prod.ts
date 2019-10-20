@@ -4,7 +4,8 @@ export const environment = {
   pusherKey: '255f010d210933ca7675',
   env: 'live',
   APIEndpoint: 'https://api.practera.com/',
-  intercomAppId: '',
+  nativeDomain: 'practera.app',
+  intercomAppId: 'pef1lmo8',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
