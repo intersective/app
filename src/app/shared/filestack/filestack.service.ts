@@ -1,6 +1,5 @@
-import { PickerStoreOptions } from 'filestack-js/build/module/lib/picker';
-import { PickerInstance, PickerOptions } from 'filestack-js/build/module';
-import { Client } from 'filestack-js/build/main/lib/client';
+import { PickerStoreOptions } from 'filestack-js/src/lib/picker';
+import { PickerInstance, PickerOptions, Client } from 'filestack-js/src/index';
 import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
@@ -74,19 +73,28 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType): PickerStoreOptions {
-    let path = environment.filestack.s3Config.paths.any;
+    const {
+      location,
+      container,
+      region,
+      workflows,
+      paths,
+    } = environment.filestack.s3Config;
+
+    let path = paths.any;
     // get s3 path based on file type
-    if (environment.filestack.s3Config.paths[fileType]) {
-      path = environment.filestack.s3Config.paths[fileType];
+    if (paths[fileType]) {
+      path = paths[fileType];
     }
     // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
+
     return {
-      location: environment.filestack.s3Config.location,
-      container: environment.filestack.s3Config.container,
-      region: environment.filestack.s3Config.region,
+      location,
+      container,
+      region,
       path: path,
-      // workflows: ['YOUR_WORKFLOW_ID'], // add workflow for virus detection
+      workflows
     };
   }
 
