@@ -1,5 +1,3 @@
-import { PickerStoreOptions } from 'filestack-js/src/lib/picker';
-import { PickerInstance, PickerOptions, Client } from 'filestack-js/src/index';
 import * as filestack from 'filestack-js';
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
@@ -30,7 +28,7 @@ const api = {
 
 @Injectable()
 export class FilestackService {
-  private filestack: Client;
+  private filestack;
 
   // file types that allowed to upload
   public fileTypes = {
@@ -72,7 +70,7 @@ export class FilestackService {
   }
 
   // get s3 config
-  getS3Config(fileType): PickerStoreOptions {
+  getS3Config(fileType) {
     const {
       location,
       container,
@@ -154,8 +152,8 @@ export class FilestackService {
     }
   }
 
-  private createInstance(options = {}, onSuccess = res => res, onError = err => err): PickerInstance {
-    const pickerOptions: PickerOptions = {
+  private createInstance(options = {}, onSuccess = res => res, onError = err => err) {
+    const pickerOptions = {
       dropPane: {},
       fromSources: [
         'local_file_system',
