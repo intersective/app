@@ -10,7 +10,8 @@
   <h2 class="title">How helpful was the feedback?</h2>
 
   <div>
-    <ion-range min="0" max="1" step="any" [(ngModel)]="ratingData.rating"></ion-range>
+    <ion-label id="ReviewRange" hidden>ReviewRange</ion-label>
+    <ion-range aria-labelledby="ReviewRange" min="0" max="1" step="any" [(ngModel)]="ratingData.rating"></ion-range>
 
     <div class="range-text">
       <p>Not helpful</p>
@@ -30,6 +31,7 @@
   </div>
   <br>
 
+  <ion-label id="ion-input-0-lbl" hidden>commentBox</ion-label>
   <ion-input *ngIf="ratingData.rating !== 0.5" placeholder="Add a personal thank you" class="comment-box" padding-horizontal [(ngModel)]="ratingData.comment"></ion-input>
 
   <br>

@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar color="light">
-    <ion-title center>Reviews</ion-title>
+    <ion-title role="heading" aria-level="1" center>Reviews</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -48,8 +48,8 @@
           <ion-card-content class="review">
             <h2>{{review.name}}</h2>
             <ion-icon *ngIf="review.isDone" name="checkmark-circle" class="check-mark"></ion-icon>
-            <h4 padding-top>{{review.submitterName}}</h4>
-            <h4 *ngIf="review.teamName">{{review.teamName}}</h4>
+            <h3 padding-top>{{review.submitterName}}</h3>
+            <h3 *ngIf="review.teamName">{{review.teamName}}</h3>
             <ion-text>{{review.date}}</ion-text>
           </ion-card-content>
         </ion-card>
