@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -9,6 +9,7 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 
 import { ChatService, ChatRoomObject, Message } from '../chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-chat-room',
@@ -21,7 +22,13 @@ export class ChatRoomComponent extends RouterEnter {
   routeUrl = '/chat-room/';
   message: string;
   messageList: Array<Message> = new Array;
-  selectedChat: ChatRoomObject;
+  selectedChat: ChatRoomObject = {
+    name: '',
+    is_team: false,
+    team_id: null,
+    team_member_id: null,
+    participants_only: false
+  };
   messagePageNumber = 0;
   messagePagesize = 20;
   loadingChatMessages = true;
@@ -38,8 +45,13 @@ export class ChatRoomComponent extends RouterEnter {
     public pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private ngZone: NgZone,
+    public element: ElementRef,
+    private newrelic: NewRelicService
   ) {
     super(router);
+    this.newrelic.setPageViewName(`Chat room: ${JSON.stringify(this.selectedChat)}`);
+
     const role = this.storage.getUser().role;
 
     // message by team
@@ -219,7 +231,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['/app/chat']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'chat']));
   }
 
   sendMessage() {
@@ -228,8 +240,9 @@ export class ChatRoomComponent extends RouterEnter {
     }
     this.loadingMesageSend = true;
     const message = this.message;
-    // remove typed message from text field.
+    // remove typed message from text area and shrink text area.
     this.message = '';
+    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
     // createing prams need to send message
     let data: any;
     if (this.selectedChat.is_team) {

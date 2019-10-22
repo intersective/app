@@ -32,7 +32,7 @@ interface VerifyParams {
 
 interface RegisterData {
   password: string;
-  user_id: string;
+  user_id: number;
   key: string;
 }
 
@@ -64,7 +64,6 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
-  private isLoggedIn = false;
 
   constructor(
     private request: RequestService,
@@ -76,6 +75,12 @@ export class AuthService {
 
   private _clearCache(): any {
     // do clear user cache here
+  }
+
+  private _login(body: HttpParams) {
+    return this.request.post(api.login, body.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
   /**
@@ -92,10 +97,7 @@ export class AuthService {
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
 
-    return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      .pipe(map(this._handleLoginResponse, this));
+    return this._login(body);
   }
 
   /**
@@ -107,18 +109,14 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    return this.request.post(api.login, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).pipe(map(this._handleLoginResponse, this));
+    return this._login(body);
   }
 
-  private _handleLoginResponse(response) {
+  private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-    if (response.data) {
-      this.storage.setUser({apikey: norm.apikey});
-      this.storage.set('programs', norm.programs);
-      this.storage.set('isLoggedIn', true);
-    }
+    this.storage.setUser({apikey: norm.apikey});
+    this.storage.set('programs', norm.programs);
+    this.storage.set('isLoggedIn', true);
     return response;
   }
 
@@ -149,7 +147,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.isLoggedIn || this.storage.get('isLoggedIn');
+    return this.storage.get('isLoggedIn');
   }
 
   logout(navigationParams = {}) {
@@ -161,7 +159,7 @@ export class AuthService {
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    return this.router.navigate(['/login'], navigationParams);
+    return this.router.navigate(['login'], navigationParams);
   }
 
    /**

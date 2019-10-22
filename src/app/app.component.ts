@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
@@ -9,6 +9,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-root',
@@ -24,39 +25,61 @@ export class AppComponent implements OnInit {
     private storage: BrowserStorageService,
     private versionCheckService: VersionCheckService,
     private pusherService: PusherService,
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
     // private splashScreen: SplashScreen,
     // private statusBar: StatusBar
   ) {
     this.initializeApp();
   }
 
-  ngOnInit() {
-    // need to set the theme color and card style immediately after page load
-    this.sharedService.onPageLoad();
-    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
-    const domain = window.location.hostname;
-    this.authService.getConfig({domain}).subscribe((response: any) => {
-      if (response !== null) {
-        const expConfig = response.data;
-        const numOfConfigs = expConfig.length;
-        if (numOfConfigs > 0 && numOfConfigs < 2) {
-          let logo = expConfig[0].logo;
-          const themeColor = expConfig[0].config.theme_color;
-          // add the domain if the logo url is not a full url
-          if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
-            logo = environment.APIEndpoint + logo;
-          }
-          this.storage.setConfig({
-            'logo': logo,
-            'color': themeColor
-          });
-          this.utils.changeThemeColor(themeColor);
-        }
-
-        // initiate pusher subcriptions and user data
-        this.sharedService.onPageLoad();
-      }
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
     });
+  }
+
+  private configVerification(): void {
+    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
+      this.storage.set('fastFeedbackOpening', false);
+    }
+  }
+
+  ngOnInit() {
+    this.configVerification();
+    this.sharedService.onPageLoad();
+
+    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+    // Get the custom branding info and update the theme color if needed
+    const domain = window.location.hostname;
+    this.authService.getConfig({domain}).subscribe(
+      (response: any) => {
+        if (response !== null) {
+          const expConfig = response.data;
+          const numOfConfigs = expConfig.length;
+          if (numOfConfigs > 0 && numOfConfigs < 2) {
+            let logo = expConfig[0].logo;
+            const themeColor = expConfig[0].config.theme_color;
+            // add the domain if the logo url is not a full url
+            if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+              logo = environment.APIEndpoint + logo;
+            }
+            this.storage.setConfig({
+              'logo': logo,
+              'color': themeColor
+            });
+            // use brand color if no theme color
+            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+              this.utils.changeThemeColor(themeColor);
+            }
+          }
+        }
+      },
+      err => {
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      }
+    );
 
     let searchParams = null;
     let queryString = '';
@@ -72,18 +95,30 @@ export class AppComponent implements OnInit {
         case 'secure':
           if (searchParams.has('auth_token')) {
             const queries = this.utils.urlQueryToObject(queryString);
-            this.router.navigate(['secure', searchParams.get('auth_token'), queries]);
+            this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
           }
           break;
         case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['reset_password', searchParams.get('key'), searchParams.get('email')]);
+            this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
           }
           break;
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.router.navigate(['registration', searchParams.get('email'), searchParams.get('key') ]);
+            this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
           }
           break;
       }
@@ -96,7 +131,7 @@ export class AppComponent implements OnInit {
       this.versionCheckService.initiateVersionCheck();
 
       // initialise Pusher
-      this.pusherService.initantiate();
+      this.pusherService.initialise();
     });
   }
 

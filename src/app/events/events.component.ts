@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService, Event, Activity } from './events.service';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+
 
 interface EventGroup {
   date: string;
@@ -32,7 +34,9 @@ export class EventsComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private eventService: EventsService,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {
     super(router);
     // update event list after book/cancel an event
@@ -55,6 +59,8 @@ export class EventsComponent extends RouterEnter {
   }
 
   onEnter() {
+    this.newRelic.setPageViewName('event-list');
+
     this._initialise();
     this.eventService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
@@ -174,18 +180,21 @@ export class EventsComponent extends RouterEnter {
   }
 
   back() {
-    this.router.navigate(['app', 'home']);
+    return this.ngZone.run(() => this.router.navigate(['app', 'home']));
   }
 
   showBrowse() {
+    this.newRelic.addPageAction('show browse');
     this.activated = 'browse';
     this._filterByActivities();
   }
   showBooked() {
+    this.newRelic.addPageAction('show booked');
     this.activated = 'booked';
     this._filterByActivities();
   }
   showAttended() {
+    this.newRelic.addPageAction('show attended');
     this.activated = 'attended';
     this._filterByActivities();
   }
