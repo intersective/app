@@ -36,7 +36,7 @@
 
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
-    <ion-label id="AssessmentRadioGroup" hidden>AssessmentRadioGroup</ion-label>
+    <ion-label name="AssessmentRadioGroup" hidden>AssessmentRadioGroup</ion-label>
     <ion-radio-group aria-labelledby="AssessmentRadioGroup" [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item *ngFor="let choice of question.choices; let i = index" [lines]="i == question.choices.length - 1 ? 'none' : ''">
         <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
