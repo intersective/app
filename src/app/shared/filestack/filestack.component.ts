@@ -11,6 +11,7 @@ export interface FilestackUploaded {
   key: string;
   container: string;
   status: string;
+  workflow?: object;
 
   // flag to indicate detected virus (true: threat found, false: safe from virus/malware)
   infected?: boolean;
