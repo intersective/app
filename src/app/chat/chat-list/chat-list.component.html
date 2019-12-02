@@ -33,7 +33,7 @@
           <ng-container *ngIf="(chat.role !== 'mentor') && (!chat.is_team) && (haveMoreTeam)"><span>{{chat.team_name}}</span></ng-container>
         </div>
         <ng-container *ngIf="chat.last_message; else messgeElseBlock"><p>{{chat.last_message}}</p></ng-container>
-        <ng-template #messgeElseBlock><p>No messages.</p></ng-template>
+        <ng-template #messgeElseBlock><p class="chat-not-start">No messages.</p></ng-template>
       </ion-label>
       <div slot="end" class="time-container">
         <span>{{getChatDate(chat.last_message_created)}}</span>

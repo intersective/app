@@ -23,7 +23,7 @@ clickable-item {
 
     .time-container {
       span {
-        color: var(--ion-color-primary);
+        color: black;
       }
     }
 
@@ -36,6 +36,9 @@ clickable-item {
   ion-label {
     margin: 10px 0 10px 0 !important;
 
+    .chat-not-start {
+      color: var(--ion-color-medium);
+    }
     .chat-name-container {
       display: inline-flex !important;
       flex-wrap: wrap;
@@ -80,7 +83,7 @@ clickable-item {
   .time-container {
     width: 22% !important;
     display: grid;
-    text-align: -webkit-right;
+    justify-items: end;
     margin-left: 4px !important;
 
     span {
@@ -89,7 +92,11 @@ clickable-item {
     }
 
     ion-badge {
+      margin-top: 2px;
       max-width: 43px !important;
+      max-height: 20px;
+      min-width: 20px;
+      min-height: 20px;
       border-radius: 8px !important;
       width: fit-content;
     }
