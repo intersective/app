@@ -39,6 +39,8 @@ $message-body-size: 224px;
 
   ion-item {
     ion-avatar {
+      width: 32px;
+      height: 32px;
       margin: 0 12px 2px 0 !important;
       margin-left: -8px !important;
       &.no-time {
@@ -211,7 +213,7 @@ $message-body-size: 224px;
             margin-left: 0 !important;
           }
           &.no-avatar {
-            margin-left: 5% !important;
+            margin-left: 44px !important;
           }
         }
       }

@@ -1,3 +1,6 @@
+.ion-toolbar-absolute {
+  text-align: center;
+}
 ion-avatar {
 
   ion-icon {
@@ -22,8 +25,10 @@ clickable-item {
     }
 
     .time-container {
-      span {
-        color: black;
+      .time{
+        span {
+          color: black;
+        }
       }
     }
 
@@ -56,7 +61,6 @@ clickable-item {
         white-space: nowrap;
         font-size: 12px;
         line-height: 16px;
-        margin-left: 3px;
         max-width: 70% !important;
         text-overflow: inherit;
         overflow: inherit;
@@ -67,8 +71,12 @@ clickable-item {
         overflow: inherit;
         max-width: 90%;
         width: fit-content;
+        font-size: 16px !important;
+        margin-right: 3px;
 
         &.team-channel {
+          font-size: 16px !important;
+          margin-right: 3px;
           max-width: -webkit-fill-available !important;
           width: auto !important;
           .chat-name-container {
@@ -86,9 +94,11 @@ clickable-item {
     justify-items: end;
     margin-left: 4px !important;
 
-    span {
-      font-size: 14px;
-      color: var(--practera-chat-color-time-text-color);
+    .time {
+      span {
+        font-size: 14px;
+        color: var(--practera-chat-color-time-text-color);
+      }
     }
 
     ion-badge {
@@ -101,5 +111,22 @@ clickable-item {
       width: fit-content;
     }
 
+  }
+}
+.desktop-view {
+  .time-container {
+    width: auto !important;
+    height: 100%;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  clickable-item {
+    ion-label {
+      .chat-name-container {
+        span {
+          max-width: none !important;
+        }
+      }
+    }
   }
 }

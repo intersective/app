@@ -438,6 +438,9 @@ export class ChatRoomComponent extends RouterEnter {
         } else {
           return true;
         }
+      } else {
+        // show message time for the first message
+        return true;
       }
     }
   }
