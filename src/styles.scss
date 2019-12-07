@@ -221,28 +221,75 @@ ion-button.practera-btn {
   --background: transparent !important;
 }
 
+/*******************
+  Practera popup styles
+*******************/
+
+.practera-popup {
+  .modal-wrapper {
+    min-width: 280px;
+    --width: 280px;
+    --height: 280px;
+    --border-radius: 12px;
+    --background: transparent;
+    --box-shadow: none;
+    .inner-scroll, .scroll-y, .overscroll {
+      --overflow: hidden;
+    }
+    .pop-up-content {
+
+      .imgage-content {
+        text-align: -webkit-center;
+    
+        .image {
+          background-color: #ffffff !important;
+          width: -webkit-fit-content;
+          border-radius: 50%;
+    
+          img {
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+          }
+        }
+      }
+
+      .div-after-img {
+        text-align: -webkit-center;
+        margin: 0 15px 30px;
+        ion-button {
+          max-width: 311px;
+        }
+        &.button-container {
+          margin: 0;
+        }
+      }
+
+    }
+  }
+  &.desktop-view {
+    .modal-wrapper {
+      --width: inherit;
+      --height: inherit;
+    }
+  }
+
+  &.lock-assessment-popup{
+    .modal-wrapper {
+      --height: 260px;
+    }
+  }
+}
 .achievement-popup {
   .modal-wrapper {
     --height: 80%;
     --width: 70%;
-    --border-radius: 12%;
+    --border-radius: 12px;
     --background: transparent;
     --box-shadow: none;
   }
 }
 
-.lock-assessment-popup {
-  .modal-wrapper {
-    --height: 260px;
-    --width: 260px;
-    --background: transparent;
-    --box-shadow: none;
-    --border-radius: 12px;
-    .inner-scroll, .scroll-y, .overscroll {
-      --overflow: hidden;
-    }
-  }
-}
 
 @media only screen and (max-device-width: 667px), screen and (max-width: 450px) {
   .intercom-namespace .intercom-launcher-badge-frame {

@@ -6,22 +6,14 @@
   .imgage-content {
     margin-top: 4vh;
     margin-bottom: -43px;
-    text-align: -webkit-center;
 
     .image {
-      background-color: #ffffff !important;
-      width: -webkit-fit-content;
-      padding: 18px;
-      border-radius: 50%;
+      padding: 12px;
 
       img {
-        border-radius: 50%;
-        width: 48px;
-
         &.default {
           filter: invert(.5);
         }
-
       }
     }
   }
@@ -33,7 +25,6 @@
   }
 
   .div-after-img {
-    margin: 0 15px 30px;
 
     .title {
       font-size: 18px;
