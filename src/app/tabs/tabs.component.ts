@@ -7,6 +7,8 @@ import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
+import { EventListService } from '@app/event-list/event-list.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-tabs',
@@ -17,6 +19,7 @@ export class TabsComponent extends RouterEnter {
   routeUrl = '/app/';
   showReview = false;
   showChat = false;
+  showEvents = false;
   noOfTodoItems = 0;
   noOfChats = 0;
   selectedTab = '';
@@ -29,8 +32,11 @@ export class TabsComponent extends RouterEnter {
     private switcherService: SwitcherService,
     private reviewsService: ReviewsService,
     private sharedService: SharedService,
+    private eventsService: EventListService,
+    private newRelic: NewRelicService,
   ) {
     super(router);
+    this.newRelic.setPageViewName('tab');
 
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -51,11 +57,20 @@ export class TabsComponent extends RouterEnter {
         });
       });
     }
+
+    if (!this.utils.isMobile()) {
+      this.utils.getEvent('chat-badge-update').subscribe(event => {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+      });
+    }
   }
 
   private _initialise() {
     this.showChat = false;
     this.showReview = false;
+    this.showEvents = false;
   }
 
   onEnter() {
@@ -71,28 +86,46 @@ export class TabsComponent extends RouterEnter {
         this.noOfChats = noOfChats;
       });
     }
-    this.switcherService.getTeamInfo().subscribe(data => {
-      if (this.storage.getUser().teamId) {
-        this.showChat = true;
-      } else {
-        this.showChat = false;
-      }
-    });
-    this.reviewsService.getReviews().subscribe(data => {
-      if (data.length) {
-        this.showReview = true;
-      }
-    });
+    // display the chat tab if the user is in team
+    if (this.storage.getUser().teamId) {
+      this.showChat = true;
+    } else {
+      this.showChat = false;
+      this.switcherService.getTeamInfo().subscribe(data => {
+        if (this.storage.getUser().teamId) {
+          this.showChat = true;
+        }
+      });
+    }
+    if (this.storage.getUser().hasReviews) {
+      this.showReview = true;
+    } else {
+      this.showReview = false;
+      this.reviewsService.getReviews().subscribe(data => {
+        if (data.length) {
+          this.showReview = true;
+        }
+      });
+    }
+    if (this.storage.getUser().hasEvents) {
+      this.showEvents = true;
+    } else {
+      this.showEvents = false;
+      this.eventsService.getEvents().subscribe(events => {
+        this.showEvents = !this.utils.isEmpty(events);
+      });
+    }
   }
 
   private _checkRoute() {
+    this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
       case '/app/home':
-        this.selectedTab = 'home';
+        this.selectedTab = 'overview';
         break;
 
-      case '/app/project':
-        this.selectedTab = 'project';
+      case '/app/events':
+        this.selectedTab = 'events';
         break;
 
       case '/app/settings':
@@ -104,8 +137,8 @@ export class TabsComponent extends RouterEnter {
         break;
 
       default:
-        if (this.router.url.includes('/app/activity')) {
-          this.selectedTab = 'project';
+        if (this.router.url.includes('/app/home')) {
+          this.selectedTab = 'overview';
         } else if (this.router.url.includes('/app/reviews')) {
           this.selectedTab = 'reviews';
         } else {
@@ -116,7 +149,7 @@ export class TabsComponent extends RouterEnter {
   }
 
   private _stopPlayingVideos() {
-    this.sharedService.stopPlayingViodes();
+    this.sharedService.stopPlayingVideos();
   }
 
 }

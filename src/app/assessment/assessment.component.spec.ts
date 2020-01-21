@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject } from '@angular/core/testing';
 import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -13,11 +13,14 @@ import { ActivityService } from '@app/activity/activity.service';
 import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { SharedService } from '@services/shared.service';
+import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { MockRouter, MockNewRelicService } from '@testing/mocked.service';
 
 class Page {
   get savingMessage() {
-    return this.query<HTMLElement>('ion-title.subTitle');
+    return this.query<HTMLElement>('ion-title.sub-title');
   }
   get assessmentName() {
     return this.query<HTMLElement>('h1');
@@ -97,12 +100,14 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
+
   const mockAssessment = {
     name: 'test',
     description: 'test',
     isForTeam: false,
     dueDate: '2029-02-02',
     isOverdue: false,
+    pulseCheck: false,
     groups: [{
       name: 'test groups',
       description: 'test groups description',
@@ -165,41 +170,12 @@ describe('AssessmentComponent', () => {
     id: 1
   };
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, QuestionsModule, HttpClientModule],
+      imports: [ReactiveFormsModule, QuestionsModule, HttpClientTestingModule],
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        UtilsService,
-        SharedService,
-        {
-          provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'getSubmission', 'getFeedbackReviewed', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
-        },
-        {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp'])
-        },
-        {
-          provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId'])
-        },
-        {
-          provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
-        },
-        {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
-        },
-        {
-          provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate'),
-            events: of()
-          }
-        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -213,17 +189,50 @@ describe('AssessmentComponent', () => {
               data: {
                 action: 'assessment',
                 from: ''
-              }
-            }
+              },
+            },
+            params: of(true),
           }
-        }
+        },
+        UtilsService,
+        SharedService,
+        {
+          provide: NewRelicService,
+          useClass: MockNewRelicService,
+        },
+        {
+          provide: AssessmentService,
+          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'getSubmission', 'getFeedbackReviewed', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+        },
+        {
+          provide: ActivityService,
+          useValue: jasmine.createSpyObj('ActivityService', ['getTasksByActivityId'])
+        },
+        {
+          provide: FastFeedbackService,
+          useClass: FastFeedbackServiceMock
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser'])
+        },
+        {
+          provide: Router,
+          useClass: MockRouter,
+        },
       ]
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
+  });
+
+  beforeEach(async () => {
     fixture = TestBed.createComponent(AssessmentComponent);
     component = fixture.componentInstance;
+
     page = new Page(fixture);
     assessmentSpy = TestBed.get(AssessmentService);
     notificationSpy = TestBed.get(NotificationService);
@@ -234,6 +243,7 @@ describe('AssessmentComponent', () => {
     storageSpy = TestBed.get(BrowserStorageService);
     shared = TestBed.get(SharedService);
     utils = TestBed.get(UtilsService);
+
     // initialise service calls
     assessmentSpy.getAssessment.and.returnValue(of(mockAssessment));
     assessmentSpy.getSubmission.and.returnValue(of({
@@ -241,57 +251,73 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     assessmentSpy.saveAnswers.and.returnValue(of({}));
-    fastFeedbackSpy.pullFastFeedback.and.returnValue(of({}));
-    activitySpy.getTasksByActivityId.and.returnValue({currentActivity: {id: 1}, nextTask: {type: 'assessment'}});
+    assessmentSpy.getFeedbackReviewed.and.returnValue(of(true));
+    activitySpy.getTasksByActivityId.and.returnValue({
+      currentActivity: {id: 1},
+      nextTask: {type: 'assessment'}
+    });
     storageSpy.getUser.and.returnValue(mockUser);
+    component.routeUrl = '/test';
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 
   it('should get correct parameters from routing', () => {
     fixture.detectChanges();
-    expect(component.id).toEqual(1);
-    expect(component.activityId).toEqual(2);
-    expect(component.contextId).toEqual(3);
-    expect(component.submissionId).toEqual(4);
-    expect(component.action).toEqual('assessment');
+    fixture.whenStable().then(() => {
+      expect(component.id).toEqual(1);
+      expect(component.activityId).toEqual(2);
+      expect(component.contextId).toEqual(3);
+      expect(component.submissionId).toEqual(4);
+      expect(component.action).toEqual('assessment');
+    });
   });
 
   it('should get correct assessment and display correct info in html', () => {
     fixture.detectChanges();
-    expect(component.assessment).toEqual(mockAssessment);
-    expect(component.loadingAssessment).toEqual(false);
-    expect(page.savingMessage).toBeTruthy();
-    expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
-    expect(page.assessmentDescription).toBeTruthy();
-    expect(page.overDueMsg).toBeFalsy();
-    expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
-    mockAssessment.groups.forEach((group, groupIndex) => {
-      expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
-      expect(page.groupDescriptions[groupIndex]).toBeTruthy();
-      group.questions.forEach((question, questionIndex) => {
-        expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
-        expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+    fixture.whenStable().then(() => {
+      expect(component.assessment).toEqual(mockAssessment);
+      expect(component.loadingAssessment).toEqual(false);
+      expect(page.savingMessage).toBeTruthy();
+      expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
+      expect(page.assessmentDescription).toBeTruthy();
+      expect(page.overDueMsg).toBeFalsy();
+      expect(page.dueMsg.innerHTML.trim()).toEqual(shared.dueDateFormatter(mockAssessment.dueDate));
+      mockAssessment.groups.forEach((group, groupIndex) => {
+        expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
+        expect(page.groupDescriptions[groupIndex]).toBeTruthy();
+        group.questions.forEach((question, questionIndex) => {
+          expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
+          expect(page.questionDescriptions[questionIndex]).toBeTruthy();
+        });
       });
+      expect(notificationSpy.alert.calls.count()).toBe(0);
+      expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
     });
-    expect(notificationSpy.alert.calls.count()).toBe(0);
-    expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
   });
 
-  it('should pop up alert if it is team assessment and user is not in team', () => {
-    const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
-    tmpAssessment.isForTeam = true;
-    assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
-    const tmpUser = JSON.parse(JSON.stringify(mockUser));
-    tmpUser.teamId = null;
-    storageSpy.getUser.and.returnValue(tmpUser);
-    fixture.detectChanges();
-    expect(notificationSpy.alert.calls.count()).toBe(1);
-    // don't need to get submission anymore
-    expect(assessmentSpy.getSubmission.calls.count()).toBe(0);
-  });
+  it('should pop up alert if it is team assessment and user is not in team', fakeAsync(() => {
+      const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
+      tmpAssessment.isForTeam = true;
+      assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
+      const tmpUser = JSON.parse(JSON.stringify(mockUser));
+      tmpUser.teamId = null;
+      storageSpy.getUser.and.returnValue(tmpUser);
+
+      tick(); // getAssessment
+      tick(); // getSubmission
+      tick(); // getFeedbackReviewed
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        // we need to call getSubmission to determine the values for doReview/doAssessment
+        expect(assessmentSpy.getSubmission.calls.count()).toBe(1);
+      });
+    })
+  );
 
   it('should get correct in progress submission', () => {
     assessmentSpy.getSubmission.and.returnValue(of({
@@ -299,12 +325,14 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     fixture.detectChanges();
-    expect(component.submission).toEqual(mockSubmission);
-    expect(component.loadingSubmission).toEqual(false);
-    expect(component.doAssessment).toBe(true);
-    expect(component.doReview).toBe(false);
-    expect(component.savingMessage).toEqual('Last saved ' + utils.timeFormatter(mockSubmission.modified));
-    expect(component.savingButtonDisabled).toBe(false);
+    fixture.whenStable().then(() => {
+      expect(component.submission).toEqual(mockSubmission);
+      expect(component.loadingSubmission).toEqual(false);
+      expect(component.doAssessment).toBe(true);
+      expect(component.doReview).toBe(false);
+      expect(component.savingMessage).toEqual('Last saved ' + utils.timeFormatter(mockSubmission.modified));
+      expect(component.savingButtonDisabled).toBe(false);
+    });
   });
 
   it('should get correct in progress locked submission', () => {
@@ -315,10 +343,12 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     fixture.detectChanges();
-    expect(component.doAssessment).toBe(false);
-    expect(component.doReview).toBe(false);
-    expect(component.savingButtonDisabled).toBe(true);
-    expect(component.submission.status).toEqual('done');
+    fixture.whenStable().then(() => {
+      expect(component.doAssessment).toBe(false);
+      expect(component.doReview).toBe(false);
+      expect(component.savingButtonDisabled).toBe(true);
+      expect(component.submission.status).toEqual('done');
+    });
   });
 
   it('should get correct done submission', () => {
@@ -329,11 +359,13 @@ describe('AssessmentComponent', () => {
       review: {}
     }));
     fixture.detectChanges();
-    expect(component.submission).toEqual(tmpSubmission);
-    expect(component.loadingSubmission).toEqual(false);
-    expect(component.doAssessment).toBe(false);
-    expect(component.doReview).toBe(false);
-    expect(component.savingButtonDisabled).toBe(true);
+    fixture.whenStable().then(() => {
+      expect(component.submission).toEqual(tmpSubmission);
+      expect(component.loadingSubmission).toEqual(false);
+      expect(component.doAssessment).toBe(false);
+      expect(component.doReview).toBe(false);
+      expect(component.savingButtonDisabled).toBe(true);
+    });
   });
 
   it('should get correct in progress review', () => {
@@ -345,11 +377,13 @@ describe('AssessmentComponent', () => {
     }));
     routeStub.snapshot.data.action = 'review';
     fixture.detectChanges();
-    expect(component.review).toEqual(mockReview);
-    expect(component.doAssessment).toBe(false);
-    expect(component.doReview).toBe(true);
-    expect(component.savingButtonDisabled).toBe(false);
-    expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(0);
+    fixture.whenStable().then(() => {
+      expect(component.review).toEqual(mockReview);
+      expect(component.doAssessment).toBe(false);
+      expect(component.doReview).toBe(true);
+      expect(component.savingButtonDisabled).toBe(false);
+      expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(0);
+    });
   });
 
   it('should get correct published review', () => {
@@ -361,15 +395,17 @@ describe('AssessmentComponent', () => {
       submission: tmpSubmission,
       review: tmpReview
     }));
-    assessmentSpy.getFeedbackReviewed.and.returnValue(of(true));
+
     fixture.detectChanges();
-    expect(component.review).toEqual(tmpReview);
-    expect(component.doAssessment).toBe(false, 'not do assessment');
-    expect(component.doReview).toBe(false, 'not do review');
-    expect(component.savingButtonDisabled).toBe(true);
-    expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(1);
-    expect(component.feedbackReviewed).toBe(true);
-    expect(component.loadingFeedbackReviewed).toBe(false);
+    fixture.whenStable().then(() => {
+      expect(component.review).toEqual(tmpReview);
+      expect(component.doAssessment).toBe(false, 'not do assessment');
+      expect(component.doReview).toBe(false, 'not do review');
+      expect(component.savingButtonDisabled).toBe(true);
+      expect(assessmentSpy.getFeedbackReviewed.calls.count()).toBe(1);
+      expect(component.feedbackReviewed).toBe(true);
+      expect(component.loadingFeedbackReviewed).toBe(false);
+    });
   });
 
   it('should navigate to the correct page #1', () => {
@@ -381,14 +417,16 @@ describe('AssessmentComponent', () => {
   it('should navigate to the correct page #2', () => {
     component.fromPage = 'events';
     component.navigationRoute();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['events']);
   });
 
-  it('should navigate to the correct page #3', () => {
+  it('should navigate to the correct page #3', fakeAsync(() => {
     component.activityId = 1;
-    component.navigationRoute();
+    tick();
+    const test = component.navigationRoute();
+    tick();
+    expect(component.activityId).toEqual(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
-  });
+  }));
 
   it('should navigate to the correct page #4', () => {
     component.activityId = null;
@@ -445,6 +483,7 @@ describe('AssessmentComponent', () => {
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
+
     beforeEach(() => {
       fixture.detectChanges();
       component.id = 1;
@@ -457,9 +496,9 @@ describe('AssessmentComponent', () => {
         'q-125': null
       });
     });
+
     afterEach(() => {
       expect(component.savingButtonDisabled).toBe(false);
-      expect(component.saving).toBe(true);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
       expect(assessment.context_id).toBe(2);
@@ -501,22 +540,102 @@ describe('AssessmentComponent', () => {
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(component.submitting).toEqual('Retrieving new task...');
-      expect(component.saving).toBe(true);
+      expect(component.saving).toBe(false);
       expect(assessment.in_progress).toBe(false);
     });
   });
 
-  it('should pop up alert if required answer missing when submitting', () => {
+  it('should pop up alert if required answer missing when submitting', fakeAsync(() => {
+    const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
+    assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
+
     component.doAssessment = true;
     fixture.detectChanges();
-    component.questionsForm.patchValue({
-      'q-123': null,
-      'q-124': null,
-      'q-125': null
+    fixture.whenStable().then(() => {
+      component.questionsForm.patchValue({
+        'q-123': null,
+        'q-124': null,
+        'q-125': null
+      });
+      component.submit(false);
+      tick();
+      expect(component.submitting).toBe(false);
+      expect(notificationSpy.popUp.calls.count()).toBe(1);
     });
-    component.submit(false);
-    expect(component.submitting).toBe(false);
-    expect(notificationSpy.popUp.calls.count()).toBe(1);
-  });
+  }));
 
+  describe('submitting assessment submit(false)', () => {
+    const activityId = 1;
+    const emptyAnswers = [];
+    const action = 'assessment';
+    const assessmentId = 0;
+
+    beforeEach(() => {
+      component.id = activityId;
+      component.action = action;
+      component.assessment = {
+        name: 'Test Assessment',
+        description: 'Test Description',
+        isForTeam: false,
+        dueDate: '',
+        isOverdue: false,
+        groups: [],
+        pulseCheck: true,
+      };
+      // component.doAssessment = true;
+    });
+
+    it('should be called with correct assessment answer/action/activity status', fakeAsync(() => {
+      const tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
+      assessmentSpy.getAssessment.and.returnValue(of(tmpAssessment));
+      tick();
+
+      component.submit(false);
+      tick();
+
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
+        {
+          id: activityId,
+          in_progress: false, // default value
+        },
+        emptyAnswers,
+        action,
+        assessmentId
+      );
+      tick(10 * 1000); // 10 secs
+    }));
+
+    it('should check fastfeedback availability as pulseCheck is `true`', fakeAsync(() => {
+      component.submit(false);
+      const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
+      spyOn(component, 'redirectToNextMilestoneTask');
+      spyOn(component, 'navigationRoute');
+
+      tick(12 * 1000); // simulate 12sec (submission 10s & fastfeedback 2s)
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
+        expect(notificationSpy.presentToast.calls.count()).toEqual(1);
+
+        if (component.doReview === true) {
+          expect(component.navigationRoute).toHaveBeenCalled();
+        } else {
+          expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+        }
+      });
+    }));
+
+    it('should skip fastfeedback if pulsecheck = false', () => {
+      component.assessment.pulseCheck = false;
+      spyOn(fastFeedbackSpy, 'pullFastFeedback');
+      spyOn(component, 'redirectToNextMilestoneTask');
+
+      component.submit(false);
+      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
+      expect(notificationSpy.presentToast.calls.count()).toEqual(0);
+      expect(component.redirectToNextMilestoneTask).toHaveBeenCalled();
+    });
+  });
 });

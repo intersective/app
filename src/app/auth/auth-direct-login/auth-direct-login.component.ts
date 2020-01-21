@@ -6,6 +6,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -21,18 +22,22 @@ export class AuthDirectLoginComponent implements OnInit {
     public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private newRelic: NewRelicService
   ) {}
 
   async ngOnInit() {
+    this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
       return this._error();
     }
 
     try {
+      const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
       const loginStatus = await this.authService.directLogin({ authToken }).toPromise();
       const userInfo = await this.switcherService.getMyInfo().toPromise();
+      nrDirectLoginTracer();
       return this._redirect();
     } catch (err) {
       this._error();
@@ -42,6 +47,7 @@ export class AuthDirectLoginComponent implements OnInit {
   // force every navigation happen under radar of angular
   private navigate(direction): Promise<boolean> {
     return this.ngZone.run(() => {
+      this.newRelic.setCustomAttribute('redirection', direction);
       return this.router.navigate(direction);
     });
   }
@@ -56,6 +62,8 @@ export class AuthDirectLoginComponent implements OnInit {
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
+    // clear the cached data
+    this.utils.clearCache();
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this.navigate(['switcher']);
@@ -68,13 +76,13 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['switcher']);
     }
     // switch to the program
-    await this.switcherService.switchProgram(program);
+    await this.switcherService.switchProgram(program).toPromise();
 
     switch (redirect) {
       case 'home':
         return this.navigate(['app', 'home']);
       case 'project':
-        return this.navigate(['app', 'project']);
+        return this.navigate(['app', 'home']);
       case 'activity':
         if (!activityId) {
           return this.navigate(['app', 'home']);
@@ -84,7 +92,20 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this.navigate(['app', 'home']);
         }
-        return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        if (this.utils.isMobile()) {
+          return this.navigate(['assessment', 'assessment', activityId, contextId, assessmentId]);
+        } else {
+          return this.router.navigate([
+            'app',
+            'activity',
+            activityId,
+            {
+              task: 'assessment',
+              task_id: assessmentId,
+              context_id: contextId
+            }
+          ]);
+        }
       case 'reviews':
         return this.navigate(['app', 'reviews']);
       case 'review':
@@ -102,7 +123,8 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(['app', 'home']);
   }
 
-  private _error(): Promise<any> {
+  private _error(res?): Promise<any> {
+    this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [

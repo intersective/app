@@ -13,7 +13,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 export class ContactNumberFormComponent implements OnInit {
 
   @Input() page;
-  @Output() updateNumber?: EventEmitter<string>;
+  @Output() updateNumber = new EventEmitter();
 
   // use to pass data to api
   profile = {
@@ -34,28 +34,28 @@ export class ContactNumberFormComponent implements OnInit {
   // variable to control the update button
   updating = false;
   contactNumberFormat = {
-    masks : {
+    masks: {
       AUS: {
         format: '+61',
-        placeholder: '___ ___ ___',
+        placeholder: '000 000 000',
         pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{3}$',
         numberLength: '11'
       },
       US: {
         format: '+1',
-        placeholder: '___ ___ ____',
+        placeholder: '000 000 0000',
         pattern: '^[0-9]{3}[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$',
         numberLength: '12'
       }
     },
-    countryCodes : [
+    countryCodes: [
       {
         name: 'Australia',
         code: 'AUS'
       },
       {
-          name: 'US/Canada',
-          code: 'US'
+        name: 'US/Canada',
+        code: 'US'
       },
     ]
   };
@@ -68,7 +68,6 @@ export class ContactNumberFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.updateNumber = new EventEmitter<string>();
     this._initcomponent();
   }
 
@@ -151,14 +150,13 @@ export class ContactNumberFormComponent implements OnInit {
     }
   }
 
-  disableArrowKeys(event) {
-    event = (event) ? event : window.event;
-
-    // charCode is the code of each Key
-    const charCode = (event.which) ? event.which : event.keyCode;
+  disableArrowKeys(event: KeyboardEvent): boolean {
+    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].indexOf(event.code) !== -1) {
+      return true;
+    }
 
     // just allow number keys to enter
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(event.key) === -1) {
         return false;
     }
     return true;

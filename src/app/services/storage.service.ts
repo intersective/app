@@ -16,6 +16,7 @@ export interface User {
   linkedinUrl?: string;
   programId?: number;
   programName?: string;
+  programImage?: string;
   experienceId?: number;
   timelineId?: number;
   projectId?: number;
@@ -26,6 +27,9 @@ export interface User {
   activityCardImage?: string;
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
+  enrolment?: any;
+  hasEvents?: boolean;
+  hasReviews?: boolean;
 }
 
 export interface Config {
