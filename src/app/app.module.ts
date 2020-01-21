@@ -22,14 +22,12 @@ import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
-    UnlockingComponent,
     IconComponent,
   ],
   imports: [

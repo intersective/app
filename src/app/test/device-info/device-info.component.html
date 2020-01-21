@@ -1,0 +1,19 @@
+<ion-content paddings>
+  <ion-list>
+    <pre>{{ platform.platforms() | json }}</pre>
+  </ion-list>
+  <ion-list>
+    <ion-item>
+      URL: {{ platform.url() }}
+    </ion-item>
+    <ion-item>
+      Height: {{ platform.height() }}
+    </ion-item>
+    <ion-item>
+      Width: {{ platform.width() }}
+    </ion-item>
+    <ion-item>
+      Agent: {{ platform.testUserAgent() }}
+    </ion-item>
+  </ion-list>
+</ion-content>
