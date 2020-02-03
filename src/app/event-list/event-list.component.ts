@@ -19,6 +19,7 @@ export class EventListComponent {
   // the current active tab
   activated = 'browse';
   events: Array<EventGroup> = [];
+  remainingEvents: Array<EventGroup> = [];
   eventsCategorised: {
     browse: Array<EventGroup>;
     booked: Array<EventGroup>;
@@ -46,6 +47,7 @@ export class EventListComponent {
 
   private _initialise() {
     this.events = [];
+    this.remainingEvents = [];
     this.eventsCategorised = {
       browse: [],
       booked: [],
@@ -118,7 +120,7 @@ export class EventListComponent {
       if (eventGroupAttended.events.length) {
         this.eventsCategorised.attended.push(eventGroupAttended);
       }
-      this.events = this.eventsCategorised[this.activated];
+      this.renderEvents(this.eventsCategorised[this.activated]);
       // if activity id is passed in, filter by that activity
       let activityId = this.activityId;
       if (!activityId) {
@@ -138,6 +140,66 @@ export class EventListComponent {
     this.eventService.getActivities().subscribe(activities => {
       this.activities = activities;
     });
+  }
+
+  // render more events from remainingEvents
+  loadMoreEvents(event) {
+    setTimeout(
+      () => {
+        this.renderEvents();
+        event.target.complete();
+      },
+      500
+    );
+  }
+
+  /**
+   * Render 7 events at one time.
+   * If one event group doesn't have 7 events, will render the next event group until 7 events or all rendered
+   *
+   * @param remainingEvents Pass the remaining event groups if we need to reset the event list
+   */
+  renderEvents(remainingEvents?) {
+    if (!this.events) {
+      this.events = [];
+    }
+    // re-assign remainingEvents if passed in
+    if (remainingEvents) {
+      this.remainingEvents = JSON.parse(JSON.stringify(remainingEvents));
+      this.events = [];
+    }
+    // don't need to do anything if no remaining events
+    if (!this.remainingEvents) {
+      return ;
+    }
+    let eventsCount = 0, eventGroup;
+    const maxEvents = 7;
+    while (eventsCount < maxEvents) {
+      // stop if there's no remaining events
+      if (!this.remainingEvents.length) {
+        break;
+      }
+      eventGroup = this.remainingEvents[0];
+      if (eventsCount + eventGroup.events.length <= maxEvents) {
+        // render the whole event group if no more than max events yet
+        this.remainingEvents.shift();
+        eventsCount += eventGroup.events.length;
+      } else {
+        eventGroup = {
+          date: this.remainingEvents[0].date,
+          events: this.remainingEvents[0].events.splice(0, maxEvents - eventsCount)
+        };
+        eventsCount = maxEvents;
+      }
+
+      if (this.events.length && this.events[this.events.length - 1].date === eventGroup.date) {
+        // concat the new event group to the last one
+        this.events[this.events.length - 1].events = this.events[this.events.length - 1].events.concat(eventGroup.events);
+      } else {
+        // push the new event group
+        this.events.push(eventGroup);
+      }
+    }
   }
 
   // tell parent component that user is going to an event
@@ -269,13 +331,13 @@ export class EventListComponent {
    * Filter the current events with selected activities
    */
   private _filterByActivities() {
-    // initialise events
-    this.events = this.eventsCategorised[this.activated];
+    // no need to filter any activity if not selected
     if (this.utils.isEmpty(this.selectedActivities)) {
+      this.renderEvents(this.eventsCategorised[this.activated]);
       return ;
     }
     const events = [];
-    this.events.forEach(eventGroup => {
+    this.eventsCategorised[this.activated].forEach(eventGroup => {
       const group: EventGroup = {
         date: eventGroup.date,
         events: []
@@ -289,6 +351,6 @@ export class EventListComponent {
         events.push(group);
       }
     });
-    this.events = events;
+    this.renderEvents(events);
   }
 }
