@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Game } from 'phaser';
 
 @Component({
   selector: 'app-phaser',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
 })
 
 export class PhaserComponent {
-
+  constructor() {
+    console.log(Game);
+  }
 }

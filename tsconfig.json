@@ -10,7 +10,8 @@
     "experimentalDecorators": true,
     "target": "es5",
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/phaser/types/"
     ],
     "lib": [
       "es2018",
@@ -24,6 +25,9 @@
       "@shared/*": ["app/shared/*"],
       "@environments/*": ["environments/*"],
       "@testing/*": ["testing/*"]
-    }
-  }
+    },
+  },
+  "files": [
+    "./src/phaser.d.ts"
+  ]
 }
