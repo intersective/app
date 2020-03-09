@@ -6,6 +6,7 @@ import { AnimatedBattlefieldComponent } from './animation-battlefield/animation-
 import { AnimatedUnlockingComponent } from './animated-unlocking/animated-unlocking.component';
 import { AnimationDrawingComponent } from './animation-drawing/animation-drawing.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
+import { PhaserComponent } from './phaser/phaser.component';
 import { TestRoutingModule } from './test-routing.module';
 import { SharedModule } from '@shared/shared.module';
 
@@ -22,6 +23,7 @@ import { SharedModule } from '@shared/shared.module';
     AnimatedUnlockingComponent,
     AnimationDrawingComponent,
     DeviceInfoComponent,
+    PhaserComponent,
   ],
   exports: [
     IonicModule,

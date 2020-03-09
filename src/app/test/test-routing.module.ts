@@ -6,6 +6,7 @@ import { AnimatedBattlefieldComponent } from './animation-battlefield/animation-
 import { AnimatedUnlockingComponent } from './animated-unlocking/animated-unlocking.component';
 import { AnimationDrawingComponent } from './animation-drawing/animation-drawing.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
+import { PhaserComponent } from './phaser/phaser.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
   {
     path: 'animation-drawing',
     component: AnimationDrawingComponent,
+  },
+  {
+    path: 'phaser',
+    component: PhaserComponent,
   }
 ];
 
