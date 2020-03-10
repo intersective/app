@@ -58,6 +58,32 @@ Run `npm run local` to start a development server on your local, and calling 127
 - If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
 - run `npm run e2e-dev` to see the result
 
+#### Capacitor
+
+On **[feature/AV2-625/capacitor](https://github.com/intersective/practera-app-v2/tree/feature/AV2-625/capacitor)** branch, run `npm install` to make sure you have capacitor cli and its dependencies installed.
+
+- Please refer to **capacitor.config.json** for capacitor's build configuration.
+- After development, please run commands below to update capacitor with latest changes.
+  - `npm run build` - ensure build is latest version 
+  - `npx cap copy`  - sync ionic app with Capacitor
+
+##### iOS
+
+- Requirements:
+  - xcode
+  - cocoapods (install through ruby pm) `gem install cocoapods`
+
+- iOS code is located inside `./ios`
+
+##### android
+
+- Requirements:
+  - Android Studio
+
+- android code is located inside `./android` 
+
+
+
 ## External link format
 
 ### 1. Direct link login 
