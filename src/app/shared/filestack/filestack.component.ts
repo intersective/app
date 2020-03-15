@@ -2,6 +2,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { Component, HostListener, EventEmitter, Output, Input } from '@angular/core';
 import { FilestackService } from './filestack.service';
 
+
 export interface FilestackUploaded {
   handle: string;
   url: string;
@@ -34,6 +35,7 @@ export class FilestackComponent {
   constructor(private filestackService: FilestackService) {}
 
   async uploadFile() {
+    console.log('i am here');
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {
       storeTo: s3Config,
@@ -49,8 +51,8 @@ export class FilestackComponent {
           data: data
         });
       },
-    };
 
+    };
     if (this.accept) {
       pickerOptions['accept'] = this.accept;
     }

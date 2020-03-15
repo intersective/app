@@ -63,6 +63,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   propagateChange = (_: any) => {};
 
   onFileUploadCompleted(file, type = null) {
+
     if (file.success) {
       // reset errors
       this.errors = [];

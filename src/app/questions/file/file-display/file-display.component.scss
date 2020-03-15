@@ -7,3 +7,26 @@ video {
   font-size: 16px;
   white-space: normal;
 }
+.flip {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+.rotate-180 {
+  transform: rotate(180deg);
+}
+.flip-and-rotate-180 {
+  transform: rotateY(-180deg);
+  -ms-transform: rotateY(-180deg);
+  -webkit-transform: rotateY(-180deg);
+}
+.flip-and-rotate-270 {
+  transform: rotateX(-270deg);
+  -ms-transform: rotateX(-270deg);
+  -webkit-transform: rotateX(-270deg);
+}
+.rotate-90 {
+  transform: rotate(90deg);
+}
+.flip-and-rotate-90 {
+
+}
