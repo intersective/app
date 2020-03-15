@@ -100,6 +100,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       if(allMetaData.Orientation >= 5) {
         swapWidthAndHeight(this);
       }
+
     });
   }
 }

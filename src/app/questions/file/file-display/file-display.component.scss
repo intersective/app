@@ -20,13 +20,18 @@ video {
   -webkit-transform: rotateY(-180deg);
 }
 .flip-and-rotate-270 {
-  transform: rotateX(-270deg);
-  -ms-transform: rotateX(-270deg);
-  -webkit-transform: rotateX(-270deg);
+  transform: rotate(-270deg);
+  -ms-transform: rotate(-270deg);
+  -webkit-transform: rotate(-270deg);
 }
 .rotate-90 {
   transform: rotate(90deg);
 }
 .flip-and-rotate-90 {
-
+  transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+}
+.rotate-270 {
+  transform: rotate(270deg);
 }
