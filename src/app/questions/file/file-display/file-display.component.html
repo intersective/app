@@ -2,7 +2,7 @@
   <ng-container [ngSwitch]="fileType">
 
     <ng-container *ngSwitchCase="'image'">
-      <img [src]="file.url" (load)="imageLoaded($event)"/>
+      <img [src]="file.url" (load)="loaded($event)"/>
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
