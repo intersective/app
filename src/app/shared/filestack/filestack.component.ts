@@ -35,7 +35,6 @@ export class FilestackComponent {
   constructor(private filestackService: FilestackService) {}
 
   async uploadFile() {
-    console.log('i am here');
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {
       storeTo: s3Config,

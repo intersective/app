@@ -103,8 +103,7 @@ export class FilestackService {
 
   async previewFile(file): Promise<any> {
     let fileUrl = file.url;
-    debugger;
-    console.log('here is filestack preview function,',file);
+    
     if (fileUrl) {
       if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
         // old format
