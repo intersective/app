@@ -66,8 +66,6 @@ const largeCircleDefaultConfig = {
     ListItemComponent,
     FloatDirective,
     ImgComponent
-
-
   ],
 })
 export class SharedModule {}

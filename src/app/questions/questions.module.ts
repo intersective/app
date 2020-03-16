@@ -12,6 +12,7 @@ import { FileComponent } from './file/file.component';
 import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
 import { FileDisplayComponent } from './file/file-display/file-display.component';
 import { FilestackModule } from '@shared/filestack/filestack.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { FilestackModule } from '@shared/filestack/filestack.module';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    FilestackModule
+    FilestackModule,
+    SharedModule
   ],
   declarations: [
     QuestionsComponent,

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import * as exif from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {
@@ -33,25 +33,19 @@ const swapWidthAndHeight = img => {
   templateUrl: './img.component.html',
   styleUrls: ['./img.component.scss']
 })
-export class ImgComponent implements OnInit {
+export class ImgComponent {
 
-  @Input() src: any;
+  @Input() imgSrc: any;
 
-  constructor() { }
-
-  ngOnInit() {
-
-  }
 
   imageLoaded(e) {
     exif.getData(e.target, function () {
       var allMetaData = exif.getAllTags(this);
       const orientationClassFix = getImageClassToFixOrientation(allMetaData.Orientation);
       this.classList.add(orientationClassFix);
-      if(allMetaData.Orientation >= 5) {
+      if (allMetaData.Orientation >= 5) {
         swapWidthAndHeight(this);
       }
-
     });
   }
 
