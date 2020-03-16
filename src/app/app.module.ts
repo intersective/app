@@ -25,8 +25,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
-import { FixOrientationService } from './services/fix-orientation.service';
-
 
 @NgModule({
   declarations: [
@@ -35,6 +33,7 @@ import { FixOrientationService } from './services/fix-orientation.service';
     UnlockingComponent,
     IconComponent,
     DeviceInfoComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -67,7 +66,6 @@ import { FixOrientationService } from './services/fix-orientation.service';
     // Custom
     UtilsService,
     VersionCheckService,
-    FixOrientationService
   ],
   bootstrap: [AppComponent],
 })

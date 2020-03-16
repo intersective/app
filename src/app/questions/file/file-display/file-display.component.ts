@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { UtilsService } from '@services/utils.service';
-import { FixOrientationService } from '@services/fix-orientation.service';
 
 @Component({
   selector: 'app-file-display',
@@ -16,7 +15,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   @Input() fileType = 'any';
   @Input() file: any;
 
-  constructor(private filestackService: FilestackService, private utils: UtilsService, private fixOrientation: FixOrientationService) { }
+  constructor(private filestackService: FilestackService, private utils: UtilsService) { }
 
   ngOnInit() {
     if (this.file && this.file.workflows) {
@@ -66,10 +65,5 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     }
   }
 
-
-  loaded(e) {
-    this.fixOrientation.imageLoaded(e);
-
-  }
 }
 

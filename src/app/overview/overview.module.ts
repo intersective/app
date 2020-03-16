@@ -11,6 +11,7 @@ import { ProjectComponent } from './project/project.component';
 import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 import { ProjectService } from './project/project.service';
 
+
 @NgModule({
   imports: [
     SharedModule,
@@ -22,7 +23,8 @@ import { ProjectService } from './project/project.service';
     TodoCardComponent,
     SlidableComponent,
     ProjectComponent,
-    OverviewComponent
+    OverviewComponent,
+
   ],
   providers: [
     ProjectService,

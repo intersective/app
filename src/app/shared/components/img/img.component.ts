@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import * as exif from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {
@@ -27,12 +27,23 @@ const swapWidthAndHeight = img => {
   img.width = currentHeight;
 }
 
-@Injectable({
-  providedIn: 'root'
+
+@Component({
+  selector: 'app-img',
+  templateUrl: './img.component.html',
+  styleUrls: ['./img.component.scss']
 })
-export class FixOrientationService {
+export class ImgComponent implements OnInit {
+
+  @Input() url: any;
+  src : any;
 
   constructor() { }
+
+  ngOnInit() {
+     this.src =this.url;
+  }
+
   imageLoaded(e) {
     exif.getData(e.target, function () {
       var allMetaData = exif.getAllTags(this);
@@ -44,4 +55,5 @@ export class FixOrientationService {
 
     });
   }
+
 }

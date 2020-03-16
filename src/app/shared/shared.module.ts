@@ -12,6 +12,9 @@ import { BrandingLogoComponent } from '@shared/components/branding-logo/branding
 import { ContactNumberFormComponent } from '@shared/components/contact-number-form/contact-number-form.component';
 import { ListItemComponent } from '@shared/components/list-item/list-item.component';
 import { FloatDirective } from './directives/float/float.directive';
+import { ImgComponent } from '@shared/components/img/img.component';
+
+
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -46,6 +49,8 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     ListItemComponent,
     FloatDirective,
+    ImgComponent
+
   ],
   exports: [
     ActivityCardComponent,
@@ -60,6 +65,9 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     ListItemComponent,
     FloatDirective,
+    ImgComponent
+
+
   ],
 })
 export class SharedModule {}
