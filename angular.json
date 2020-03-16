@@ -43,7 +43,8 @@
               }
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js"
+              "./node_modules/pusher-js/dist/web/pusher.min.js",
+              "src/assets/phaser.min.js"
             ]
           },
           "configurations": {
