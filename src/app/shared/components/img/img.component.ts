@@ -35,13 +35,12 @@ const swapWidthAndHeight = img => {
 })
 export class ImgComponent implements OnInit {
 
-  @Input() url: any;
-  src : any;
+  @Input() src: any;
 
   constructor() { }
 
   ngOnInit() {
-     this.src =this.url;
+
   }
 
   imageLoaded(e) {

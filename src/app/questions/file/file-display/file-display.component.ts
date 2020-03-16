@@ -10,7 +10,6 @@ import { UtilsService } from '@services/utils.service';
 export class FileDisplayComponent implements OnInit, OnChanges {
   private virusDetection: any;
   private quarantine: any;
-  public imageMeta: any;
 
   @Input() fileType = 'any';
   @Input() file: any;
