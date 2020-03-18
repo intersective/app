@@ -22,4 +22,5 @@ describe('ImgComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });
