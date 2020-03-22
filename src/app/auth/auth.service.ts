@@ -77,9 +77,9 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams) {
+  private _login(body: HttpParams, timelineid?: number) {
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', timelineid }
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -91,8 +91,8 @@ export class AuthService {
    */
   login({ email, password }): Observable<any> {
     const body = new HttpParams({
-        encoder: new QueryEncoder()
-      })
+      encoder: new QueryEncoder()
+    })
       .set('data[User][email]', email)
       .set('data[User][password]', password)
       .set('domain', this.getDomain());
@@ -106,10 +106,11 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  directLogin({ authToken }): Observable<any> {
+  directLogin({ authToken, timelineId }): Observable<any> {
     const body = new HttpParams()
-      .set('auth_token', authToken);
-    return this._login(body);
+      .set('auth_token', authToken)
+      .set('timelineId',timelineId)
+    return this._login(body, timelineId);
   }
 
   private _handleLoginResponse(response): Observable<any> {
@@ -162,14 +163,14 @@ export class AuthService {
     return this.router.navigate(['login'], navigationParams);
   }
 
-   /**
-   * @name forgotPassword
-   * @description make request to server to send out email with reset password url
-   * @param  {string}}        email [user's email which will receive reset password url]
-   * @return {Observable<any>}      [description]
-   */
-  forgotPassword(email: string): Observable<any>  {
-    return this.request.post(api.forgotPassword, {
+  /**
+  * @name forgotPassword
+  * @description make request to server to send out email with reset password url
+  * @param  {string}}        email [user's email which will receive reset password url]
+  * @return {Observable<any>}      [description]
+  */
+ forgotPassword(email: string): Observable<any>  {
+  return this.request.post(api.forgotPassword, {
       email: email,
       domain: this.getDomain()
     });
@@ -179,7 +180,7 @@ export class AuthService {
     let domain = window.location.hostname;
     domain =
       domain.indexOf('127.0.0.1') !== -1 ||
-      domain.indexOf('localhost') !== -1
+        domain.indexOf('localhost') !== -1
         ? 'dev.app-v2.practera.com'
         : domain;
     return domain;
@@ -200,13 +201,13 @@ export class AuthService {
    * @return {Boolean}
    */
   linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
-  }
+    return this.storage.getUser().linkedinConnected || false;
+}
 
-  // Activity ID is no longer used as a parameter,
-  // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
+// Activity ID is no longer used as a parameter,
+// but needs to be there so just pass in a 1
+connectToLinkedIn () {
+  const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
 
     this.utils.openUrl(url);
     return;
@@ -258,16 +259,16 @@ export class AuthService {
 
   saveRegistration(data: RegisterData): Observable<any> {
     return this.request
-    .post(api.register, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+      .post(api.register, data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
     return this.request
-    .post(api.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+      .post(api.verifyRegistration, data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
   }
 
   /**
@@ -278,8 +279,8 @@ export class AuthService {
   */
   verifyResetPassword(data: VerifyParams): Observable<any> {
     return this.request
-    .post(api.verifyResetPassword, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+      .post(api.verifyResetPassword, data, {
+        headers: { 'Content-Type': 'application/json' }
+      });
   }
 }

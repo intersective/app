@@ -127,9 +127,9 @@ export class SwitcherService {
       .pipe(map(response => {
         if (response.success && response.data) {
           if (!this.utils.has(response.data, 'Teams') ||
-              !Array.isArray(response.data.Teams) ||
-              !this.utils.has(response.data.Teams[0], 'id')
-             ) {
+            !Array.isArray(response.data.Teams) ||
+            !this.utils.has(response.data.Teams[0], 'id')
+          ) {
             return this.storage.setUser({
               teamId: null
             });
@@ -145,8 +145,8 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  getMyInfo(): Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
+  async getMyInfo(timelineid?: number): Promise<Observable<any>> {
+    return this.request.get(api.me, { headers: { timelineid } }).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {
           return this.request.apiResponseFormatError('User format error');
@@ -215,11 +215,11 @@ export class SwitcherService {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
         return ['switcher'];
-      // Array with one program object -> [{}]
+        // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
         await this.switchProgram(programs[0]).toPromise();
       } else {
-      // one program object -> {}
+        // one program object -> {}
         await this.switchProgram(programs).toPromise();
       }
 
@@ -228,12 +228,12 @@ export class SwitcherService {
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          if (this.storage.get('directLinkRoute')) {
-            const route = this.storage.get('directLinkRoute');
-            this.storage.remove('directLinkRoute');
-            return route;
-          }
-          return ['app', 'home'];
+        if (this.storage.get('directLinkRoute')) {
+          const route = this.storage.get('directLinkRoute');
+          this.storage.remove('directLinkRoute');
+          return route;
+        }
+        return ['app', 'home'];
       } else {
         return ['go-mobile'];
       }
