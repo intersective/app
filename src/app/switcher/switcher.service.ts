@@ -26,6 +26,8 @@ export interface ProgramObj {
   project: Project;
   timeline: Timeline;
   enrolment: Enrolment;
+  progress?: number;
+  todoItems?: number;
 }
 
 export interface Program {
@@ -87,6 +89,23 @@ export class SwitcherService {
     return of(programs);
   }
 
+  /**
+   * Get the progress and number of notifications for each project
+   * @param projectIds Project ids
+   */
+  getProgresses(projectIds: number[]) {
+    return this.request.postGraphQL('"{projects(ids: ' + JSON.stringify(projectIds) + ') {id progress todo_items{is_done}}}"')
+      .pipe(map(res => {
+        return res.data.projects.map(v => {
+          return {
+            id: +v.id,
+            progress: v.progress,
+            todoItems: v.todo_items.filter(ti => !ti.is_done).length
+          };
+        });
+      }));
+  }
+
   switchProgram(programObj: ProgramObj): Observable<any> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
@@ -113,13 +132,13 @@ export class SwitcherService {
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin(
+    return forkJoin([
       this.getNewJwt(),
       this.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
-    );
+    ]);
   }
 
   getTeamInfo(): Observable<any> {
@@ -145,7 +164,7 @@ export class SwitcherService {
    * @name getMyInfo
    * @description get user info
    */
-  getMyInfo(): Observable<any> {
+  getMyInfo():  Observable<any> {
     return this.request.get(api.me).pipe(map(response => {
       if (response.data) {
         if (!this.utils.has(response, 'data.User')) {
