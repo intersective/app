@@ -67,7 +67,9 @@ export class PhaserComponent {
 
   preload() {
     // console.log(this.load.image('gem', 'assets/logo.svg'));
-    this.game.load.image('background', 'assets/geometric-light.png');
+    const bg = this.game.load.image('background', 'assets/geometric-light.png');
+    bg.width = this.game.width;
+    bg.height = this.game.height;
     this.game.load.image('logo', 'assets/logo.svg');
     this.game.load.image('tail', 'assets/img/sample-badge.png');
 
@@ -83,18 +85,21 @@ export class PhaserComponent {
     this.game.load.spritesheet('mummy', 'assets/sprites/metalslug_mummy37x45.png', 37, 45, 18);
   }*/
   create() {
-     this.game.add.image(0, 0, 'background');
+    this.game.add.image(0, 0, 'background');
+    this.game.add.image(0, 0, 'logo');
+
 
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     // this.game.add.titleSprite
 
-    let emitter = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, 400);
+    let emitter = this.game.add.emitter(400, 300, 200);
+    // let emitter = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, 100);
 
     emitter.makeParticles( [ 'tail' ] );
 
-    emitter.gravity = 200;
-    emitter.setAlpha(1, 0, 3000);
-    emitter.setScale(0.8, 0, 0.8, 0, 3000);
+    emitter.gravity = 150;
+    emitter.setAlpha(5, 0, 3000);
+    emitter.setScale(0.2, 0, 0.2, 0, 3000);
 
     emitter.start(false, 3000, 5);
 
@@ -110,25 +115,15 @@ export class PhaserComponent {
     // var text = this.game.add.text(350, 250, '', { font: '16px Courier', fill: '#00ff00'
     // var gem = this.add.sprite(400, 300, 'gems').setScale(4);
     // gem.play('diamond');
-    this.game.add.image(200, 200, 'logo');
 
     // this.add.image(400, 300, 'sky');
 
-    let particles = this.game.particles.add('red');
 
     /*let emitter = particles.createEmitter({
         speed: 100,
         scale: { start: 1, end: 0 },
         blendMode: 'ADD'
     });*/
-
-    let logo = this.game.physics.add.image(400, 100, 'logo');
-
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
-
-    emitter.startFollow(logo);
   }
 
   /*create() {
