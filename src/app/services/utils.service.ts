@@ -329,6 +329,7 @@ export class UtilsService {
 
     return (length - 1) === index;
   }
+
   /**
    * Format the time string
    * 1. Add 'T' between date and time, for compatibility with Safari

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { NativeService } from './native.service';
+import { PushNotificationService } from './push-notification.service';
 
 @NgModule({
   imports: [
@@ -9,10 +10,12 @@ import { NativeService } from './native.service';
   declarations: [
   ],
   providers: [
-    NativeService
+    NativeService,
+    PushNotificationService
   ],
   exports: [
-    NativeService
+    NativeService,
+    PushNotificationService
   ]
 })
 export class NativeModule {}

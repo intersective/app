@@ -11,6 +11,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { trigger, state, transition, style, animate, useAnimation } from '@angular/animations';
 import { fadeIn } from '../../animations';
 import { Observable, Subscription } from 'rxjs';
+import { PushNotificationService } from '../../native/push-notification.service';
 
 @Component({
   selector: 'app-home',
@@ -47,7 +48,8 @@ export class HomeComponent implements OnDestroy, OnInit {
     public storage: BrowserStorageService,
     public achievementService: AchievementsService,
     private eventsService: EventListService,
-    private newRelic: NewRelicService
+    private newRelic: NewRelicService,
+    private pushNotification: PushNotificationService,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -55,12 +57,20 @@ export class HomeComponent implements OnDestroy, OnInit {
       if (!this.utils.isEmpty(todoItem)) {
         // add todo item to the list if it is not empty
         this.todoItems.push(todoItem);
+        this.fireNotification({
+          title: todoItem.name,
+          content: todoItem.description
+        });
       }
     });
     this.utils.getEvent('team-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
+          this.fireNotification({
+            title: 'chatMessage',
+            content: 'chatMessage',
+          });
         }
       });
     });
@@ -68,6 +78,10 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.homeService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
           this.eventReminders.push(session);
+          this.fireNotification({
+            title: 'session',
+            content: 'session',
+          });
         }
       });
     });
@@ -78,6 +92,10 @@ export class HomeComponent implements OnDestroy, OnInit {
           this.homeService.getChatMessage().subscribe(chatMessage => {
             if (!this.utils.isEmpty(chatMessage)) {
               this._addChatTodoItem(chatMessage);
+              this.fireNotification({
+                title: 'chatMessage',
+                content: 'chatMessage',
+              });
             }
           });
         });
@@ -89,6 +107,18 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.refresh.subscribe(params => {
       this.onEnter();
     });
+    this.fireNotification({
+      title: 'Hello from Practera',
+      content: 'Please enjoy our native app made especially for you!'
+    });
+  }
+
+  private async fireNotification({title, content}) {
+    await this.pushNotification.schedule({ title, content });
+    // await this.pushNotification.schedule({ title, content });
+    /*if (this.pushNotification.areEnabled()) {
+      await this.pushNotification.schedule({ title, content });
+    }*/
   }
 
   private _initialise() {

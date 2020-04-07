@@ -10,12 +10,14 @@ import { SlidableComponent } from './home/slidable/slidable.component';
 import { ProjectComponent } from './project/project.component';
 import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 import { ProjectService } from './project/project.service';
+import { NativeModule } from '../native/native.module';
 
 @NgModule({
   imports: [
     SharedModule,
     OverviewRoutingModule,
     FastFeedbackModule,
+    NativeModule,
   ],
   declarations: [
     HomeComponent,
@@ -33,6 +35,7 @@ import { ProjectService } from './project/project.service';
     SharedModule,
     FastFeedbackModule,
     OverviewComponent,
+    NativeModule,
   ],
 })
 export class OverviewModule { }
