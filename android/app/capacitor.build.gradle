@@ -10,8 +10,9 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
 
-    implementation "com.google.firebase:firebase-messaging:19.0.0"
+
 }
+
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()
