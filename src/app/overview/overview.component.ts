@@ -5,7 +5,7 @@ import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
-import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from 'capacitor-fcm';
 
 import {
   Plugins,
@@ -24,15 +24,17 @@ export class OverviewComponent implements OnInit {
   isMobile: boolean;
   programName: string;
   initiator$ = this.route.params;
+  fcm: any;
 
   constructor(
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
-    private fcm: FCM
   ) {
     this.isMobile = this.utils.isMobile();
+    this.fcm = new FCM();
+
   }
 
   async ngOnInit() {
@@ -40,27 +42,6 @@ export class OverviewComponent implements OnInit {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
-
-    this.fcm.subscribeToTopic('marketing');
-
-    this.fcm.getToken().then(token => {
-      console.log('token::', token);
-    });
-
-    this.fcm.onNotification().subscribe(data => {
-      if(data.wasTapped){
-        console.log("Received in background");
-      } else {
-        console.log("Received in foreground");
-      };
-    });
-
-    this.fcm.onTokenRefresh().subscribe(token => {
-      // backend.registerToken(token);
-      console.log('refresh token::', token);
-    });
-
-    this.fcm.unsubscribeFromTopic('marketing');
 
     console.log('Initializing HomePage');
 
@@ -99,5 +80,40 @@ export class OverviewComponent implements OnInit {
         alert('Push action performed: ' + JSON.stringify(notification));
       }
     );
+
+    PushNotifications.register()
+      .then(() => {
+        //
+        // Subscribe to a specific topic
+        // you can use `FCMPlugin` or just `fcm`
+        this.fcm
+          .subscribeTo({ topic: "test" })
+          .then(r => alert(`subscribed to topic`))
+          .catch(err => console.log(err));
+      })
+      .catch(err => alert(JSON.stringify(err)));
+
+    this.fcm
+      .unsubscribeFrom({ topic: "test" })
+      .then(() => alert(`unsubscribed from topic`))
+      .catch(err => console.log(err));
+
+    //
+    // Get FCM token instead the APN one returned by Capacitor
+    this.fcm
+      .getToken()
+      .then(r => {
+        alert(`Token ${r.token}`);
+        console.log(r);
+        console.log('token:', r.token);
+      })
+      .catch(err => console.log(err));
+
+    //
+    // Remove FCM instance
+    this.fcm
+      .deleteInstance()
+      .then(() => alert(`Token deleted`))
+      .catch(err => console.log(err));
   }
 }
