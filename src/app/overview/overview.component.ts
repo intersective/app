@@ -5,8 +5,6 @@ import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
-import { FCM } from 'capacitor-fcm';
-
 import {
   Plugins,
   PushNotification,
@@ -24,7 +22,6 @@ export class OverviewComponent implements OnInit {
   isMobile: boolean;
   programName: string;
   initiator$ = this.route.params;
-  fcm: any;
 
   constructor(
     private storage: BrowserStorageService,
@@ -33,11 +30,9 @@ export class OverviewComponent implements OnInit {
     private fastFeedbackService: FastFeedbackService,
   ) {
     this.isMobile = this.utils.isMobile();
-    this.fcm = new FCM();
-
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.initiator$.subscribe(() => {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
@@ -60,6 +55,7 @@ export class OverviewComponent implements OnInit {
     PushNotifications.addListener('registration',
       (token: PushNotificationToken) => {
         alert('Push registration success, token: ' + token.value);
+        console.log('Token:', token.value);
       }
     );
 
@@ -80,40 +76,5 @@ export class OverviewComponent implements OnInit {
         alert('Push action performed: ' + JSON.stringify(notification));
       }
     );
-
-    PushNotifications.register()
-      .then(() => {
-        //
-        // Subscribe to a specific topic
-        // you can use `FCMPlugin` or just `fcm`
-        this.fcm
-          .subscribeTo({ topic: "test" })
-          .then(r => alert(`subscribed to topic`))
-          .catch(err => console.log(err));
-      })
-      .catch(err => alert(JSON.stringify(err)));
-
-    this.fcm
-      .unsubscribeFrom({ topic: "test" })
-      .then(() => alert(`unsubscribed from topic`))
-      .catch(err => console.log(err));
-
-    //
-    // Get FCM token instead the APN one returned by Capacitor
-    this.fcm
-      .getToken()
-      .then(r => {
-        alert(`Token ${r.token}`);
-        console.log(r);
-        console.log('token:', r.token);
-      })
-      .catch(err => console.log(err));
-
-    //
-    // Remove FCM instance
-    this.fcm
-      .deleteInstance()
-      .then(() => alert(`Token deleted`))
-      .catch(err => console.log(err));
   }
 }
