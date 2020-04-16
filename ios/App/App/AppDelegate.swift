@@ -1,3 +1,4 @@
+import Firebase
 import UIKit
 import Capacitor
 
@@ -9,6 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
+    FirebaseApp.configure()
     return true
   }
 
@@ -39,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // but if you want the App API to support tracking app url opens, make sure to keep this call
     return CAPBridge.handleOpenUrl(url, options)
   }
-  
+
   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     // Called when the app was launched with an activity, including Universal Links.
     // Feel free to add additional processing here, but if you want the App API to support
@@ -61,7 +63,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   #if USE_PUSH
 
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: deviceToken)
+    Messaging.messaging().apnsToken = deviceToken
+    InstanceID.instanceID().instanceID { (result, error) in
+      if let error = error {
+        NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidFailToRegisterForRemoteNotificationsWithError.name()), object: error)
+      } else if let result = result {
+        NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: result.token)
+      }
+    }
   }
 
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
