@@ -250,6 +250,21 @@ export class AssessmentComponent extends RouterEnter {
               ]
             });
           }
+          if (this.action === 'review' && !this.doReview) {
+            return this.notificationService.alert({
+              message: 'The review is not required to do',
+              buttons: [
+                {
+                  text: 'OK',
+                  role: 'cancel',
+                  handler: () => {
+                      this._navigate(['app', 'home']);
+                    }
+
+                }
+              ]
+            });
+          }
 
         },
         (error) => {
@@ -314,7 +329,6 @@ export class AssessmentComponent extends RouterEnter {
         if (this.submission.status === 'pending review' && this.action === 'review') {
           this.doReview = true;
         }
-
         // call todo item to check if the feedback has been reviewed or not
         if (this.submission.status === 'published') {
           this.loadingFeedbackReviewed = true;
