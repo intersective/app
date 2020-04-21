@@ -250,21 +250,7 @@ export class AssessmentComponent extends RouterEnter {
               ]
             });
           }
-          if (this.action === 'review' && !this.doReview) {
-            return this.notificationService.alert({
-              message: 'The review is not required to do',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel',
-                  handler: () => {
-                      this._navigate(['app', 'home']);
-                    }
 
-                }
-              ]
-            });
-          }
 
         },
         (error) => {
@@ -345,6 +331,21 @@ export class AssessmentComponent extends RouterEnter {
         }
       },
       (error) => {
+        if (!this.review.status) {
+          return this.notificationService.alert({
+            message: 'The review is not required to do',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                    this._navigate(['app', 'home']);
+                  }
+
+              }
+            ]
+          });
+        }
         this.newRelic.noticeError(`${JSON.stringify(error)}`);
       });
   }
