@@ -1,0 +1,22 @@
+{
+  "interests": [
+    "hello"
+  ],
+  "apns": {
+    "aps": {
+      "alert": {
+        "title": "Hello",
+        "body": "Hello, iOS world!"
+      }
+    }
+  },
+  "fcm": {
+    "notification": {
+      "title": "Hello",
+      "body": "Hello, android world!"
+    },
+    "data": {
+      "inAppNotificationMessage": "Display me somewhere in the app ui!"
+    }
+  }
+}
