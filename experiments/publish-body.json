@@ -6,14 +6,14 @@
     "aps": {
       "alert": {
         "title": "Hello",
-        "body": "Hello, iOS world!"
+        "body": "Hello, iOS world Thursday, 14 May 2020!"
       }
     }
   },
   "fcm": {
     "notification": {
       "title": "Hello",
-      "body": "Hello, android world!"
+      "body": "Hello, android world Thursday, 14 May 2020!"
     },
     "data": {
       "inAppNotificationMessage": "Display me somewhere in the app ui!"
