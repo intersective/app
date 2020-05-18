@@ -33,6 +33,13 @@ Minimum test target version: *iOS 9.3*
   1. For Android testing, you'll need to generate an apk from android studio and update the *app* value on `/experiments/appium/index.js`
   1. If you run into error, please check Appium for troubleshooting
 
+### Testing your setup
+
+1. You can test if your Appium setup is working on Android with the attached apk below inside */experiments/appium/ApiDemos-debug.apk*
+
+1. Please update the value of *app* path inside */experiments/appium/index.js* according to the new apk file path.
+
+
 
 ### Troubleshotting
 coming soon
