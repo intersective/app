@@ -20,12 +20,13 @@ const opts = {
 
 async function main () {
   const client = await wdio.remote(opts);
-  await client.shake();
+  // await client.shake();
 
-  const field = await client.$("android.widget.EditText");
-  await field.setValue("Hello World!");
+  const field = await client.$('[name="email"]');
+  console.log(field);
+  await field.setValue("chaw@test.com");
   const value = await field.getText();
-  assert.equal(value,"Hello World!");
+  assert.equal(value, "chaw@test.com");
 
   await client.deleteSession();
 }

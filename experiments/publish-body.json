@@ -16,7 +16,21 @@
       "body": "Hello, android world Thursday, 14 May 2020!"
     },
     "data": {
-      "inAppNotificationMessage": "Display me somewhere in the app ui!"
+      "inAppNotificationMessage": "Display me somewhere in the app ui!",
+      "actions": [
+        {
+          "icon": "emailGuests",
+          "title": "EMAIL GUESTS",
+          "callback": "emailGuests",
+          "foreground": true
+        },
+        {
+          "icon": "snooze",
+          "title": "SNOOZE",
+          "callback": "snooze",
+          "foreground": false
+        }
+      ]
     }
   }
 }

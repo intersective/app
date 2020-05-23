@@ -22,7 +22,7 @@
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",
     "generate-version": "node ./hooks/post-build.js",
-    "android.app": "./node_modules/.bin/wdio ./experiments/appium/config.android.js",
+    "android.app": "./node_modules/.bin/wdio ./experiments/appium/wdio.config.android.js",
     "ios.app": "./node_modules/.bin/wdio ./experiments/appium/config.ios.js"
   },
   "dependencies": {
@@ -76,17 +76,19 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/lodash": "^4.14.149",
-    "@types/node": "~10.12.0",
+    "@types/node": "^10.12.30",
     "@types/pusher-js": "^4.2.2",
     "@wdio/appium-service": "^6.1.0",
     "@wdio/cli": "^6.1.12",
     "@wdio/jasmine-framework": "^6.1.8",
     "@wdio/local-runner": "^6.1.12",
+    "@wdio/mocha-framework": "^6.1.8",
     "@wdio/sauce-service": "^6.1.9",
     "@wdio/spec-reporter": "^6.1.12",
     "@wdio/sync": "^6.1.8",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "chromedriver": "^83.0.0",
     "codelyzer": "~4.5.0",
     "cucumber": "^6.0.5",
     "jasmine-core": "~2.99.1",
@@ -104,6 +106,7 @@
     "tslint": "~5.12.0",
     "typescript": "~3.7.5",
     "wdio": "^4.0.0",
+    "wdio-chromedriver-service": "^6.0.3",
     "webdriverio": "^6.1.12"
   },
   "cordova": {
