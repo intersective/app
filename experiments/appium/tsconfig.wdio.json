@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": [
+      "node",
+      "typings",
+      "webdriverio",
+      "@wdio/jasmine-framework"
+    ]
+  },
+  "includes": [
+    "./conf/config.android.ts",
+    "./conf/config.ios.ts",
+    "./src/specs/**/*.spec.ts"
+  ]
+}

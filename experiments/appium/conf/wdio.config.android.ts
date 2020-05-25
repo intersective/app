@@ -1,4 +1,4 @@
-export.config = {
+const config = {
   path: '/wd/hub',
   port: 4723,
   services: [
@@ -28,3 +28,4 @@ export.config = {
   }
 };
 
+export { config };

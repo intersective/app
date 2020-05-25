@@ -18,3 +18,4 @@ e2e/protractor-dev.conf.js
 android/app/google-services.json
 ios/App/App/GoogleService-Info.plist
 release.keystore
+dist
