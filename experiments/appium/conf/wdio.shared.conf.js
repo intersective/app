@@ -27,7 +27,7 @@ exports.config = {
     deprecationWarnings: true,
     outputDir: './test-report/output',
     bail: 0,
-    baseUrl: 'localhost',
+    // baseUrl: 'localhost',
     waitforTimeout: 10000,
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
@@ -37,21 +37,19 @@ exports.config = {
     // ====================
     // Appium Configuration
     // ====================
-    services: [
-        [
-            'appium',
-            {
-            // For options see
+    services: ['appium'],
+    appium: {
+        // For options see
+        // https://github.com/webdriverio/webdriverio/tree/master/packages/wdio-appium-service
+        // If you need a logs from appium server, make log equal true.
+        log: true,
+        logPath : './',
+        args: {
+            // For arguments see
             // https://github.com/webdriverio/webdriverio/tree/master/packages/wdio-appium-service
-                logPath : './',
-                args: {
-                // For arguments see
-                // https://github.com/webdriverio/webdriverio/tree/master/packages/wdio-appium-service
-                },
-                command: 'appium',
-            },
-        ],
-    ],
+        },
+        command: 'appium',
+    },
     port: 4723,
     path: '/wd/hub',
     //This code is responsible for taking the screenshot in case of error and attaching it to the report
