@@ -76,13 +76,14 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    const {
+    let location, container, region, workflows, paths;
+    ({
       location,
       container,
       region,
       workflows,
-      paths,
-    } = environment.filestack.s3Config;
+      paths
+    } = environment.filestack.s3Config);
 
     let path = paths.any;
     // get s3 path based on file type
@@ -91,7 +92,10 @@ export class FilestackService {
     }
     // add user hash to the path
     path = path + this.storage.getUser().userHash + '/';
-
+    if (this.storage.getCountry() === 'China') {
+      container = environment.filestack.s3Config.containerChina;
+      region = environment.filestack.s3Config.regionChina;
+    }
     return {
       location,
       container,
@@ -184,6 +188,30 @@ export class FilestackService {
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
+  }
+
+  async upload(file, uploadOptions, path, uploadToken): Promise<any> {
+    const option = {
+      onProgress: uploadOptions.onProgress
+    };
+
+    if (!path) {
+      path = this.getS3Config(this.getFileTypes());
+    }
+
+    await this.filestack.upload(file, option, path, uploadToken)
+    .then(res => {
+      const missingAttribute = {
+        container: res.container,
+        key: res.key,
+        filename: res.filename,
+        mimetype: res.mimetype
+      };
+      return uploadOptions.onFileUploadFinished(Object.assign(res.toJSON(), missingAttribute));
+    })
+    .catch(err => {
+      return uploadOptions.onFileUploadFailed(err);
+    });
   }
 
   async previewModal(url, filestackUploadedResponse?): Promise<void> {
