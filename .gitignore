@@ -7,6 +7,7 @@ assets/newrelic.js
 coverage/
 tests/
 test-report/
+out-tsc/
 platforms
 resources
 plugins

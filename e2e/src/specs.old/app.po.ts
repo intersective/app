@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { USER } from '../config';
+import { USER } from './config';
 
 export class AppPage {
   navigateTo(page?) {

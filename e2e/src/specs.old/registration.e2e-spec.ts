@@ -1,6 +1,6 @@
 import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
-import { REGISTRATION } from '../config';
+import { REGISTRATION } from './config';
 
 xdescribe('AppV2-Registration', () => {
   let page: AppPage;

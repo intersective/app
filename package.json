@@ -21,6 +21,7 @@
     "e2e": "ng e2e --port 4300",
     "e2e-dev": "ng e2e -c dev --port 4300",
     "e2e-sandbox": "ng e2e -c sandbox",
+    "e2e-appium": "tsc --p e2e/tsconfig.e2e.json && protractor e2e/protractor-appium.conf.js --verbose",
     "generate-version": "node ./hooks/post-build.js",
     "android.app": "./node_modules/.bin/wdio ./experiments/appium/conf/wdio.config.android.js",
     "ios.app": "./node_modules/.bin/wdio ./experiments/appium/conf/config.ios.js"
