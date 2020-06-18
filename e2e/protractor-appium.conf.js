@@ -3,7 +3,7 @@ const tsNode = require('ts-node');
 const serverAddress = 'http://localhost:4723/wd/hub';
 const testFilePAtterns = [
   // '**/*/*.e2e-spec.ts'
-  './src/specs.old/**.e2e-spec.ts'
+  './src/specs-native/**.e2e-spec.ts'
 ];
 const iPhoneXCapability = {
   browserName: '',
@@ -42,7 +42,8 @@ const androidEmulator = {
 exports.config = {
   allScriptsTimeout: 11000,
   specs: testFilePAtterns,
-  baseUrl: '',
+  baseUrl: 'http://10.0.2.2:8000',
+  // baseUrl: '',
   multiCapabilities: [
     androidEmulator,
     // iPhoneXCapability
