@@ -10,30 +10,34 @@ describe('AppV2', () => {
     page = new AppPage();
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+    // Wait up to 5 seconds for commands to work
+    browser.timeouts('implicit', 5000);
   });
 
   afterEach(function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
-  it('should display login if page is non-existence', async () => {
+  it('should has logo', async () => {
     await browser.wait(protractor.ExpectedConditions.elementToBeClickable(element(by.css('input[type="email"'))));
+    expect(browser.isVisible('div-logo')).toBeTruthy();
+  });
 
-    // page.navigateTo('/non-existence');
+  it('should be able to login', async () => {
+    await browser.wait(protractor.ExpectedConditions.elementToBeClickable(element(by.css('input[type="email"'))));
+    const emailField = element(by.css('input[type="email"'));
+    const passwordField = element(by.css('input[type="password"'));
+    emailField.sendKeys('chaw@test.com');
+    passwordField.sendKeys('kW96dLJHrQDaaLM');
+    const loginButton = page.loginButton();
+    expect(loginButton.getAttribute('disabled')).toBeFalsy();
+    loginButton.click();
+
     // browser.waitForAngularEnabled().then(res => {
       // browser.sleep(5000);
       const poweredBy = element(by.css('ion-content')).all(by.css('div')).last();
       expect(poweredBy.$('img').getAttribute('src')).toContain('/assets/logo.svg');
     // });
-  });
-
-  xit('should has logo', () => {
-    page.navigateTo();
-    browser.sleep(2000);
-    browser.waitForAngularEnabled().then(res => {
-      const test = page.containsClass('div-logo');
-      expect(test).toBeTruthy();
-    });
   });
 
   xit('login button should disabled', () => {

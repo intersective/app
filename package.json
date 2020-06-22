@@ -85,7 +85,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/lodash": "^4.14.152",
     "@types/new-relic-browser": "^0.1072.4",
-    "@types/node": "^10.12.30",
+    "@types/node": "^10.17.26",
     "@types/pusher-js": "^4.2.2",
     "@wdio/appium-service": "^6.1.0",
     "@wdio/cli": "^6.1.12",
