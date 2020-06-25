@@ -3,7 +3,7 @@ const expect = global['chai'].expect;
 import { ProgramSwitcherPage } from '../page-objects/program-switcher.po';
 import { HomePage } from '../page-objects/home.po';
 import { EC, AppPage } from '../page-objects/app.po';
-import { $, element } from 'protractor';
+import { element, by } from 'protractor';
 
 const page = new ProgramSwitcherPage();
 
@@ -12,14 +12,19 @@ When(/^I choose (.+) program$/, async program => {
     case 'first':
       await page.waitUntilFirstCardClickable();
       await page.clickFirstCard();
-      break;
+      return;
   }
-  return page.waitUntilTabPresent();
+  // return page.waitUntilTabPresent();
 });
 
 Then(/^I should be able to see tab options$/, async () => {
-  const tabs = await page.waitUntilTabPresent();
-  expect(tabs.isPresent()).to.be.true;
+  page.waitForAngularDisabled();
+
+  await page.wait(EC.presenceOf(page.tabs));
+  const isDisplayed = await page.tabs.isDisplayed();
+  expect(isDisplayed).to.be.true;
+
+  return page.waitForAngularEnabled();
 });
 
 

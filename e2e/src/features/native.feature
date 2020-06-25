@@ -32,4 +32,6 @@ Feature: Login/Logout the app
     Then I should not be able to click login button
     Then I should be on the program switcher page
 
-
+  Scenario: Choose first program
+    When I choose first program
+    Then I should be able to see tab options

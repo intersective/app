@@ -27,9 +27,8 @@ export class AppPage {
     return browser.waitForAngularEnabled(false);
   }
 
-  async waitUntilTabPresent() {
-    await this.wait(EC.presenceOf(this.tabs));
-    return element(this.tabs);
+  waitUntilTabPresent() {
+    return this.wait(EC.presenceOf(this.tabs));
   }
 
   async clickTab(tab) {
