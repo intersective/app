@@ -1,22 +1,25 @@
-import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
-import { AppPage } from './app.po';
+import { browser, $, $$, Key } from 'protractor';
+import { AppPage, EC } from './app.po';
 
 export class ProgramSwitcherPage extends AppPage {
   parent = $('app-switcher-program');
   row = this.parent.$(`ion-row`);
   programCards = this.row.$$('ion-col');
-  firstCard = this.row.$$('ion-col').get(0).$('ion-card');
+  firstCard = this.row.$$('ion-col').first().$('ion-card');
 
   clickFirstCard() {
     return this.clickCard(0);
   }
 
-  clickCard(i) {
-    return this.programCards.get(i).$('ion-card').click();
+  async clickCard(i) {
+    const element = this.programCards.get(i).$('ion-card');
+    await this.wait(EC.elementToBeClickable(element));
+    return element.click();
   }
 
-  waitUntilFirstCardClickable() {
-    return this.wait(ExpectedConditions.elementToBeClickable(this.firstCard));
+  async waitUntilFirstCardClickable() {
+    await this.wait(EC.presenceOf(this.firstCard), 5000);
+    return this.wait(EC.elementToBeClickable(this.firstCard));
   }
 
 }

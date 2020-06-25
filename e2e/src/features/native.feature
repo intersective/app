@@ -32,14 +32,4 @@ Feature: Login/Logout the app
     Then I should not be able to click login button
     Then I should be on the program switcher page
 
-  Scenario: Choose first program
-    When I choose first program
-    Then I should be on the home page
 
-  Scenario: Go to settings page
-    When I click the settings tab
-    Then I should be on the settings page
-
-  Scenario: Logout
-    When I click logout button
-    Then I should be on the login page

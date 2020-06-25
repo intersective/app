@@ -2,7 +2,7 @@ import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
 import { LoginPage } from '../page-objects/login.po';
 import { CORRECT_ACCOUNT } from '../../config';
-import { wdBrowser } from 'wd-bridge';
+import { EC } from '../page-objects/app.po';
 
 const page = new LoginPage();
 
@@ -25,8 +25,6 @@ When(/^I fill in (.+) account$/, account => {
   return page.fillInAccount({
     email: email,
     password: password
-  }).then(() => {
-    global['wdBrowser'].hideDeviceKeyboard();
   });
 });
 

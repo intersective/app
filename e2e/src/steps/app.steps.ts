@@ -1,8 +1,9 @@
 import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
-import { AppPage } from '../page-objects/app.po';
+import { AppPage, EC } from '../page-objects/app.po';
 import { REGISTRATION } from '../../config';
 import { wdBrowser } from 'wd-bridge';
+import { element, by } from 'protractor';
 
 const page = new AppPage();
 
@@ -38,10 +39,12 @@ When(/^I click the (.+) tab$/, tabType => {
 });
 
 Then(/^I should dismiss virtual keyboard$/, () => {
-  wdBrowser.hideDeviceKeyboard();
+  global['wdBrowser'].hideDeviceKeyboard();
 });
 
-Then(/^I should be on the (.+) page$/, pageType => {
+Then(/^I should be on the (.+) page(.*)$/, async (pageType, isNative) => {
+  const currentUrl = await page.currentUrl();
+
   let route = '/';
   switch (pageType) {
     case 'registration':
@@ -60,6 +63,7 @@ Then(/^I should be on the (.+) page$/, pageType => {
       route = '/app/settings';
       break;
   }
-  return expect(page.currentUrl()).to.eventually.include(route);
+
+  return expect(currentUrl).to.include(route);
 });
 

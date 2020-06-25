@@ -1,4 +1,4 @@
-import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
+import { browser, $, $$, Key, ExpectedConditions, element } from 'protractor';
 
 export const EC = ExpectedConditions;
 
@@ -9,9 +9,11 @@ export class AppPage {
   navigateTo(page?) {
     return browser.get(page || '/');
   }
+
   currentUrl() {
     return browser.getCurrentUrl();
   }
+
   wait(callback, maxWaitTime?) {
     return browser.wait(callback, maxWaitTime);
   }
@@ -25,11 +27,13 @@ export class AppPage {
     return browser.waitForAngularEnabled(false);
   }
 
-  waitUntilTabPresent() {
-    return this.wait(ExpectedConditions.presenceOf(this.tabs));
+  async waitUntilTabPresent() {
+    await this.wait(EC.presenceOf(this.tabs));
+    return element(this.tabs);
   }
 
-  clickTab(tab) {
+  async clickTab(tab) {
+    await this.waitUntilTabPresent();
     return this.tab(tab).click();
   }
 }
