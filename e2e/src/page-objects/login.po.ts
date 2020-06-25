@@ -1,5 +1,5 @@
-import { browser, $, $$, Key } from 'protractor';
-import { AppPage } from './app.po';
+import { $, $$, Key } from 'protractor';
+import { AppPage, EC } from './app.po';
 
 export class LoginPage extends AppPage {
   inputEmail = $(`input[name="email"]`);
@@ -17,6 +17,8 @@ export class LoginPage extends AppPage {
   }
 
   fillInAccount(user) {
+    this.wait(EC.visibilityOf(this.inputEmail));
+    this.wait(EC.visibilityOf(this.inputPassword));
     this.inputEmail.sendKeys(user.email);
     return this.inputPassword.sendKeys(user.password);
   }
@@ -31,10 +33,17 @@ export class LoginPage extends AppPage {
   }
 
   clickLogin() {
+    this.wait(EC.visibilityOf(this.btnLogin));
     return this.btnLogin.click();
   }
 
   dismissAlert() {
-    return this.btnAlert.click();
+    this.btnAlert.click();
+    return this.wait(EC.invisibilityOf(this.btnAlert), 5000);
+  }
+
+  // native app testing
+  waitUntilLoginPresent() {
+    return this.wait(EC.presenceOf(this.inputEmail));
   }
 }

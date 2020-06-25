@@ -2,8 +2,13 @@ import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
 import { LoginPage } from '../page-objects/login.po';
 import { CORRECT_ACCOUNT } from '../../config';
+import { wdBrowser } from 'wd-bridge';
 
 const page = new LoginPage();
+
+Given(/^App is loaded$/, () => {
+  page.waitUntilLoginPresent();
+});
 
 When(/^I fill in (.+) account$/, account => {
   let email, password;
@@ -20,13 +25,15 @@ When(/^I fill in (.+) account$/, account => {
   return page.fillInAccount({
     email: email,
     password: password
+  }).then(() => {
+    global['wdBrowser'].hideDeviceKeyboard();
   });
 });
 
-When(/^I remove email and password$/, async() => {
-  await page.removeEmailnPassword();
+When(/^I remove email and password$/, () => {
+  page.removeEmailnPassword();
   // add one more letter then remove it to trigger the form validation (disable the login button)
-  await page.insertEmail('a');
+  page.insertEmail('a');
   return page.deleteEmail();
 });
 

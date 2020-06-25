@@ -2,6 +2,7 @@ import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
 import { AppPage } from '../page-objects/app.po';
 import { REGISTRATION } from '../../config';
+import { wdBrowser } from 'wd-bridge';
 
 const page = new AppPage();
 
@@ -34,6 +35,10 @@ Given(/^I go to the (.*)correct (.+) link$/, (incorrect, linkType) => {
 
 When(/^I click the (.+) tab$/, tabType => {
   return page.clickTab(tabType);
+});
+
+Then(/^I should dismiss virtual keyboard$/, () => {
+  wdBrowser.hideDeviceKeyboard();
 });
 
 Then(/^I should be on the (.+) page$/, pageType => {

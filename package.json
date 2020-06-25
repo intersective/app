@@ -115,6 +115,8 @@
     "tsconfig-paths": "^3.9.0",
     "tslint": "~6.1.2",
     "typescript": "~3.7.5",
+    "wd": "^1.12.1",
+    "wd-bridge": "0.0.2",
     "wdio": "^4.0.0",
     "wdio-chromedriver-service": "^6.0.3",
     "webdriverio": "^6.1.12"

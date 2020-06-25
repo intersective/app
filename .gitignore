@@ -22,3 +22,4 @@ ios/App/App/GoogleService-Info.plist
 release.keystore
 dist
 
+experiments/appium/App.app

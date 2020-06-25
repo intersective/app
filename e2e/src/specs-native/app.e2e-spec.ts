@@ -10,8 +10,9 @@ describe('AppV2', () => {
     page = new AppPage();
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
-    // Wait up to 5 seconds for commands to work
-    browser.timeouts('implicit', 5000);
+
+    // var until = protractor.ExpectedConditions;
+    // browser.wait(until.presenceOf(element(by.css('#username input'))), 30000, 'Element didn\'t load till 30 seconds');
   });
 
   afterEach(function() {
@@ -33,11 +34,9 @@ describe('AppV2', () => {
     expect(loginButton.getAttribute('disabled')).toBeFalsy();
     loginButton.click();
 
-    // browser.waitForAngularEnabled().then(res => {
-      // browser.sleep(5000);
-      const poweredBy = element(by.css('ion-content')).all(by.css('div')).last();
-      expect(poweredBy.$('img').getAttribute('src')).toContain('/assets/logo.svg');
-    // });
+    browser.sleep(5000);
+    const poweredBy = element(by.css('ion-content')).all(by.css('div')).last();
+    expect(poweredBy.$('img').getAttribute('src')).toContain('/assets/logo.svg');
   });
 
   xit('login button should disabled', () => {

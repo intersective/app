@@ -1,5 +1,7 @@
 import { browser, $, $$, Key, ExpectedConditions } from 'protractor';
 
+export const EC = ExpectedConditions;
+
 export class AppPage {
   tabs = $('ion-tabs');
   tab = name => this.tabs.$(`ion-tab-button[tab="${name}"]`);
@@ -10,8 +12,8 @@ export class AppPage {
   currentUrl() {
     return browser.getCurrentUrl();
   }
-  wait(callback) {
-    return browser.wait(callback);
+  wait(callback, maxWaitTime?) {
+    return browser.wait(callback, maxWaitTime);
   }
   sleep(ms) {
     return browser.sleep(ms);
@@ -22,7 +24,6 @@ export class AppPage {
   waitForAngularDisabled() {
     return browser.waitForAngularEnabled(false);
   }
-
 
   waitUntilTabPresent() {
     return this.wait(ExpectedConditions.presenceOf(this.tabs));
