@@ -16,15 +16,16 @@ export class LoginPage extends AppPage {
     return this.inputEmail.sendKeys(email);
   }
 
-  fillInAccount(user) {
-    this.wait(EC.visibilityOf(this.inputEmail));
-    this.wait(EC.visibilityOf(this.inputPassword));
-    this.inputEmail.sendKeys(user.email);
-    return this.inputPassword.sendKeys(user.password);
+  async fillInAccount(user) {
+    await this.wait(EC.visibilityOf(this.inputEmail));
+    await this.wait(EC.visibilityOf(this.inputPassword));
+    await this.inputEmail.sendKeys(user.email);
+    await this.inputPassword.sendKeys(user.password);
+    return;
   }
 
-  removeEmailnPassword() {
-    this.inputEmail.clear();
+  async removeEmailnPassword() {
+    await this.inputEmail.clear();
     return this.inputPassword.clear();
   }
 
@@ -37,8 +38,8 @@ export class LoginPage extends AppPage {
     return this.btnLogin.click();
   }
 
-  dismissAlert() {
-    this.btnAlert.click();
+  async dismissAlert() {
+    await this.btnAlert.click();
     return this.wait(EC.invisibilityOf(this.btnAlert), 5000);
   }
 

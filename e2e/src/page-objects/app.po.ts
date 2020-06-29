@@ -32,7 +32,8 @@ export class AppPage {
   }
 
   async clickTab(tab) {
-    await this.waitUntilTabPresent();
+    await this.wait(EC.visibilityOf(this.tabs), 5000);
+    // await this.waitUntilTabPresent();
     return this.tab(tab).click();
   }
 }

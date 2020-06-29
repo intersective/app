@@ -50,7 +50,7 @@ const androidEmulator = {
 };
 
 exports.config = {
-  allScriptsTimeout: 15000,
+  allScriptsTimeout: 20000,
   specs: [
     './src/features/native.feature',
   ],

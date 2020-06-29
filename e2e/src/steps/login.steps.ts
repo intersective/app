@@ -6,8 +6,8 @@ import { EC } from '../page-objects/app.po';
 
 const page = new LoginPage();
 
-Given(/^App is loaded$/, () => {
-  page.waitUntilLoginPresent();
+Given(/^App is loaded$/, async () => {
+  await page.waitUntilLoginPresent();
 });
 
 When(/^I fill in (.+) account$/, account => {
@@ -44,13 +44,15 @@ When(/^I click OK button of alert$/, () => {
   return page.sleep(500);
 });
 
-Then(/^I should(.*) be able to click login button$/, not => {
+Then(/^I should(.*) be able to click login button$/, async (not) => {
   if (not) {
-    page.waitForAngularDisabled();
-    expect(page.btnLogin.getAttribute('disabled')).to.eventually.equal('true');
+    await page.waitForAngularDisabled();
+    const disabled = await page.btnLogin.getAttribute('disabled');
+    expect(disabled).to.equal('true');
     return page.waitForAngularEnabled();
   }
-  return expect(page.btnLogin.getAttribute('disabled')).to.eventually.be.null;
+  const disabled = await page.btnLogin.getAttribute('disabled');
+  return expect(disabled).to.be.null;
 });
 
 Then(/^I should see alert message$/, () => {

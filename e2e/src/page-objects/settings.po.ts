@@ -6,7 +6,8 @@ export class SettingsPage extends AppPage {
   btnLogout = this.parent.$('#item-logout');
 
   async clickLogout() {
-    await this.wait(EC.presenceOf(this.btnLogout));
+    await this.wait(EC.visibilityOf(this.btnLogout));
+    console.log('test');
     return this.btnLogout.click();
   }
 }

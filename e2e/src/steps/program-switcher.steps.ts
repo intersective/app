@@ -20,7 +20,7 @@ When(/^I choose (.+) program$/, async program => {
 Then(/^I should be able to see tab options$/, async () => {
   page.waitForAngularDisabled();
 
-  await page.wait(EC.presenceOf(page.tabs));
+  await page.wait(EC.visibilityOf(page.tabs));
   const isDisplayed = await page.tabs.isDisplayed();
   expect(isDisplayed).to.be.true;
 
