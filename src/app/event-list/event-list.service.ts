@@ -87,9 +87,7 @@ export class EventListService {
       `"{` +
         `events{` +
           `id name title description isBook type canBook singleBooking location remainingCapacity` +
-          `eventEnd eventStart activity{` +
-            `id name ` +
-          `}` +
+          `eventEnd eventStart activityId` +
         `}` +
       `}"`)
       .pipe(map(response => {
