@@ -82,7 +82,6 @@ export class EventListService {
         type: 'activity_session'
       };
     }
-    //return this.request.get(api.get.events, {params: params})
     return this.request.postGraphQL(
       `"{` +
         `events{` +
