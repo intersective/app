@@ -36,10 +36,7 @@ Feature: Login/Logout the app
     Then I should be able to see tab options
     Then I should be on the home page on native app
 
-  Scenario: Go to settings page
-    When I click the settings tab
-    Then I should be on the settings page on native app
-
   Scenario: Logout
+    When I click the settings tab
     When I click logout button
     Then I should be on the login page

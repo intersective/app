@@ -64,8 +64,8 @@ exports.config = {
   baseUrl: 'http://10.0.2.2:8000',
   // baseUrl: '',
   multiCapabilities: [
-    // androidEmulator,
-    iPhone8Capability
+    androidEmulator,
+    // iPhone8Capability
   ],
   framework: 'custom',
   frameworkPath: require.resolve('protractor-cucumber-framework'),

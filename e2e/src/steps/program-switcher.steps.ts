@@ -14,11 +14,11 @@ When(/^I choose (.+) program$/, async program => {
       await page.clickFirstCard();
       return;
   }
-  // return page.waitUntilTabPresent();
+  return page.waitUntilTabPresent();
 });
 
 Then(/^I should be able to see tab options$/, async () => {
-  page.waitForAngularDisabled();
+  await page.waitForAngularDisabled();
 
   await page.wait(EC.visibilityOf(page.tabs));
   const isDisplayed = await page.tabs.isDisplayed();

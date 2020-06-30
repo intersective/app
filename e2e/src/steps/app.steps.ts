@@ -58,11 +58,6 @@ Then(/^I should dismiss virtual keyboard$/, () => {
 });
 
 Then(/^I should be on the home page on native app$/, async () => {
-  wdBrowser.title().then(function (title) {
-    console.log('what is the title?::', title);
-    // expect(title).toEqual('AngularJS — Superheroic JavaScript MVW Framework');
-  });
-
   try {
     let currentUrl = await page.currentUrl();
     return expect(currentUrl).to.include('/app/home');
