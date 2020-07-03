@@ -53,25 +53,25 @@ export class OverviewComponent implements OnInit {
     });
 
     PushNotifications.addListener('registration',
-      (token: PushNotificationToken) => {
+                                  (token: PushNotificationToken) => {
         console.log('Token:', token.value);
       }
     );
 
     PushNotifications.addListener('registrationError',
-      (error: any) => {
+                                  (error: any) => {
         console.log('Error on registration: ' + JSON.stringify(error));
       }
     );
 
     PushNotifications.addListener('pushNotificationReceived',
-      (notification: PushNotification) => {
+                                  (notification: PushNotification) => {
         console.log('Push received: ' + JSON.stringify(notification));
       }
     );
 
     PushNotifications.addListener('pushNotificationActionPerformed',
-      (notification: PushNotificationActionPerformed) => {
+                                  (notification: PushNotificationActionPerformed) => {
         console.log('Push action performed: ' + JSON.stringify(notification));
       }
     );

@@ -22,7 +22,7 @@ Then(/^I should be able to see tab options$/, async () => {
 
   await page.wait(EC.visibilityOf(page.tabs));
   const isDisplayed = await page.tabs.isDisplayed();
-  expect(isDisplayed).to.be.true;
+  expect(isDisplayed).to.be(true);
 
   return page.waitForAngularEnabled();
 });

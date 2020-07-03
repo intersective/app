@@ -11,5 +11,5 @@ describe('Screenshots', () => {
     // browser.screenshot returns the screenshot as a base64 string
     const textVisibleScreenshot = browser.screenshot();
     writeFileSync('screenshot-1.png', textVisibleScreenshot.value, 'base64');
-  })
+  });
 });

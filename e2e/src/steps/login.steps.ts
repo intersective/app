@@ -45,13 +45,12 @@ When(/^I click OK button of alert$/, () => {
 });
 
 Then(/^I should(.*) be able to click login button$/, async (not) => {
+  const disabled = await page.btnLogin.getAttribute('disabled');
   if (not) {
     await page.waitForAngularDisabled();
-    const disabled = await page.btnLogin.getAttribute('disabled');
     expect(disabled).to.equal('true');
     return page.waitForAngularEnabled();
   }
-  const disabled = await page.btnLogin.getAttribute('disabled');
   return expect(disabled).to.be.null;
 });
 

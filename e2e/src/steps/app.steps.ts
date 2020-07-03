@@ -37,20 +37,10 @@ Given(/^I go to the (.*)correct (.+) link$/, (incorrect, linkType) => {
 When(/^I click the (.+) tab$/, async tabType => {
   // page.wait(EC.page.login)
   // await page.clickTab(tabType);
-  try {
-    await page.wait(EC.elementToBeClickable($('ion-tabs').$(`ion-tab-button[tab="settings"]`)));
-  } catch (e) {
-    console.log(e);
-  }
-
-  try {
-    await page.waitForAngularDisabled();
-    await $('ion-tabs').$(`ion-tab-button[tab="settings"]`).click();
-    await page.waitForAngularEnabled();
-  } catch (e) {
-    console.log(e);
-  }
-  console.log('reach here bo?');
+  await page.wait(EC.elementToBeClickable($('ion-tabs').$(`ion-tab-button[tab="settings"]`)));
+  await page.waitForAngularDisabled();
+  await $('ion-tabs').$(`ion-tab-button[tab="settings"]`).click();
+  await page.waitForAngularEnabled();
 });
 
 Then(/^I should dismiss virtual keyboard$/, () => {
@@ -58,27 +48,18 @@ Then(/^I should dismiss virtual keyboard$/, () => {
 });
 
 Then(/^I should be on the home page on native app$/, async () => {
-  try {
-    let currentUrl = await page.currentUrl();
-    return expect(currentUrl).to.include('/app/home');
-  } catch (e) {
-    console.log('watswrong?::', e);
-  }
+  const currentUrl = await page.currentUrl();
+  return expect(currentUrl).to.include('/app/home');
 });
 
 Then(/^I should be on the settings page on native app$/, async () => {
-  try {
-    let currentUrl = await page.currentUrl();
-    return expect(currentUrl).to.include('/app/settings');
-  } catch (e) {
-    console.log('watswrong?::', e);
-  }
+  const currentUrl = await page.currentUrl();
+  return expect(currentUrl).to.include('/app/settings');
 });
 
 Then(/^I should be on the (.+) page$/, async pageType => {
   try {
-    let currentUrl = await page.currentUrl();
-    console.log('how here?', currentUrl);
+    const currentUrl = await page.currentUrl();
 
     let route = '/';
     switch (pageType) {
@@ -98,7 +79,6 @@ Then(/^I should be on the (.+) page$/, async pageType => {
         route = '/app/settings';
         break;
     }
-    console.log('url::', currentUrl);
 
     const expectation = expect(currentUrl).to.include(route);
     return expectation;
