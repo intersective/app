@@ -181,5 +181,6 @@
     <orderEntry type="library" name="Gradle: com.google.android.datatransport:transport-api:2.2.0@aar" level="project" />
     <orderEntry type="module" module-name="@capacitor-capacitor-android" />
     <orderEntry type="module" module-name="capacitor-cordova-android-plugins" />
+    <orderEntry type="module" module-name="capacitor-pusher-beams-auth" />
   </component>
 </module>

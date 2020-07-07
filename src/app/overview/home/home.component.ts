@@ -13,6 +13,12 @@ import { fadeIn } from '../../animations';
 import { Observable, Subscription } from 'rxjs';
 import { PushNotificationService } from '../../native/push-notification.service';
 
+// simple testing for custom plugin
+import { Plugins } from '@capacitor/core';
+// import { CapacitorPusherBeamsAuthWeb } from 'capacitor-pusher-beams-auth';
+// import { CapacitorPusherBeamsAuth } from 'capacitor-pusher-beams-auth';
+const { CapacitorPusherBeamsAuth } = Plugins;
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
@@ -107,7 +113,24 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    /*const s = await CapacitorPusherBeamsAuth.openMap({
+      latitude: 'lat1',
+      longitude: 'long1'
+    });
+    console.log('s::', s);*/
+    const s = await CapacitorPusherBeamsAuth.openWebVersion({anything: 'anything here!!!'});
+    console.log('s::', s);
+
+    const android = await CapacitorPusherBeamsAuth.onlyAndroid({ value: 'testing for android!'});
+    console.log('android::::', android);
+
+    const openMap = await CapacitorPusherBeamsAuth.openMap({
+      latitude: 123123,
+      longitude: 321321,
+    });
+    console.log(openMap);
+
     this.refresh.subscribe(params => {
       this.onEnter();
     });
@@ -115,6 +138,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       title: 'Hello from Practera',
       content: 'Please enjoy our native app made especially for you!'
     });
+
   }
 
   private async fireNotification({title, content}) {

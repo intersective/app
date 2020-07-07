@@ -3059,6 +3059,8 @@ var __importDefault = (undefined && undefined.__importDefault) || function (mod)
 
 // simple testing for custom plugin
 
+// import { CapacitorPusherBeamsAuthWeb } from 'capacitor-pusher-beams-auth';
+// import { CapacitorPusherBeamsAuth } from 'capacitor-pusher-beams-auth';
 var CapacitorPusherBeamsAuth = _capacitor_core__WEBPACK_IMPORTED_MODULE_14__["Plugins"].CapacitorPusherBeamsAuth;
 var HomeComponent = /** @class */ (function () {
     function HomeComponent(intercom, router, homeService, utils, storage, achievementService, eventsService, newRelic, pushNotification) {
@@ -3136,11 +3138,25 @@ var HomeComponent = /** @class */ (function () {
     }
     HomeComponent.prototype.ngOnInit = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var s;
+            var s, android, openMap;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
+                    case 0: return [4 /*yield*/, CapacitorPusherBeamsAuth.openWebVersion({ anything: 'anything here!!!' })];
+                    case 1:
+                        s = _a.sent();
+                        console.log('s::', s);
+                        return [4 /*yield*/, CapacitorPusherBeamsAuth.onlyAndroid({ value: 'testing for android!' })];
+                    case 2:
+                        android = _a.sent();
+                        console.log('android::::', android);
+                        return [4 /*yield*/, CapacitorPusherBeamsAuth.openMap({
+                                latitude: 123123,
+                                longitude: 321321,
+                            })];
+                    case 3:
+                        openMap = _a.sent();
+                        console.log(openMap);
                         this.refresh.subscribe(function (params) {
                             _this.onEnter();
                         });
@@ -3148,13 +3164,6 @@ var HomeComponent = /** @class */ (function () {
                             title: 'Hello from Practera',
                             content: 'Please enjoy our native app made especially for you!'
                         });
-                        return [4 /*yield*/, CapacitorPusherBeamsAuth.openMap({
-                                latitude: 'lat1',
-                                longitude: 'long1'
-                            })];
-                    case 1:
-                        s = _a.sent();
-                        console.log('s::', s);
                         return [2 /*return*/];
                 }
             });
