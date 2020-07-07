@@ -8,6 +8,7 @@ coverage/
 tests/
 test-report/
 out-tsc/
+dist/out-tsc/
 platforms
 resources/android/icon
 resources/android/splash
@@ -23,8 +24,10 @@ www
 e2e/config/index.ts
 e2e/protractor-dev.conf.js
 android/app/google-services.json
+android/app/build/
 ios/App/App/GoogleService-Info.plist
 release.keystore
 dist
 
 experiments/appium/App.app
+android/local.properties

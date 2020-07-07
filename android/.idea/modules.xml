@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../node_modules/@capacitor/android/capacitor/@capacitor-capacitor-android.iml" filepath="$PROJECT_DIR$/../node_modules/@capacitor/android/capacitor/@capacitor-capacitor-android.iml" group="android/capacitor-android" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/android.iml" filepath="$PROJECT_DIR$/.idea/android.iml" group="android" />
+      <module fileurl="file://$PROJECT_DIR$/app/android-app.iml" filepath="$PROJECT_DIR$/app/android-app.iml" group="android/app" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/android-capacitor-cordova-android-plugins.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/android-capacitor-cordova-android-plugins.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="android/app" />
+      <module fileurl="file://$PROJECT_DIR$/../node_modules/@capacitor/android/capacitor/capacitor-android.iml" filepath="$PROJECT_DIR$/../node_modules/@capacitor/android/capacitor/capacitor-android.iml" group="android/capacitor-android" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/capacitor-cordova-android-plugins.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/capacitor-cordova-android-plugins.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins~1.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins~1.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins~2.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/intersective-practera-app-v2-android-capacitor-cordova-android-plugins~2.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/null.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/null.iml" group="android/capacitor-cordova-android-plugins" />
+      <module fileurl="file://$PROJECT_DIR$/practera-app-v2-android.iml" filepath="$PROJECT_DIR$/practera-app-v2-android.iml" group="android" />
+      <module fileurl="file://$PROJECT_DIR$/capacitor-cordova-android-plugins/practera-app-v2-android-capacitor-cordova-android-plugins.iml" filepath="$PROJECT_DIR$/capacitor-cordova-android-plugins/practera-app-v2-android-capacitor-cordova-android-plugins.iml" group="android/capacitor-cordova-android-plugins" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,470 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.practera.appv2"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="29" />
+9-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml
+10
+11    <!-- Permissions -->
+12
+13    <uses-permission android:name="android.permission.INTERNET" />
+13-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:47:5-67
+13-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:47:22-64
+14    <!-- Camera, Photos, input file -->
+15    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+15-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:49:5-79
+15-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:49:22-77
+16    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+16-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:50:5-81
+16-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:50:22-78
+17    <!-- Geolocation API -->
+18    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+18-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:52:5-81
+18-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:52:22-78
+19    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+19-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:53:5-79
+19-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:53:22-76
+20
+21    <uses-feature android:name="android.hardware.location.gps" />
+21-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:54:5-66
+21-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:54:19-63
+22    <!-- Network API -->
+23    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+23-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:56:5-79
+23-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:56:22-76
+24    <!-- Navigator.getUserMedia -->
+25    <!-- Video -->
+26    <uses-permission android:name="android.permission.CAMERA" />
+26-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:59:5-65
+26-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:59:22-62
+27    <!-- Audio -->
+28    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+28-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:61:5-71
+28-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:61:22-68
+29    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+29-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:62:5-79
+29-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:62:22-77
+30
+31    <uses-feature
+31-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-13:36
+32        android:name="android.hardware.camera"
+32-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:12:9-47
+33        android:required="false" />
+33-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:9-33
+34
+35    <permission
+35-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:11:5-13:47
+36        android:name="com.practera.appv2.permission.C2D_MESSAGE"
+36-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:12:9-63
+37        android:protectionLevel="signature" />
+37-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:13:9-44
+38
+39    <uses-permission android:name="com.practera.appv2.permission.C2D_MESSAGE" />
+39-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:15:5-79
+39-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:15:22-76
+40    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Required by older versions of Google Play services to create IID tokens -->
+40-->[com.google.android.gms:play-services-measurement-api:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9aab3f98fdf0a888cc42dad517ea21a3/jetified-play-services-measurement-api-16.5.0/AndroidManifest.xml:24:5-68
+40-->[com.google.android.gms:play-services-measurement-api:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9aab3f98fdf0a888cc42dad517ea21a3/jetified-play-services-measurement-api-16.5.0/AndroidManifest.xml:24:22-65
+41    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+41-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:26:5-82
+41-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:26:22-79
+42    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+42-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:26:5-110
+42-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:26:22-107
+43
+44    <application
+44-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:5:5-43:19
+45        android:allowBackup="true"
+45-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:6:9-35
+46        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+46-->[androidx.core:core:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/cf23515831a30cf8e0e5ff774beb1451/core-1.2.0/AndroidManifest.xml:24:18-86
+47        android:debuggable="true"
+48        android:fullBackupContent="@xml/backup_rules"
+48-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:18:18-63
+49        android:icon="@mipmap/ic_launcher"
+49-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:7:9-43
+50        android:label="@string/app_name"
+50-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:8:9-41
+51        android:roundIcon="@mipmap/ic_launcher_round"
+51-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:9:9-54
+52        android:supportsRtl="true"
+52-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:10:9-35
+53        android:testOnly="true"
+54        android:theme="@style/AppTheme" >
+54-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:11:9-40
+55        <activity
+55-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:13:9-32:20
+56            android:name="com.practera.appv2.MainActivity"
+56-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:15:13-59
+57            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+57-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:14:13-129
+58            android:label="@string/title_activity_main"
+58-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:16:13-56
+59            android:launchMode="singleTask"
+59-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:18:13-44
+60            android:theme="@style/AppTheme.NoActionBarLaunch" >
+60-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:17:13-62
+61            <intent-filter>
+61-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:20:13-23:29
+62                <action android:name="android.intent.action.MAIN" />
+62-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:21:17-69
+62-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:21:25-66
+63
+64                <category android:name="android.intent.category.LAUNCHER" />
+64-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:22:17-77
+64-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:22:27-74
+65            </intent-filter>
+66            <intent-filter>
+66-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:25:13-30:29
+67                <action android:name="android.intent.action.VIEW" />
+67-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:26:17-69
+67-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:26:25-66
+68
+69                <category android:name="android.intent.category.DEFAULT" />
+69-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:27:17-76
+69-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:27:27-73
+70                <category android:name="android.intent.category.BROWSABLE" />
+70-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:28:17-78
+70-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:28:27-75
+71
+72                <data android:scheme="@string/custom_url_scheme" />
+72-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:29:17-68
+72-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:29:23-65
+73            </intent-filter>
+74        </activity>
+75
+76        <provider
+77            android:name="androidx.core.content.FileProvider"
+77-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:35:13-62
+78            android:authorities="com.practera.appv2.fileprovider"
+78-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:36:13-64
+79            android:exported="false"
+79-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:37:13-37
+80            android:grantUriPermissions="true" >
+80-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:38:13-47
+81            <meta-data
+81-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:39:13-41:64
+82                android:name="android.support.FILE_PROVIDER_PATHS"
+82-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:40:17-67
+83                android:resource="@xml/file_paths" />
+83-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:41:17-51
+84        </provider>
+85
+86        <service
+86-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:16:9-18:40
+87            android:name="com.getcapacitor.plugin.background.BackgroundTaskService"
+87-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:17:13-84
+88            android:exported="false" />
+88-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:18:13-37
+89
+90        <receiver android:name="com.getcapacitor.plugin.notification.TimedNotificationPublisher" />
+90-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:20:9-100
+90-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:20:19-97
+91        <receiver android:name="com.getcapacitor.plugin.notification.NotificationDismissReceiver" />
+91-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:21:9-101
+91-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:21:19-98
+92
+93        <meta-data
+93-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:23:9-25:37
+94            android:name="firebase_messaging_auto_init_enabled"
+94-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:24:13-64
+95            android:value="false" />
+95-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:25:13-34
+96
+97        <service
+97-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:27:9-33:19
+98            android:name="com.getcapacitor.CapacitorFirebaseMessagingService"
+98-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:28:13-78
+99            android:stopWithTask="false" >
+99-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:29:13-41
+100            <intent-filter>
+100-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:30:13-32:29
+101                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+101-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:17-78
+101-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:25-75
+102            </intent-filter>
+103        </service>
+104        <!--
+105             FirebaseMessagingService performs security checks at runtime,
+106             but set to not exported to explicitly avoid allowing another app to call it.
+107        -->
+108        <service
+108-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:28:9-34:19
+109            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+109-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:29:13-82
+110            android:exported="false" >
+110-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:30:13-37
+111            <intent-filter android:priority="-500" >
+111-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:30:13-32:29
+112                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+112-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:17-78
+112-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:25-75
+113            </intent-filter>
+114        </service>
+115        <service
+115-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:35:9-41:19
+116            android:name="com.google.firebase.components.ComponentDiscoveryService"
+116-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:36:13-84
+117            android:directBootAware="true"
+117-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:34:13-43
+118            android:exported="false" >
+118-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:37:13-37
+119            <meta-data
+119-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:38:13-40:85
+120                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+120-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:39:17-119
+121                android:value="com.google.firebase.components.ComponentRegistrar" />
+121-->[com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:40:17-82
+122            <meta-data
+122-->[com.google.firebase:firebase-datatransport:17.0.3] /Users/chaw/.gradle/caches/transforms-2/files-2.1/c9fdb49c77a6c560ace392ea2d5303c1/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:28:13-30:85
+123                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+123-->[com.google.firebase:firebase-datatransport:17.0.3] /Users/chaw/.gradle/caches/transforms-2/files-2.1/c9fdb49c77a6c560ace392ea2d5303c1/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:29:17-115
+124                android:value="com.google.firebase.components.ComponentRegistrar" />
+124-->[com.google.firebase:firebase-datatransport:17.0.3] /Users/chaw/.gradle/caches/transforms-2/files-2.1/c9fdb49c77a6c560ace392ea2d5303c1/jetified-firebase-datatransport-17.0.3/AndroidManifest.xml:30:17-82
+125            <meta-data
+125-->[com.google.android.gms:play-services-measurement-api:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9aab3f98fdf0a888cc42dad517ea21a3/jetified-play-services-measurement-api-16.5.0/AndroidManifest.xml:30:13-32:85
+126                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+126-->[com.google.android.gms:play-services-measurement-api:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9aab3f98fdf0a888cc42dad517ea21a3/jetified-play-services-measurement-api-16.5.0/AndroidManifest.xml:31:17-139
+127                android:value="com.google.firebase.components.ComponentRegistrar" />
+127-->[com.google.android.gms:play-services-measurement-api:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9aab3f98fdf0a888cc42dad517ea21a3/jetified-play-services-measurement-api-16.5.0/AndroidManifest.xml:32:17-82
+128            <meta-data
+128-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:32:13-34:85
+129                android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+129-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:33:17-96
+130                android:value="com.google.firebase.components.ComponentRegistrar" />
+130-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:34:17-82
+131            <meta-data
+131-->[com.google.firebase:firebase-installations:16.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1e98b102015e39078d965ca60768118d/jetified-firebase-installations-16.0.0/AndroidManifest.xml:17:13-19:85
+132                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+132-->[com.google.firebase:firebase-installations:16.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1e98b102015e39078d965ca60768118d/jetified-firebase-installations-16.0.0/AndroidManifest.xml:18:17-127
+133                android:value="com.google.firebase.components.ComponentRegistrar" />
+133-->[com.google.firebase:firebase-installations:16.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1e98b102015e39078d965ca60768118d/jetified-firebase-installations-16.0.0/AndroidManifest.xml:19:17-82
+134        </service>
+135
+136        <receiver
+136-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:19:9-28:20
+137            android:name="com.pusher.pushnotifications.reporting.FCMMessageReceiver"
+137-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:20:13-85
+138            android:exported="true"
+138-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:21:13-36
+139            android:permission="com.google.android.c2dm.permission.SEND" >
+139-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:22:13-73
+140            <intent-filter>
+140-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:23:13-27:29
+141                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+141-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:24:17-81
+141-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:24:25-78
+142
+143                <category android:name="com.practera.appv2" />
+143-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:26:17-61
+143-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:26:27-58
+144            </intent-filter>
+145        </receiver>
+146
+147        <service
+147-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:30:9-37:19
+148            android:name="com.pusher.pushnotifications.reporting.ReportingJobService"
+148-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:31:13-86
+149            android:exported="true"
+149-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:32:13-36
+150            android:permission="android.permission.BIND_JOB_SERVICE" >
+150-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:33:13-69
+151            <intent-filter>
+151-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:34:13-36:29
+152                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+152-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:35:17-84
+152-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:35:25-81
+153            </intent-filter>
+154        </service>
+155        <service android:name="com.pusher.pushnotifications.fcm.EmptyMessagingService" >
+155-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:38:9-42:19
+155-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:38:18-87
+156            <intent-filter android:priority="1" >
+156-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:30:13-32:29
+157                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+157-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:17-78
+157-->[:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:31:25-75
+158            </intent-filter>
+159        </service>
+160
+161        <provider
+161-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:44:9-48:38
+162            android:name="com.pusher.pushnotifications.internal.PushNotificationsInitProvider"
+162-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:45:13-95
+163            android:authorities="com.practera.appv2.pushnotificationsinitprovider"
+163-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:46:13-81
+164            android:exported="false"
+164-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:47:13-37
+165            android:initOrder="99" />
+165-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:48:13-35
+166
+167        <activity android:name="com.pusher.pushnotifications.reporting.OpenNotificationActivity" >
+167-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:50:9-56:20
+167-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:50:19-97
+168            <intent-filter>
+168-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:51:13-55:29
+169                <action android:name="com.pusher.pushnotifications.OPEN_TRACKING" />
+169-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:52:17-85
+169-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:52:25-82
+170
+171                <category android:name="android.intent.category.DEFAULT" />
+171-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:27:17-76
+171-->/Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:27:27-73
+172            </intent-filter>
+173        </activity>
+174
+175        <receiver
+175-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:37:9-44:20
+176            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+176-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:38:13-78
+177            android:exported="true"
+177-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:39:13-36
+178            android:permission="com.google.android.c2dm.permission.SEND" >
+178-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:40:13-73
+179            <intent-filter>
+179-->[com.google.firebase:firebase-iid:20.1.1] /Users/chaw/.gradle/caches/transforms-2/files-2.1/65f174b01524df0d4bd637d7360a2e28/jetified-firebase-iid-20.1.1/AndroidManifest.xml:41:13-43:29
+180                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+180-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:24:17-81
+180-->[com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:24:25-78
+181            </intent-filter>
+182        </receiver>
+183
+184        <provider
+184-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:26:9-30:39
+185            android:name="com.google.firebase.provider.FirebaseInitProvider"
+185-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:27:13-77
+186            android:authorities="com.practera.appv2.firebaseinitprovider"
+186-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:28:13-72
+187            android:exported="false"
+187-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:29:13-37
+188            android:initOrder="100" />
+188-->[com.google.firebase:firebase-common:19.3.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/1b23a58bb1c539c2a19df1b0920c32b5/firebase-common-19.3.0/AndroidManifest.xml:30:13-36
+189
+190        <activity
+190-->[com.google.android.gms:play-services-base:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/38b6c4b545e39be84f8fef63d737cf6b/play-services-base-17.0.0/AndroidManifest.xml:23:9-26:75
+191            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+191-->[com.google.android.gms:play-services-base:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/38b6c4b545e39be84f8fef63d737cf6b/play-services-base-17.0.0/AndroidManifest.xml:24:13-79
+192            android:exported="false"
+192-->[com.google.android.gms:play-services-base:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/38b6c4b545e39be84f8fef63d737cf6b/play-services-base-17.0.0/AndroidManifest.xml:25:13-37
+193            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+193-->[com.google.android.gms:play-services-base:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/38b6c4b545e39be84f8fef63d737cf6b/play-services-base-17.0.0/AndroidManifest.xml:26:13-72
+194
+195        <receiver
+195-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:29:9-33:20
+196            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+196-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:30:13-85
+197            android:enabled="true"
+197-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:31:13-35
+198            android:exported="false" >
+198-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:32:13-37
+199        </receiver>
+200        <receiver
+200-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:34:9-42:20
+201            android:name="com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver"
+201-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:35:13-100
+202            android:enabled="true"
+202-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:36:13-35
+203            android:exported="true"
+203-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:37:13-36
+204            android:permission="android.permission.INSTALL_PACKAGES" >
+204-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:38:13-69
+205            <intent-filter>
+205-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:39:13-41:29
+206                <action android:name="com.android.vending.INSTALL_REFERRER" />
+206-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:40:17-79
+206-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:40:25-76
+207            </intent-filter>
+208        </receiver>
+209
+210        <service
+210-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:44:9-47:40
+211            android:name="com.google.android.gms.measurement.AppMeasurementService"
+211-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:45:13-84
+212            android:enabled="true"
+212-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:46:13-35
+213            android:exported="false" />
+213-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:47:13-37
+214        <service
+214-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:48:9-52:72
+215            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+215-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:49:13-87
+216            android:enabled="true"
+216-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:50:13-35
+217            android:exported="false"
+217-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:51:13-37
+218            android:permission="android.permission.BIND_JOB_SERVICE" />
+218-->[com.google.android.gms:play-services-measurement:16.5.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/4041eadc4bb2e20c1a5e54d854f151c8/jetified-play-services-measurement-16.5.0/AndroidManifest.xml:52:13-69
+219
+220        <meta-data
+220-->[com.google.android.gms:play-services-basement:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/f720b24cc490c109d50c0a0a1e6bf186/play-services-basement-17.0.0/AndroidManifest.xml:23:9-25:69
+221            android:name="com.google.android.gms.version"
+221-->[com.google.android.gms:play-services-basement:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/f720b24cc490c109d50c0a0a1e6bf186/play-services-basement-17.0.0/AndroidManifest.xml:24:13-58
+222            android:value="@integer/google_play_services_version" />
+222-->[com.google.android.gms:play-services-basement:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/f720b24cc490c109d50c0a0a1e6bf186/play-services-basement-17.0.0/AndroidManifest.xml:25:13-66
+223        <!--
+224             Receives GooglePlay execution requests and forwards them to the
+225             appropriate internal service.
+226        -->
+227        <service
+227-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:32:9-39:19
+228            android:name="com.firebase.jobdispatcher.GooglePlayReceiver"
+228-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:33:13-73
+229            android:exported="true"
+229-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:34:13-36
+230            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE" >
+230-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:35:13-93
+231            <intent-filter>
+231-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:36:13-38:29
+232                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+232-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:37:17-87
+232-->[com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:37:25-84
+233            </intent-filter>
+234        </service>
+235        <service
+235-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:29:9-35:19
+236            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+236-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:30:13-103
+237            android:exported="false" >
+237-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:31:13-37
+238            <meta-data
+238-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:32:13-34:39
+239                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+239-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:33:17-94
+240                android:value="cct" />
+240-->[com.google.android.datatransport:transport-backend-cct:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/6b92bf4ad40bcdc58a60097256bb2331/jetified-transport-backend-cct-2.2.0/AndroidManifest.xml:34:17-36
+241        </service>
+242        <service
+242-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:26:9-30:19
+243            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+243-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:27:13-117
+244            android:exported="false"
+244-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:28:13-37
+245            android:permission="android.permission.BIND_JOB_SERVICE" >
+245-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:29:13-69
+246        </service>
+247
+248        <receiver
+248-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:32:9-34:40
+249            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+249-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:33:13-132
+250            android:exported="false" />
+250-->[com.google.android.datatransport:transport-runtime:2.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/711d09d774dd8393d1b2cda417cd0cc2/jetified-transport-runtime-2.2.0/AndroidManifest.xml:34:13-37
+251
+252        <provider
+252-->[androidx.lifecycle:lifecycle-process:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/399fb33a8ad56b04bb7efb3af3e16457/jetified-lifecycle-process-2.0.0/AndroidManifest.xml:23:9-27:43
+253            android:name="androidx.lifecycle.ProcessLifecycleOwnerInitializer"
+253-->[androidx.lifecycle:lifecycle-process:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/399fb33a8ad56b04bb7efb3af3e16457/jetified-lifecycle-process-2.0.0/AndroidManifest.xml:24:13-79
+254            android:authorities="com.practera.appv2.lifecycle-process"
+254-->[androidx.lifecycle:lifecycle-process:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/399fb33a8ad56b04bb7efb3af3e16457/jetified-lifecycle-process-2.0.0/AndroidManifest.xml:25:13-69
+255            android:exported="false"
+255-->[androidx.lifecycle:lifecycle-process:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/399fb33a8ad56b04bb7efb3af3e16457/jetified-lifecycle-process-2.0.0/AndroidManifest.xml:26:13-37
+256            android:multiprocess="true" />
+256-->[androidx.lifecycle:lifecycle-process:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/399fb33a8ad56b04bb7efb3af3e16457/jetified-lifecycle-process-2.0.0/AndroidManifest.xml:27:13-40
+257    </application>
+258
+259</manifest>

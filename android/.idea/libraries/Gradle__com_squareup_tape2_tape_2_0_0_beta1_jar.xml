@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.squareup.tape2:tape:2.0.0-beta1@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.tape2/tape/2.0.0-beta1/99f4bada162d50f73f8558332591cabab2531555/tape-2.0.0-beta1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.tape2/tape/2.0.0-beta1/dfc42fe67b67f2cd36abaf7068d38657e9f2e7fb/tape-2.0.0-beta1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.tape2/tape/2.0.0-beta1/fc4db844cd277ede46754c676787290adb73a80d/tape-2.0.0-beta1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

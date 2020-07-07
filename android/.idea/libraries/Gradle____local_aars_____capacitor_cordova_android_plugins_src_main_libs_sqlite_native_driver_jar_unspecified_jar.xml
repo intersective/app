@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: __local_aars__:./capacitor-cordova-android-plugins/src/main/libs/sqlite-native-driver.jar:unspecified@jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/capacitor-cordova-android-plugins/src/main/libs/sqlite-native-driver.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
