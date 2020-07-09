@@ -34,6 +34,11 @@
 
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
+      <ion-item (click)="goToNativeSetting()" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
+        App Settings
+      </ion-item>
+
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
         Email Help

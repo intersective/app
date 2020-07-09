@@ -1083,6 +1083,7 @@ var map = {
 	],
 	"../overview/overview.module": [
 		"./src/app/overview/overview.module.ts",
+		"default~overview-overview-module~settings-settings-module",
 		"overview-overview-module"
 	],
 	"../reviews/reviews.module": [
@@ -1095,6 +1096,7 @@ var map = {
 	"../settings/settings.module": [
 		"./src/app/settings/settings.module.ts",
 		"default~assessment-assessment-module~chat-chat-module~events-events-module~reviews-reviews-module~se~abd5c3d3",
+		"default~overview-overview-module~settings-settings-module",
 		"settings-settings-module"
 	],
 	"../tasks/tasks.module": [
@@ -6047,6 +6049,8 @@ var UtilsService = /** @class */ (function () {
      * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
      */
     UtilsService.prototype.isMobile = function () {
+        console.log('isMobile?::', window.innerWidth <= 576);
+        console.log('isMobile?::innerWidth::', window.innerWidth);
         return window.innerWidth <= 576;
     };
     /** check if a value is empty

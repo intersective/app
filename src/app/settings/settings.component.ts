@@ -9,6 +9,8 @@ import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Plugins } from '@capacitor/core';
+const { CapacitorPusherBeamsAuth } = Plugins;
 
 @Component({
   selector: 'app-settings',
@@ -108,6 +110,11 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
+  }
+
+  // for Native only: go to setting app's setting page (android) or permission setting page (iOS)
+  goToNativeSetting() {
+    return CapacitorPusherBeamsAuth.goToAppSetting();
   }
 
   logout() {
