@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: dev.zacsweers.moshisealed:moshi-sealed-reflect:0.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-reflect/0.1.0/6ac156900624bd31a72d67efc6251ea1fed8cd69/moshi-sealed-reflect-0.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-reflect/0.1.0/6dbf644306508c85cfc202bcd70108e59b52671e/moshi-sealed-reflect-0.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-reflect/0.1.0/3d0710a1eb5b7bff341466c9ab57c6cad11ae3e3/moshi-sealed-reflect-0.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

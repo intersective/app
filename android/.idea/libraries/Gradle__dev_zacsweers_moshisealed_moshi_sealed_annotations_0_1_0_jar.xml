@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: dev.zacsweers.moshisealed:moshi-sealed-annotations:0.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-annotations/0.1.0/3787032760360bfd8d16797f71b30c2fc65c409f/moshi-sealed-annotations-0.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-annotations/0.1.0/ced3b860ce2b768ce44b6560f302c2a5f993451f/moshi-sealed-annotations-0.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.zacsweers.moshisealed/moshi-sealed-annotations/0.1.0/c08957dc6127538b0943dac416ada1ebfa4169c2/moshi-sealed-annotations-0.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

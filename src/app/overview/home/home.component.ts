@@ -38,6 +38,10 @@ export class HomeComponent implements OnDestroy, OnInit {
   subscriptions: Subscription[] = [];
   achievements: Array<Achievement>;
   progressConfig: any;
+  programInfo = {
+    image: '',
+    name: ''
+  };
   loadingAchievements = true;
 
   constructor(
@@ -128,10 +132,18 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.loadingProgress = true;
     this.achievements = [];
     this.loadingAchievements = true;
+    this.programInfo = {
+      image: '',
+      name: ''
+    };
   }
 
   onEnter() {
     this._initialise();
+    this.programInfo = {
+      image: this.storage.getUser().programImage,
+      name: this.storage.getUser().programName
+    };
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);

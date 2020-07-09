@@ -2,8 +2,13 @@ import { Given, When, Then } from 'cucumber';
 const expect = global['chai'].expect;
 import { LoginPage } from '../page-objects/login.po';
 import { CORRECT_ACCOUNT } from '../../config';
+import { EC } from '../page-objects/app.po';
 
 const page = new LoginPage();
+
+Given(/^App is loaded$/, async () => {
+  await page.waitUntilLoginPresent();
+});
 
 When(/^I fill in (.+) account$/, account => {
   let email, password;
@@ -23,10 +28,10 @@ When(/^I fill in (.+) account$/, account => {
   });
 });
 
-When(/^I remove email and password$/, async() => {
-  await page.removeEmailnPassword();
+When(/^I remove email and password$/, () => {
+  page.removeEmailnPassword();
   // add one more letter then remove it to trigger the form validation (disable the login button)
-  await page.insertEmail('a');
+  page.insertEmail('a');
   return page.deleteEmail();
 });
 
@@ -39,13 +44,14 @@ When(/^I click OK button of alert$/, () => {
   return page.sleep(500);
 });
 
-Then(/^I should(.*) be able to click login button$/, not => {
+Then(/^I should(.*) be able to click login button$/, async (not) => {
+  const disabled = await page.btnLogin.getAttribute('disabled');
   if (not) {
-    page.waitForAngularDisabled();
-    expect(page.btnLogin.getAttribute('disabled')).to.eventually.equal('true');
+    await page.waitForAngularDisabled();
+    expect(disabled).to.equal('true');
     return page.waitForAngularEnabled();
   }
-  return expect(page.btnLogin.getAttribute('disabled')).to.eventually.be.null;
+  return expect(disabled).to.be.null;
 });
 
 Then(/^I should see alert message$/, () => {

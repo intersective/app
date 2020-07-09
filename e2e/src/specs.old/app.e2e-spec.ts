@@ -1,6 +1,6 @@
 import { browser, by, element } from 'protractor';
 import { AppPage } from './app.po';
-import { PROGRAM, MENTOR, USER, SINGLE_PROGRAM_USER } from '../config';
+import { PROGRAM, MENTOR, USER, SINGLE_PROGRAM_USER } from './config';
 
 describe('AppV2', () => {
   let page: AppPage;

@@ -1,5 +1,5 @@
-import { browser, $, $$, Key } from 'protractor';
-import { AppPage } from './app.po';
+import { $, $$, Key } from 'protractor';
+import { AppPage, EC } from './app.po';
 
 export class LoginPage extends AppPage {
   inputEmail = $(`input[name="email"]`);
@@ -16,13 +16,16 @@ export class LoginPage extends AppPage {
     return this.inputEmail.sendKeys(email);
   }
 
-  fillInAccount(user) {
-    this.inputEmail.sendKeys(user.email);
-    return this.inputPassword.sendKeys(user.password);
+  async fillInAccount(user) {
+    await this.wait(EC.visibilityOf(this.inputEmail));
+    await this.wait(EC.visibilityOf(this.inputPassword));
+    await this.inputEmail.sendKeys(user.email);
+    await this.inputPassword.sendKeys(user.password);
+    return;
   }
 
-  removeEmailnPassword() {
-    this.inputEmail.clear();
+  async removeEmailnPassword() {
+    await this.inputEmail.clear();
     return this.inputPassword.clear();
   }
 
@@ -31,10 +34,17 @@ export class LoginPage extends AppPage {
   }
 
   clickLogin() {
+    this.wait(EC.visibilityOf(this.btnLogin));
     return this.btnLogin.click();
   }
 
-  dismissAlert() {
-    return this.btnAlert.click();
+  async dismissAlert() {
+    await this.btnAlert.click();
+    return this.wait(EC.invisibilityOf(this.btnAlert), 5000);
+  }
+
+  // native app testing
+  waitUntilLoginPresent() {
+    return this.wait(EC.presenceOf(this.inputEmail));
   }
 }
