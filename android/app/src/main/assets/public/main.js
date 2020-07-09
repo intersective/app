@@ -6049,8 +6049,6 @@ var UtilsService = /** @class */ (function () {
      * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
      */
     UtilsService.prototype.isMobile = function () {
-        console.log('isMobile?::', window.innerWidth <= 576);
-        console.log('isMobile?::innerWidth::', window.innerWidth);
         return window.innerWidth <= 576;
     };
     /** check if a value is empty

@@ -295,6 +295,7 @@ var SettingsComponent = /** @class */ (function (_super) {
         var mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
         window.open(mailto, '_self');
     };
+    // for Native only: go to setting app's setting page (android) or permission setting page (iOS)
     SettingsComponent.prototype.goToNativeSetting = function () {
         return CapacitorPusherBeamsAuth.goToAppSetting();
     };
