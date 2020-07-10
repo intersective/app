@@ -53,6 +53,7 @@
     "@ionic/storage": "^2.2.0",
     "angular-in-memory-web-api": "^0.7.0",
     "angular2-text-mask": "^9.0.0",
+    "capacitor-pusher-beams-auth": "file:../pusher-beams-auth",
     "cordova-sqlite-storage": "^2.6.0",
     "core-js": "^2.5.4",
     "exif-js": "^2.3.0",
