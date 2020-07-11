@@ -15,6 +15,7 @@ ADDED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/s
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:2:1-63:12
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:2:1-63:12
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml:2:1-63:12
+MERGED from [:cesarbarone-capacitor-pusher-beams] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@cesarbarone/capacitor-pusher-beams/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:capacitor-pusher-beams-auth] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/capacitor-pusher-beams-auth/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-36:12
 MERGED from [com.google.android.material:material:1.1.0-rc02] /Users/chaw/.gradle/caches/transforms-2/files-2.1/051eaa9027caada5026e12dfeac8bc27/material-1.1.0-rc02/AndroidManifest.xml:17:1-24:12
@@ -23,6 +24,8 @@ MERGED from [:capacitor-cordova-android-plugins] /Users/chaw/Workspaces/www/inte
 MERGED from [com.google.firebase:firebase-core:16.0.9] /Users/chaw/.gradle/caches/transforms-2/files-2.1/eab75f7a59f9e344b2d8139a921eda6d/jetified-firebase-core-16.0.9/AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:17:1-44:12
 MERGED from [com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:2:1-59:12
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/80b69e0281975f7e9accaab0f9198800/legacy-support-v4-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/15dedc436db97eba9c51ba371d2b8714/legacy-support-core-ui-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/fd87986aa651fe7c3128c0b95293c012/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-extensions:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/0a6c212f73963fa6835af45599dfab1e/lifecycle-extensions-2.0.0/AndroidManifest.xml:17:1-25:12
 MERGED from [com.google.android.gms:play-services-location:17.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/498abde944f350e22462b2703aea22a7/jetified-play-services-location-17.0.0/AndroidManifest.xml:2:1-9:12
@@ -52,6 +55,7 @@ MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/chaw/.gradle/c
 MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/709dec39ab4d41e4eaebf9d7dbe74e41/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.browser:browser:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/c1420d47df5e117932bba76e098a3816/browser-1.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:17:1-42:12
+MERGED from [androidx.media:media:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/3edfbc7b78ed5b8b0b6ccffd1386d8d8/media-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ec2ff2d2f35f5ce21d8f3a2cd566b74c/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/dd6e81403769a15935cf91e15427e1b5/legacy-support-core-utils-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.loader:loader:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/33987a6c2abb97d3a5dc8363aa39ad35/loader-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -60,8 +64,11 @@ MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/chaw/
 MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/21e18b66e86534a7ba2f091590864e61/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/93fa951bb50245f79bfdb3046a233a07/coordinatorlayout-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ee402462607e3d7bc40e1166a58a6978/recyclerview-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9f9d1f3c50ce4e1f871ff56b75c8e58c/slidingpanelayout-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.customview:customview:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/faf6750b30e085dada05d5bf2b630089/customview-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.transition:transition:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/85ca3f2cc7fc2d3a231f6bc7d430904f/transition-1.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/74a949c57b303ec0823b0ea9d5439f22/swiperefreshlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/19851895a64cdce23bed4e3d01b0894b/asynclayoutinflater-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/cf23515831a30cf8e0e5ff774beb1451/core-1.2.0/AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/e7b316e008973942910afd1c84dc02d7/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/69ad70deb7fc3872e7a51cd7de424a87/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
@@ -300,6 +307,8 @@ uses-sdk
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml
 INJECTED from /Users/chaw/Workspaces/www/intersective/practera-app-v2/android/app/src/main/AndroidManifest.xml
+MERGED from [:cesarbarone-capacitor-pusher-beams] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@cesarbarone/capacitor-pusher-beams/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:cesarbarone-capacitor-pusher-beams] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@cesarbarone/capacitor-pusher-beams/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:capacitor-pusher-beams-auth] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/capacitor-pusher-beams-auth/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:capacitor-pusher-beams-auth] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/capacitor-pusher-beams-auth/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:capacitor-android] /Users/chaw/Workspaces/www/intersective/practera-app-v2/node_modules/@capacitor/android/capacitor/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
@@ -316,6 +325,10 @@ MERGED from [com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/
 MERGED from [com.google.firebase:firebase-messaging:20.1.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9fbada88fa325291a82eb809c2064dc7/jetified-firebase-messaging-20.1.2/AndroidManifest.xml:20:5-44
 MERGED from [com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:7:5-9:41
 MERGED from [com.pusher:push-notifications-android:1.6.2] /Users/chaw/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/80b69e0281975f7e9accaab0f9198800/legacy-support-v4-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/80b69e0281975f7e9accaab0f9198800/legacy-support-v4-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/15dedc436db97eba9c51ba371d2b8714/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/15dedc436db97eba9c51ba371d2b8714/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/fd87986aa651fe7c3128c0b95293c012/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/fd87986aa651fe7c3128c0b95293c012/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-extensions:2.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/0a6c212f73963fa6835af45599dfab1e/lifecycle-extensions-2.0.0/AndroidManifest.xml:20:5-44
@@ -374,6 +387,8 @@ MERGED from [androidx.browser:browser:1.2.0] /Users/chaw/.gradle/caches/transfor
 MERGED from [androidx.browser:browser:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/c1420d47df5e117932bba76e098a3816/browser-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:22:5-24:41
 MERGED from [com.firebase:firebase-jobdispatcher:0.8.5] /Users/chaw/.gradle/caches/transforms-2/files-2.1/b750b2b7bd5dbaf4a9487e17a34c7b46/jetified-firebase-jobdispatcher-0.8.5/AndroidManifest.xml:22:5-24:41
+MERGED from [androidx.media:media:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/3edfbc7b78ed5b8b0b6ccffd1386d8d8/media-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media:media:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/3edfbc7b78ed5b8b0b6ccffd1386d8d8/media-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ec2ff2d2f35f5ce21d8f3a2cd566b74c/viewpager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ec2ff2d2f35f5ce21d8f3a2cd566b74c/viewpager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/dd6e81403769a15935cf91e15427e1b5/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
@@ -390,10 +405,16 @@ MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] /Users/chaw/.gr
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/93fa951bb50245f79bfdb3046a233a07/coordinatorlayout-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ee402462607e3d7bc40e1166a58a6978/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/ee402462607e3d7bc40e1166a58a6978/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9f9d1f3c50ce4e1f871ff56b75c8e58c/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/9f9d1f3c50ce4e1f871ff56b75c8e58c/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.customview:customview:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/faf6750b30e085dada05d5bf2b630089/customview-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.customview:customview:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/faf6750b30e085dada05d5bf2b630089/customview-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.transition:transition:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/85ca3f2cc7fc2d3a231f6bc7d430904f/transition-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.transition:transition:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/85ca3f2cc7fc2d3a231f6bc7d430904f/transition-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/74a949c57b303ec0823b0ea9d5439f22/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/74a949c57b303ec0823b0ea9d5439f22/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/19851895a64cdce23bed4e3d01b0894b/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/19851895a64cdce23bed4e3d01b0894b/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.core:core:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/cf23515831a30cf8e0e5ff774beb1451/core-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.core:core:1.2.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/cf23515831a30cf8e0e5ff774beb1451/core-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/chaw/.gradle/caches/transforms-2/files-2.1/e7b316e008973942910afd1c84dc02d7/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44

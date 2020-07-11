@@ -2,5 +2,8 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
 
+include ':cesarbarone-capacitor-pusher-beams'
+project(':cesarbarone-capacitor-pusher-beams').projectDir = new File('../node_modules/@cesarbarone/capacitor-pusher-beams/android')
+
 include ':capacitor-pusher-beams-auth'
 project(':capacitor-pusher-beams-auth').projectDir = new File('../node_modules/capacitor-pusher-beams-auth/android')

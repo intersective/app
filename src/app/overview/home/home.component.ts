@@ -17,7 +17,7 @@ import { PushNotificationService } from '../../native/push-notification.service'
 import { Plugins } from '@capacitor/core';
 // import { CapacitorPusherBeamsAuthWeb } from 'capacitor-pusher-beams-auth';
 // import { CapacitorPusherBeamsAuth } from 'capacitor-pusher-beams-auth';
-const { CapacitorPusherBeamsAuth } = Plugins;
+const { CapacitorPusherBeamsAuth, PusherBeams } = Plugins;
 
 @Component({
   selector: 'app-home',
@@ -139,6 +139,9 @@ export class HomeComponent implements OnDestroy, OnInit {
       content: 'Please enjoy our native app made especially for you!'
     });
 
+    // programmatiically subscribe to new device interest
+    // PusherBeams.addDeviceInterest('testing-interest');
+    PusherBeams.echo({value: 'testing-interest'});
   }
 
   private async fireNotification({title, content}) {

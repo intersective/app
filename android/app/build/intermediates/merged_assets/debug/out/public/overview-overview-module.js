@@ -399,7 +399,7 @@ var __importDefault = (undefined && undefined.__importDefault) || function (mod)
 
 // import { CapacitorPusherBeamsAuthWeb } from 'capacitor-pusher-beams-auth';
 // import { CapacitorPusherBeamsAuth } from 'capacitor-pusher-beams-auth';
-var CapacitorPusherBeamsAuth = _capacitor_core__WEBPACK_IMPORTED_MODULE_14__["Plugins"].CapacitorPusherBeamsAuth;
+var CapacitorPusherBeamsAuth = _capacitor_core__WEBPACK_IMPORTED_MODULE_14__["Plugins"].CapacitorPusherBeamsAuth, PusherBeams = _capacitor_core__WEBPACK_IMPORTED_MODULE_14__["Plugins"].PusherBeams;
 var HomeComponent = /** @class */ (function () {
     function HomeComponent(intercom, router, homeService, utils, storage, achievementService, eventsService, newRelic, pushNotification) {
         var _this = this;
@@ -502,6 +502,9 @@ var HomeComponent = /** @class */ (function () {
                             title: 'Hello from Practera',
                             content: 'Please enjoy our native app made especially for you!'
                         });
+                        // programmatiically subscribe to new device interest
+                        // PusherBeams.addDeviceInterest('testing-interest');
+                        PusherBeams.echo({ value: 'testing-interest' });
                         return [2 /*return*/];
                 }
             });
