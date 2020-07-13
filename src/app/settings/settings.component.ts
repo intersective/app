@@ -10,7 +10,8 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Plugins } from '@capacitor/core';
-const { CapacitorPusherBeamsAuth } = Plugins;
+const { CapacitorPusherBeamsAuth, PusherBeams } = Plugins;
+
 
 @Component({
   selector: 'app-settings',
@@ -170,4 +171,12 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
+  subscribeInterest(text) {
+    PusherBeams.echo({value: text});
+    // PusherBeams.addDeviceInterest({interest: text});
+  }
+
+  unsubscribeInterest(text) {
+    PusherBeams.removeDeviceInterest({interest: text});
+  }
 }

@@ -33,12 +33,23 @@
     </ion-item>
 
     <div class="ion-margin-top support-mobile subtitle-1">
-      <ion-label class="subtitle-2 gray-2">Support</ion-label>
-      <ion-item (click)="goToNativeSetting()" lines="none">
+      <ion-label class="subtitle-2 gray-2">Experimental Features</ion-label>
+      <ion-item class="no-bg" (click)="goToNativeSetting()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
-        App Settings
+        Go to Settings (AppV2)
       </ion-item>
 
+      <ion-item class="no-bg" (click)="subscribeInterest('test-channel')" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="mic-outline"></ion-icon>
+        Subscribe to a PN Channel (test-channel)
+      </ion-item>
+
+      <ion-item class="no-bg" (click)="unsubscribeInterest('test-channel')" lines="none">
+        <ion-icon class="ion-padding-end" color="primary" name="mic-off-outline"></ion-icon>
+        Unsubscribe the PN Channel (test-channel)
+      </ion-item>
+
+      <ion-label class="subtitle-2 gray-2">Support</ion-label>
       <ion-item class="no-bg" (click)="mailTo()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
         Email Help

@@ -1,6 +1,7 @@
 {
   "interests": [
-    "hello"
+    "test-channel",
+    "testing-interest-wrong"
   ],
   "apns": {
     "aps": {
@@ -13,7 +14,7 @@
   "fcm": {
     "notification": {
       "title": "Hello",
-      "body": "Hello, android world Thursday, 14 May 2020!"
+      "body": "testing-interest test"
     },
     "data": {
       "inAppNotificationMessage": "Display me somewhere in the app ui!",
