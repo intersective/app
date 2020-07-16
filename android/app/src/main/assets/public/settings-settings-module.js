@@ -357,8 +357,24 @@ var SettingsComponent = /** @class */ (function (_super) {
         });
     };
     SettingsComponent.prototype.subscribeInterest = function (text) {
-        PusherBeams.echo({ value: text });
-        // PusherBeams.addDeviceInterest({interest: text});
+        return __awaiter(this, void 0, void 0, function () {
+            var interests, setChaw;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        PusherBeams.echo({ value: text });
+                        return [4 /*yield*/, PusherBeams.getDeviceInterests()];
+                    case 1:
+                        interests = _a.sent();
+                        console.log('interests::', interests);
+                        return [4 /*yield*/, PusherBeams.setUserID({ userID: 'chaw' })];
+                    case 2:
+                        setChaw = _a.sent();
+                        console.log('setUserID::', setChaw);
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     SettingsComponent.prototype.unsubscribeInterest = function (text) {
         PusherBeams.removeDeviceInterest({ interest: text });

@@ -1,7 +1,6 @@
 {
   "interests": [
-    "test-channel",
-    "testing-interest-wrong"
+    "test-channel"
   ],
   "apns": {
     "aps": {
