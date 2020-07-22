@@ -173,12 +173,12 @@ export class SettingsComponent extends RouterEnter {
 
   async subscribeInterest(text) {
     PusherBeams.echo({value: text});
-    // PusherBeams.addDeviceInterest({interest: text});
+    PusherBeams.addDeviceInterest({interest: text});
     const interests = await PusherBeams.getDeviceInterests();
     console.log('interests::', interests);
 
-    const setChaw = await PusherBeams.setUserID({ userID: 'chaw' });
-    console.log('setUserID::', setChaw);
+    // const setChaw = await PusherBeams.setUserID({ userID: 'chaw' });
+    // console.log('setUserID::', setChaw);
   }
 
   unsubscribeInterest(text) {
