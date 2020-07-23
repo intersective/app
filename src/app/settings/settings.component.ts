@@ -171,17 +171,35 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
+  async getSubscribedInterests() {
+    const interests = await PusherBeams.getDeviceInterests();
+    console.log('interests::', interests);
+    return interests;
+  }
+
   async subscribeInterest(text) {
     PusherBeams.echo({value: text});
     PusherBeams.addDeviceInterest({interest: text});
-    const interests = await PusherBeams.getDeviceInterests();
-    console.log('interests::', interests);
-
+    await this.getSubscribedInterests();
     // const setChaw = await PusherBeams.setUserID({ userID: 'chaw' });
     // console.log('setUserID::', setChaw);
   }
 
-  unsubscribeInterest(text) {
-    PusherBeams.removeDeviceInterest({interest: text});
+  async unsubscribeInterest(text) {
+    const s = await PusherBeams.removeDeviceInterest({interest: text});
+    console.log('unsubscribeInterest::', s);
+    await this.getSubscribedInterests();
+  }
+
+  async clearDeviceInterests() {
+    const s = await PusherBeams.clearDeviceInterests();
+    console.log('clearDeviceInterests::', s);
+    await this.getSubscribedInterests();
+  }
+
+  async clearAllPusherState() {
+    const s = await PusherBeams.clearAllState();
+    console.log('clearAllPusherState::', s);
+    await this.getSubscribedInterests();
   }
 }

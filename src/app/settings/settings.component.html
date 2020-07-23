@@ -20,6 +20,16 @@
       <ion-icon class="ion-padding-end" color="primary" name="mic-off-outline"></ion-icon>
       Unsubscribe the PN Channel (test-channel)
     </ion-item>
+
+    <ion-item class="no-bg" (click)="clearDeviceInterests()" lines="none">
+      <ion-icon class="ion-padding-end" color="primary" name="mic-off-outline"></ion-icon>
+      Clear Interests
+    </ion-item>
+
+    <ion-item class="no-bg" (click)="clearAllPusherState()" lines="none">
+      <ion-icon class="ion-padding-end" color="primary" name="mic-off-outline"></ion-icon>
+      Clear States
+    </ion-item>
   </div>
 
   <ng-container *ngIf="utils.isMobile()">

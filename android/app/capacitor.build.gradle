@@ -9,7 +9,7 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-    implementation project(':cesarbarone-capacitor-pusher-beams')
+    implementation project(':capacitor-pusher-beams')
     implementation project(':capacitor-pusher-beams-auth')
 
 }

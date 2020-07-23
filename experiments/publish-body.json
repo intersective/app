@@ -8,6 +8,9 @@
         "title": "Hello",
         "body": "Hello, iOS world Thursday, 14 May 2020!"
       }
+    },
+    "data": {
+      "custom": "data - from chaw"
     }
   },
   "fcm": {

@@ -12,9 +12,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     FirebaseApp.configure()
-    self.beamsClient.start(instanceId: "f5df7283-144c-458c-ac23-622b2d47eed9")
+    self.beamsClient.start(instanceId: "f5df7283-144c-458c-ac23-622b2d47eed9q")
     self.beamsClient.registerForRemoteNotifications()
     try? self.beamsClient.addDeviceInterest(interest: "general")
+    
+    if launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] != nil {
+      // The app was launched by the user tapping a notification
+      print("activated by pressing remote notification")
+    }
     return true
   }
 
@@ -84,7 +89,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
     
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-     print(userInfo)
+    let remoteNotificationType = self.beamsClient.handleNotification(userInfo: userInfo)
+    if remoteNotificationType == .ShouldIgnore {
+      return // This was an internal-only notification from Pusher.
+    }
+    print(userInfo)
   }
 
 #endif

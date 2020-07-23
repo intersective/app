@@ -114,17 +114,8 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   async ngOnInit() {
-    /*const s = await CapacitorPusherBeamsAuth.openMap({
-      latitude: 'lat1',
-      longitude: 'long1'
-    });
-    console.log('s::', s);*/
     const s = await CapacitorPusherBeamsAuth.openWebVersion({anything: 'anything here!!!'});
-    console.log('s::', s);
-
-    const android = await CapacitorPusherBeamsAuth.onlyAndroid({ value: 'testing for android!'});
-    console.log('android::::', android);
-
+    const android = await CapacitorPusherBeamsAuth.onlyAndroid({ value: 'Test CapacitorPusherBeamsAuth.onlyAndroid'});
     const openMap = await CapacitorPusherBeamsAuth.openMap({
       latitude: 123123,
       longitude: 321321,
