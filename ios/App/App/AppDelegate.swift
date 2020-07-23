@@ -15,9 +15,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     self.beamsClient.start(instanceId: "f5df7283-144c-458c-ac23-622b2d47eed9")
-//    f5df7283-144c-458c-ac23-622b2d47eed9
     self.beamsClient.registerForRemoteNotifications()
-    try? self.beamsClient.addDeviceInterest(interest: "hello")
+    do {
+      let res: () = try self.beamsClient.addDeviceInterest(interest: "general")
+      print(res)
+    } catch {
+      // @TODO: need to implement better error handling for Beams subscription
+      print("unable subcribe to general")
+    }
     
     FirebaseApp.configure()
     
