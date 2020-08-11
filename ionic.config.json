@@ -1,7 +1,8 @@
 {
   "name": "practera-appv2",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular",
   "id": "a5d733a7"
