@@ -6,7 +6,7 @@
   <string name="custom_url_scheme">com.practera.appv2</string>
   <string name="ionic_app_id">a5d733a7</string>
   <string name="ionic_channel_name">Develop</string>
-  <string name="ionic_update_method">auto</string>
+  <string name="ionic_update_method">background</string>
   <string name="ionic_max_versions">2</string>
   <string name="ionic_min_background_duration">30</string>
   <string name="ionic_update_api">https://api.ionicjs.com</string>

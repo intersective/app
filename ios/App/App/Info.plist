@@ -78,24 +78,12 @@
     <key>IonChannelName</key>
     <string>Develop</string>
     <key>IonUpdateMethod</key>
-    <string>auto</string>
+    <string>background</string>
     <key>IonMaxVersions</key>
     <string>2</string>
     <key>IonMinBackgroundDuration</key>
     <string>30</string>
     <key>IonApi</key>
     <string>https://api.ionicjs.com</string>
-    <key>IonAppId</key>
-    <string>$APP_ID</string>
-    <key>IonChannelName</key>
-    <string>$CHANNEL_NAME</string>
-    <key>IonApi</key>
-    <string>$UPDATE_API</string>
-    <key>IonMaxVersions</key>
-    <string>$MAX_STORE</string>
-    <key>IonUpdateMethod</key>
-    <string>$UPDATE_METHOD</string>
-    <key>IonMinBackgroundDuration</key>
-    <string>$MIN_BACKGROUND_DURATION</string>
   </dict>
 </plist>

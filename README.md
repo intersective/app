@@ -36,6 +36,11 @@ Run `npm run local` to start a development server on your local, and calling 127
     1. Capacitor cli - install globally on your system
 1. Run `npm run build-native` to update iOS and Android build with the latest code change from AppV2 (angular code).
 
+##### AppFlow - Live Update
+
+1. Generate `pro-manifest.json` manually (because we use Capacitor, we need to add this file manually)
+1. Sync changes on *www* with `npx cap sync`
+
 ### New Relics Setup
 
 1. Before we deploy app to live server, we'll need to create a `newrelic.js` file from project root directory's `/assets` folder
