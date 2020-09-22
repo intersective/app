@@ -16,8 +16,8 @@ const api = {
   get: {
     events: 'api/v2/act/event/list.json',
     submissions: 'api/submissions.json',
-    activities: 'api/v2/plan/activity/list.json'
-  }
+    activities: 'api/v2/plan/activity/list.json',
+  },
 };
 
 export interface Event {
@@ -44,7 +44,7 @@ export interface Event {
     provider: string;
     url: string;
     meetingId: string;
-    password: string
+    password: string;
   };
 }
 
@@ -59,9 +59,8 @@ export interface Activity {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class EventListService {
   constructor(
     private request: RequestService,
@@ -69,25 +68,32 @@ export class EventListService {
     private storage: BrowserStorageService,
     private notificationService: NotificationService
   ) {}
-   getEvents(type, activity_Id?) {
-    return this.request.graphQLQuery(
-       `query getEvents($event_type: String, $activityId: Int) {
-         events(type: $event_type, activityId :$activityId) {
-           id name description type activityId activityName location capacity remainingCapacity
-           isBooked canBook eventStart eventEnd singleBooking 
-         }
-       }`,{
-        event_type: type,
-        activityId: activity_Id,
-      },
-      {
-        noCache: true
-      }
-     ).pipe(map(response => {
-       return this.normaliseEvents(response.data.events);
-  })
-)}
-  
+
+  getEvents(type, activity_Id?) {
+    return this.request
+      .graphQLQuery(
+        `query getEvents($event_type: String, $activityId: Int) {
+          events(type: $event_type, activityId :$activityId) {
+            id name description type activityId activityName location capacity remainingCapacity
+            isBooked canBook eventStart eventEnd singleBooking
+            assessment {
+             id name}
+          }
+        }`,
+        {
+          event_type: type,
+          activityId: activity_Id,
+        },
+        {
+          noCache: true,
+        }
+      )
+      .pipe(
+        map((response) => {
+          return this.normaliseEvents(response.data.events);
+        })
+      );
+  }
 
   normaliseEvents(data): Array<Event> {
     if (!Array.isArray(data)) {
@@ -96,22 +102,24 @@ export class EventListService {
     }
     const events: Array<Event> = [];
     this.storage.initBookedEventActivityIds();
-    data.forEach(event => {
-      if (!this.utils.has(event, 'id') ||
-          !this.utils.has(event, 'name') ||
-          !this.utils.has(event, 'description') ||
-          !this.utils.has(event, 'activityId') ||
-          !this.utils.has(event, 'activityName') ||
-          !this.utils.has(event, 'location') ||
-          !this.utils.has(event, 'eventStart') ||
-          !this.utils.has(event, 'eventEnd') ||
-          !this.utils.has(event, 'capacity') ||
-          !this.utils.has(event, 'remainingCapacity') ||
-          !this.utils.has(event, 'isBooked') ||
-          !this.utils.has(event, 'canBook') ||
-          !this.utils.has(event, 'type') ||
-          // !this.utils.has(event, 'assessment') ||
-          !this.utils.has(event, 'singleBooking')) {
+    data.forEach((event) => {
+      if (
+        !this.utils.has(event, 'id') ||
+        !this.utils.has(event, 'name') ||
+        !this.utils.has(event, 'description') ||
+        !this.utils.has(event, 'activityId') ||
+        !this.utils.has(event, 'activityName') ||
+        !this.utils.has(event, 'location') ||
+        !this.utils.has(event, 'eventStart') ||
+        !this.utils.has(event, 'eventEnd') ||
+        !this.utils.has(event, 'capacity') ||
+        !this.utils.has(event, 'remainingCapacity') ||
+        !this.utils.has(event, 'isBooked') ||
+        !this.utils.has(event, 'canBook') ||
+        !this.utils.has(event, 'type') ||
+        !this.utils.has(event, 'assessment') ||
+        !this.utils.has(event, 'singleBooking')
+      ) {
         return this.request.apiResponseFormatError('Event object format error');
       }
       events.push({
@@ -129,17 +137,21 @@ export class EventListService {
         singleBooking: event.singleBooking,
         canBook: event.canBook,
         isPast: this.utils.timeComparer(event.eventStart) < 0,
-        assessment: this.utils.has(event, 'assessment.id') ? {
-          id: event.assessment.id,
-          contextId: event.assessment.context_id,
-          isDone: event.assessment.is_done || false
-        } : null,
-        videoConference: this.utils.has(event, 'video_conference.url') ? {
-          provider: event.video_conference.provider,
-          url: event.video_conference.url,
-          meetingId: event.video_conference.meeting_id,
-          password: event.video_conference.password
-        } : null
+        assessment: this.utils.has(event, 'assessment.id')
+          ? {
+              id: event.assessment.id,
+              contextId: event.assessment.context_id,
+              isDone: event.assessment.is_done || false,
+            }
+          : null,
+        videoConference: this.utils.has(event, 'video_conference.url')
+          ? {
+              provider: event.video_conference.provider,
+              url: event.video_conference.url,
+              meetingId: event.video_conference.meeting_id,
+              password: event.video_conference.password,
+            }
+          : null,
       });
       // set the booked event activity id if it is single booking activity and booked
       if (event.singleBooking && event.isBooked) {
@@ -150,15 +162,19 @@ export class EventListService {
   }
 
   getSubmission(assessmentId, contextId): Observable<any> {
-    return this.request.get(api.get.submissions, {params: {
-        assessment_id: assessmentId,
-        context_id: contextId,
-        review: false
-      }})
-      .pipe(map(response => {
-        return !this.utils.isEmpty(response.data);
+    return this.request
+      .get(api.get.submissions, {
+        params: {
+          assessment_id: assessmentId,
+          context_id: contextId,
+          review: false,
+        },
       })
-    );
+      .pipe(
+        map((response) => {
+          return !this.utils.isEmpty(response.data);
+        })
+      );
   }
 
   private _sortEvent(events) {
@@ -185,12 +201,13 @@ export class EventListService {
   }
 
   getActivities() {
-    return this.request.get(api.get.activities)
-      .pipe(map(response => {
+    return this.request.get(api.get.activities).pipe(
+      map((response) => {
         if (response.success && response.data) {
           return this._normaliseActivities(response.data);
         }
-      }));
+      })
+    );
   }
 
   private _normaliseActivities(data): Array<Activity> {
@@ -199,18 +216,22 @@ export class EventListService {
       return [];
     }
 
-    return data.map(activity => {
-      if (!this.utils.has(activity, 'id') ||
-          !this.utils.has(activity, 'name')) {
-        this.request.apiResponseFormatError('Activity format error');
-        return null;
-      }
-      return {
-        id: activity.id,
-        name: activity.name
-      };
-      // sort activity by name alphabetically
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    return data
+      .map((activity) => {
+        if (
+          !this.utils.has(activity, 'id') ||
+          !this.utils.has(activity, 'name')
+        ) {
+          this.request.apiResponseFormatError('Activity format error');
+          return null;
+        }
+        return {
+          id: activity.id,
+          name: activity.name,
+        };
+        // sort activity by name alphabetically
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   eventDetailPopUp(event: Event) {
@@ -235,7 +256,11 @@ export class EventListService {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
     // otherwise display time only
-    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+    return (
+      this.utils.utcToLocal(event.startTime, 'time') +
+      ' - ' +
+      this.utils.utcToLocal(event.endTime, 'time')
+    );
   }
 
   /**

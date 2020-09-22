@@ -65,7 +65,7 @@ export class EventListComponent {
 
   onEnter() {
     this.newRelic.setPageViewName('event-list');
-    this._initialise(); 
+    this._initialise();
     this.eventListService.getEvents(this.type, this.activityId).subscribe(events => {
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
