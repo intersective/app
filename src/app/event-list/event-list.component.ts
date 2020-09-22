@@ -17,7 +17,6 @@ export class EventListComponent {
   // if eventId has value, hightlight this event
   @Input() eventId;
   // the current active tab
-  context = '';
   type = '';
   activated = 'browse';
   events: Array<EventGroup> = [];
@@ -59,7 +58,6 @@ export class EventListComponent {
     this.selectedActivities = [];
     this.loadingEvents = true;
     this.activated = 'browse';
-    this.context = '';
     this.type = 'activity_session';
   }
 
