@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Subscribed to {{ totalChannels }} channels</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row *ngFor="let channels of results | keyvalue">
+      <ion-col *ngFor="let events of channels.value | keyvalue">
+        {{ events.value | json }}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
