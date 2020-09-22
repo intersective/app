@@ -7,11 +7,21 @@ import { AnimatedUnlockingComponent } from './animated-unlocking/animated-unlock
 import { AnimationDrawingComponent } from './animation-drawing/animation-drawing.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { PhaserComponent } from './phaser/phaser.component';
+import { PusherExperimentsComponent } from './pusher-experiments/pusher-experiments.component';
+import { PusherBeamsExperimentsComponent } from './pusher-beams-experiments/pusher-beams-experiments.component';
 
 const routes: Routes = [
   {
     path: '',
     component: TestComponent,
+  },
+  {
+    path: 'pusher-experiments',
+    component: PusherExperimentsComponent,
+  },
+  {
+    path: 'pusher-beams-experiments',
+    component: PusherBeamsExperimentsComponent,
   },
   {
     path: 'device-info',
