@@ -69,25 +69,25 @@ export class EventListService {
     private storage: BrowserStorageService,
     private notificationService: NotificationService
   ) {}
-
-  getEvents(activityId?): Observable<any> {
-    let params = {};
-    if (activityId) {
-      params = {
-        type: 'activity_session',
-        activity_id: activityId
-      };
-    } else {
-      params = {
-        type: 'activity_session'
-      };
-    }
-    return this.request.get(api.get.events, {params: params})
-      .pipe(map(response => {
-        return this.normaliseEvents(response.data);
-      })
-    );
-  }
+   getEvents(type, activity_Id?) {
+    return this.request.graphQLQuery(
+       `query getEvents($event_type: String, $activityId: Int) {
+         events(type: $event_type, activityId :$activityId) {
+           id name description type activityId activityName location capacity remainingCapacity
+           isBooked canBook eventStart eventEnd singleBooking 
+         }
+       }`,{
+        event_type: type,
+        activityId: activity_Id,
+      },
+      {
+        noCache: true
+      }
+     ).pipe(map(response => {
+       return this.normaliseEvents(response.data.events);
+  })
+)}
+  
 
   normaliseEvents(data): Array<Event> {
     if (!Array.isArray(data)) {
@@ -98,35 +98,37 @@ export class EventListService {
     this.storage.initBookedEventActivityIds();
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
-          !this.utils.has(event, 'title') ||
+          !this.utils.has(event, 'name') ||
           !this.utils.has(event, 'description') ||
-          !this.utils.has(event, 'activity_id') ||
-          !this.utils.has(event, 'activity_name') ||
+          !this.utils.has(event, 'activityId') ||
+          !this.utils.has(event, 'activityName') ||
           !this.utils.has(event, 'location') ||
-          !this.utils.has(event, 'start') ||
-          !this.utils.has(event, 'end') ||
+          !this.utils.has(event, 'eventStart') ||
+          !this.utils.has(event, 'eventEnd') ||
           !this.utils.has(event, 'capacity') ||
-          !this.utils.has(event, 'remaining_capacity') ||
-          !this.utils.has(event, 'is_booked') ||
-          !this.utils.has(event, 'can_book') ||
-          !this.utils.has(event, 'single_booking')) {
+          !this.utils.has(event, 'remainingCapacity') ||
+          !this.utils.has(event, 'isBooked') ||
+          !this.utils.has(event, 'canBook') ||
+          !this.utils.has(event, 'type') ||
+          // !this.utils.has(event, 'assessment') ||
+          !this.utils.has(event, 'singleBooking')) {
         return this.request.apiResponseFormatError('Event object format error');
       }
       events.push({
         id: event.id,
-        name: event.title,
+        name: event.name,
         description: event.description,
         location: event.location,
-        activityId: event.activity_id,
-        activityName: event.activity_name,
-        startTime: event.start,
-        endTime: event.end,
+        activityId: event.activityId,
+        activityName: event.activityName,
+        startTime: event.eventStart,
+        endTime: event.eventEnd,
         capacity: event.capacity,
-        remainingCapacity: event.remaining_capacity,
-        isBooked: event.is_booked,
-        singleBooking: event.single_booking,
-        canBook: event.can_book,
-        isPast: this.utils.timeComparer(event.start) < 0,
+        remainingCapacity: event.remainingCapacity,
+        isBooked: event.isBooked,
+        singleBooking: event.singleBooking,
+        canBook: event.canBook,
+        isPast: this.utils.timeComparer(event.eventStart) < 0,
         assessment: this.utils.has(event, 'assessment.id') ? {
           id: event.assessment.id,
           contextId: event.assessment.context_id,
@@ -140,8 +142,8 @@ export class EventListService {
         } : null
       });
       // set the booked event activity id if it is single booking activity and booked
-      if (event.single_booking && event.is_booked) {
-        this.storage.setBookedEventActivityIds(event.activity_id);
+      if (event.singleBooking && event.isBooked) {
+        this.storage.setBookedEventActivityIds(event.activityId);
       }
     });
     return this._sortEvent(events);

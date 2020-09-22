@@ -17,6 +17,8 @@ export class EventListComponent {
   // if eventId has value, hightlight this event
   @Input() eventId;
   // the current active tab
+  context = '';
+  type = '';
   activated = 'browse';
   events: Array<EventGroup> = [];
   remainingEvents: Array<EventGroup> = [];
@@ -57,12 +59,14 @@ export class EventListComponent {
     this.selectedActivities = [];
     this.loadingEvents = true;
     this.activated = 'browse';
+    this.context = '';
+    this.type = 'activity_session';
   }
 
   onEnter() {
     this.newRelic.setPageViewName('event-list');
-    this._initialise();
-    this.eventListService.getEvents().subscribe(events => {
+    this._initialise(); 
+    this.eventListService.getEvents(this.type, this.activityId).subscribe(events => {
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
         return;

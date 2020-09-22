@@ -210,7 +210,7 @@ export class SwitcherService {
   }
 
   getEvents() {
-    return this.eventsService.getEvents().pipe(map(events => {
+    return this.eventsService.getEvents("activity_session", null).pipe(map(events => {
       this.storage.setUser({
         hasEvents: !this.utils.isEmpty(events)
       });
