@@ -44,7 +44,7 @@ export class FastFeedbackComponent implements OnInit {
 
   dismiss(data) {
     // change the flag to false
-    this.storage.set('fastFeedbackOpening', false);
+    this.storage.nativeSet('fastFeedbackOpening', false);
     this.modalController.dismiss(data);
   }
 

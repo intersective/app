@@ -102,8 +102,9 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
-  isInMultiplePrograms() {
-    return this.storage.get('programs').length > 1;
+  async isInMultiplePrograms() {
+    const programs = await this.storage.nativeGet('programs');
+    return programs.length > 1;
   }
 
   // send email to Help request

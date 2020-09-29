@@ -34,13 +34,13 @@ export class SwitcherProgramComponent extends RouterEnter {
     private utils: UtilsService
   ) { super(router); }
 
-  onEnter() {
+  async onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getPrograms()
-      .subscribe(programs => {
-        this.programs = programs;
-        this._getProgresses(programs);
-      });
+    const programs = await this.switcherService.getPrograms()
+    programs.subscribe(programs => {
+      this.programs = programs;
+      this._getProgresses(programs);
+    });
   }
 
   private _getProgresses(programs) {

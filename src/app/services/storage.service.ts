@@ -1,4 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { NativeStorageService } from './native-storage.service';
+import { Capacitor } from '@capacitor/core';
 
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
@@ -43,9 +45,21 @@ export interface Config {
 })
 
 export class BrowserStorageService {
+  private isNative = Capacitor.isNative;
   public memoryCache: any;
 
-  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
+  constructor(
+    @Inject(BROWSER_STORAGE) public storage: Storage,
+    private nativeStorage: NativeStorageService
+  ) {}
+
+  nativeGet(key: string) {
+    return this.nativeStorage.getObject(key);
+  }
+
+  nativeSet(key: string, value: any) {
+    return this.nativeStorage.setObject(key, value);
+  }
 
   get(key: string) {
     const cached = this.storage.getItem(key);

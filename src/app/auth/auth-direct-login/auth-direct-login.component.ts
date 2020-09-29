@@ -82,7 +82,7 @@ export class AuthDirectLoginComponent implements OnInit {
     }
     // switch parogram if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
+      const program = this.utils.find(await this.storage.nativeGet('programs'), value => {
         return value.timeline.id === timelineId;
       });
       if (this.utils.isEmpty(program)) {
@@ -131,7 +131,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
   private _saveOrRedirect(route: Array<String | number | object>, save = false) {
     if (save) {
-      return this.storage.set('directLinkRoute', route);
+      return this.storage.nativeSet('directLinkRoute', route);
     }
     return this.navigate(route);
   }

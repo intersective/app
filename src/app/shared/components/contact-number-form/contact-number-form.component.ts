@@ -259,12 +259,12 @@ export class ContactNumberFormComponent implements OnInit {
                 const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
                 const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
-                const programsObj = this.utils.each(this.storage.get('programs'), function(program) {
+                const programsObj = this.utils.each(this.storage.nativeGet('programs'), function(program) {
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;
                     }
                 });
-                this.storage.set('programs', programsObj);
+                this.storage.nativeSet('programs', programsObj);
                 return this.notificationService.popUp('shortMessage', { message: 'Profile successfully updated!'});
 
               } else {

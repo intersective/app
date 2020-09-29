@@ -31,10 +31,11 @@ export class AchievementsComponent extends RouterEnter {
     super(router);
   }
 
-  onEnter() {
+  async onEnter() {
+    const { image, name } = await this.storage.nativeGet('me');
     this.userInfo = {
-      image: this.storage.get('me').image,
-      name: this.storage.get('me').name
+      image,
+      name
     };
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(

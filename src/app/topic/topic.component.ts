@@ -197,10 +197,10 @@ export class TopicComponent extends RouterEnter {
   private _markAsStartStop(state) {
     this.topicService.updateTopicProgress(this.id, state).subscribe(
       response => {
-        if (this.storage.get('startReadTopic') && state === 'stopped') {
+        if (this.storage.nativeGet('startReadTopic') && state === 'stopped') {
           this.storage.remove('startReadTopic');
-        } else if (!this.storage.get('startReadTopic') && state === 'started') {
-          this.storage.set('startReadTopic', this.id);
+        } else if (!this.storage.nativeGet('startReadTopic') && state === 'started') {
+          this.storage.nativeSet('startReadTopic', this.id);
         }
       },
       err => {

@@ -44,9 +44,9 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private configVerification(): void {
-    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
-      this.storage.set('fastFeedbackOpening', false);
+  private async configVerification(): Promise<void> {
+    if (await this.storage.nativeGet('fastFeedbackOpening')) { // set default modal status
+      await this.storage.nativeSet('fastFeedbackOpening', false);
     }
   }
 

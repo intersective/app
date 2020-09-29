@@ -73,7 +73,7 @@ export class FastFeedbackService {
     return this.getFastFeedback().pipe(
       switchMap(res => {
         // don't open it again if there's one opening
-        const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
+        const fastFeedbackIsOpened = this.storage.nativeGet('fastFeedbackOpening');
 
         // if any of either slider or meta is empty or not available,
         // should just skip the modal popup
@@ -85,7 +85,7 @@ export class FastFeedbackService {
         // popup instant feedback view if question quantity found > 0
         if (!this.utils.isEmpty(res.data) && res.data.slider.length > 0 && !fastFeedbackIsOpened) {
           // add a flag to indicate that a fast feedback pop up is opening
-          this.storage.set('fastFeedbackOpening', true);
+          this.storage.nativeSet('fastFeedbackOpening', true);
 
           return from(this.fastFeedbackModal(
             {

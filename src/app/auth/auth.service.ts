@@ -116,8 +116,8 @@ export class AuthService {
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({apikey: norm.apikey});
-    this.storage.set('programs', norm.programs);
-    this.storage.set('isLoggedIn', true);
+    this.storage.nativeSet('programs', norm.programs);
+    this.storage.nativeSet('isLoggedIn', true);
     return norm;
   }
 
@@ -147,8 +147,8 @@ export class AuthService {
     };
   }
 
-  isAuthenticated(): boolean {
-    return this.storage.get('isLoggedIn');
+  async isAuthenticated(): Promise<boolean> {
+    return await this.storage.nativeGet('isLoggedIn');
   }
 
   /**
@@ -213,7 +213,7 @@ export class AuthService {
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
+    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.nativeGet('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
 
     this.utils.openUrl(url);
     return;
@@ -231,8 +231,8 @@ export class AuthService {
     }).pipe(map(response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
-        this.storage.set('tutorial', response.data.tutorial);
-        this.storage.set('programs', response.data.timelines);
+        this.storage.nativeSet('tutorial', response.data.tutorial);
+        this.storage.nativeSet('programs', response.data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly

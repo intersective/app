@@ -128,8 +128,8 @@ export class SharedService {
    * IF user lokking at a topic mark topic progress as stop reading when navigating.
    */
   markTopicStopOnNavigating() {
-    if (this.storage.get('startReadTopic')) {
-      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
+    if (this.storage.nativeGet('startReadTopic')) {
+      this.topicService.updateTopicProgress(this.storage.nativeGet('startReadTopic'), 'stopped').subscribe(
         response => {
           this.storage.remove('startReadTopic');
         },

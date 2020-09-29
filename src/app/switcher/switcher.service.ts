@@ -73,8 +73,8 @@ export class SwitcherService {
     private eventsService: EventListService,
   ) {}
 
-  getPrograms() {
-    const programs = this.storage.get('programs');
+  async getPrograms() {
+    const programs = await this.storage.nativeGet('programs');
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
     programs.forEach(program => {
@@ -218,10 +218,10 @@ export class SwitcherService {
     }));
   }
 
-  checkIsOneProgram(programs?) {
+  async checkIsOneProgram(programs?) {
     let programList = programs;
     if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
+      programList = await this.storage.nativeGet('programs');
     }
     if (programList.length === 1) {
       return true;
@@ -244,11 +244,13 @@ export class SwitcherService {
    */
   async switchProgramAndNavigate(programs): Promise<any> {
     if (!this.utils.isEmpty(programs)) {
+      const programsChecked = await this.checkIsOneProgram(programs);
+
       // Array with multiple program objects -> [{},{},{},{}]
-      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+      if (Array.isArray(programs) && !programsChecked) {
         return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
-      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
+      } else if (Array.isArray(programs) && programsChecked) {
         await this.switchProgram(programs[0]).toPromise();
       } else {
       // one program object -> {}
@@ -260,8 +262,8 @@ export class SwitcherService {
       this.utils.clearCache();
       if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
         || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          if (this.storage.get('directLinkRoute')) {
-            const route = this.storage.get('directLinkRoute');
+          if (await this.storage.nativeGet('directLinkRoute')) {
+            const route = await this.storage.nativeGet('directLinkRoute');
             this.storage.remove('directLinkRoute');
             return route;
           }

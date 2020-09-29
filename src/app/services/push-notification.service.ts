@@ -47,7 +47,7 @@ export class PushNotificationService {
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
     PushNotifications.requestPermission().then(result => {
-      this.storage.set('pushnotifications', result);
+      this.storage.nativeSet('pushnotifications', result);
       if (result.granted) {
         // Register with Apple / Google to receive push via APNS/FCM
         return PushNotifications.register();
