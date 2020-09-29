@@ -35,6 +35,18 @@ describe('StorageService', function() {
     });
   });
 
+  describe('append()', function() {
+    it('should append value into cached key', () => {
+      const key = 'test';
+
+      service.set(key, {'text': 'value1'});
+      const result = service.append(key, {'text2': 'value2'});
+
+      expect(storage.getItem).toHaveBeenCalledWith(key);
+      expect(storage.setItem).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('clear()', function() {
     it('should clear cache', () => {
       service.clear();
