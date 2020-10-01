@@ -40,7 +40,7 @@ export class RouterEnter implements OnInit, OnDestroy {
    * @returns void
    */
   ngOnInit() {
-    this.subscription = this.router.events.subscribe(async event => {
+    this.subscription = this.router.events.subscribe(event => {
       // invoke the onEnter() function of the component if the routing match current page view and stacked components' routeUrl
       if (event instanceof NavigationEnd && event.url.includes(this.routeUrl)) {
         // always unsubscribe previously subscribed Observables to prevent duplication subscription
@@ -48,7 +48,7 @@ export class RouterEnter implements OnInit, OnDestroy {
           this.subscriptions.forEach(sub => sub.unsubscribe());
           this.subscriptions = [];
         }
-        await this.onEnter();
+        this.onEnter();
       }
     });
   }
