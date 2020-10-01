@@ -39,7 +39,6 @@ export class TabsComponent extends RouterEnter {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       this.noOfTodoItems++;
     });
@@ -62,7 +61,6 @@ export class TabsComponent extends RouterEnter {
     this.showChat = false;
     this.showReview = false;
     this.showEvents = false;
-
   }
 
   onEnter() {
