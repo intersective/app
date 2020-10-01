@@ -62,6 +62,10 @@ export class BrowserStorageService {
   }
 
   get(key: string) {
+    if (this.isNative) {
+      return this.nativeGet(key);
+    }
+
     const cached = this.storage.getItem(key);
     if (cached) {
       return JSON.parse(this.storage.getItem(key) || null);
@@ -70,6 +74,9 @@ export class BrowserStorageService {
   }
 
   set(key: string, value: any) {
+    if (this.isNative) {
+      return this.nativeSet(key, value);
+    }
     return this.storage.setItem(key, JSON.stringify(value));
   }
 
@@ -89,12 +96,13 @@ export class BrowserStorageService {
     this.storage.clear();
   }
 
-  getUser() {
+  getUser(): Promise<any> {
     return this.get('me') || {};
   }
 
-  setUser(user: User) {
-    this.set('me', Object.assign(this.getUser(), user));
+  async setUser(user: User) {
+    const cachedUser = await this.getUser();
+    await this.set('me', Object.assign(cachedUser, user));
     return true;
   }
 

@@ -42,9 +42,9 @@ export class FastFeedbackComponent implements OnInit {
     this.submissionCompleted = false;
   }
 
-  dismiss(data) {
+  async dismiss(data) {
     // change the flag to false
-    this.storage.nativeSet('fastFeedbackOpening', false);
+    await this.storage.nativeSet('fastFeedbackOpening', false);
     this.modalController.dismiss(data);
   }
 

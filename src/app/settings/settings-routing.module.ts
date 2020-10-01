@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { SettingsRoutingComponent } from './settings-routing.component';
 import { SettingsComponent } from './settings.component';
+import { SettingsResolverService } from './settings-resolver.service';
+
 
 const routes: Routes = [
   {
@@ -11,7 +13,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: SettingsComponent
+        component: SettingsComponent,
       }
     ]
   }

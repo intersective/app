@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { Intercom } from 'ng-intercom';
@@ -46,6 +46,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   constructor(
     private intercom: Intercom,
     public router: Router,
+    private routes: ActivatedRoute,
     private homeService: HomeService,
     public utils: UtilsService,
     public storage: BrowserStorageService,
@@ -53,7 +54,6 @@ export class HomeComponent implements OnDestroy, OnInit {
     private eventsService: EventListService,
     private newRelic: NewRelicService
   ) {
-    const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
       const todoItem = this.homeService.getTodoItemFromEvent(event);
       if (!this.utils.isEmpty(todoItem)) {
@@ -81,6 +81,10 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.refresh.subscribe(params => {
       this.onEnter();
     });
+
+    this.routes.data.subscribe((data: {user: User}) => {
+      console.log('data::', data);
+    });
   }
 
   private _initialise() {
@@ -97,6 +101,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   onEnter() {
+
     this._initialise();
     this.programInfo = {
       image: this.storage.getUser().programImage,

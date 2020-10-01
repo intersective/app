@@ -54,10 +54,11 @@ export class TasksComponent extends RouterEnter {
     }
     // find the first task that is not done or pending review
     // and is allowed to access for this user
-    let firstTask = tasks.find(task => {
+    let firstTask = tasks.find(async task => {
+      const { teamId } = await this.storage.getUser();
       return !['done', 'pending review'].includes(task.status) &&
         task.type !== 'Locked' &&
-        !(task.isForTeam && !this.storage.getUser().teamId) &&
+        !(task.isForTeam && !teamId) &&
         !task.isLocked;
     });
     if (!firstTask) {

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage';
 import { HttpClientModule } from '@angular/common/http';
 import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
@@ -46,6 +47,7 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
     ApolloModule,
     HttpLinkModule,
     IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
     AuthModule,
     RequestModule.forRoot({
       appkey: environment.appkey,

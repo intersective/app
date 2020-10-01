@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
 /**
@@ -206,17 +207,19 @@ export class AuthService {
    * check user linkedIn connection status
    * @return {Boolean}
    */
-  linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
+  async linkedinAuthenticated () {
+    const { linkedinConnected } = await this.storage.getUser();
+    return linkedinConnected || false;
   }
 
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.nativeGet('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
+  async connectToLinkedIn () {
+    const { apikey, timelineId } = await this.storage.getUser();
+    const appkey = await this.storage.get('appkey');
+    const url = `/api/auth_linkedin.json?apikey=${apikey}&appkey=${appkey}&timeline_id=${timelineId}`;
 
-    this.utils.openUrl(url);
-    return;
+    return this.utils.openUrl(url);
   }
 
   /**

@@ -3,16 +3,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './overview.component';
 import { HomeComponent } from './home/home.component';
 import { ProjectComponent } from './project/project.component';
+import { OverviewResolverService } from './overview-resolver.service';
 
 const routes: Routes = [
   {
     path: '',
     component: OverviewComponent,
+    resolve: {
+      user: OverviewResolverService
+    },
     children: [
       {
         path: '',
         component: HomeComponent,
-        outlet: 'home',
+        outlet: 'home'
       },
       {
         path: '',

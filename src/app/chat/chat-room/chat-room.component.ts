@@ -398,9 +398,10 @@ export class ChatRoomComponent extends RouterEnter {
     this.pusherService.triggerTyping(this.chatChannel.pusherChannelName);
   }
 
-  private _showTyping(event) {
+  private async _showTyping(event) {
     // don't need to show typing message if the current user is the one who is typing
-    if (event.user === this.storage.getUser().name) {
+    const { name } = await this.storage.getUser();
+    if (event.user === name) {
       return;
     }
     this.whoIsTyping = event.user + ' is typing';

@@ -20,39 +20,16 @@ export class NativeStorageService {
 
   async getObject(key) {
     try {
-      const ret = await this.storage.get({ key });
-      const result = JSON.parse(ret.value);
+      const result = await this.storage.get(key);
       return result;
     } catch (err) {
       return err;
     }
   }
 
-  async setItem(key, value) {
+  async remove(key) {
     try {
-      const result = await this.storage.set({
-        key,
-        value
-      });
-      return result;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async getItem(key) {
-    try {
-      const { value } = await this.storage.get({ key });
-      console.log('Got item: ', value);
-      return value;
-    } catch (err) {
-      return err;
-    }
-  }
-
-  async removeItem(key) {
-    try {
-      const result = await this.storage.remove({ key });
+      const result = await this.storage.remove(key);
       return result;
     } catch (err) {
       return err;

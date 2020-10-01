@@ -31,9 +31,10 @@ export class GoMobileComponent implements OnInit {
     private newRelic: NewRelicService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.newRelic.setPageViewName('go-mobile');
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
+    const { contactNumber } = await this.storage.getUser();
+    this.profile.contactNumber = contactNumber;
     if (this.profile.contactNumber) {
       this.saved = true;
       this.invalidNumber = false;

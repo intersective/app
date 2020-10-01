@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, flatMap } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -161,10 +161,11 @@ export class AssessmentService {
         noCache: true
       }
     )
-    .pipe(map(res => {
+    .pipe(flatMap(async res => {
+      const submission = await this._normaliseSubmission(res.data);
       return {
         assessment: this._normaliseAssessment(res.data, action),
-        submission: this._normaliseSubmission(res.data),
+        submission,
         review: this._normaliseReview(res.data, action)
       };
     }));
@@ -253,11 +254,16 @@ export class AssessmentService {
     return assessment;
   }
 
-  private _normaliseSubmission(data): Submission {
+  private async _normaliseSubmission(data): Promise<Submission> {
     if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
       return null;
     }
     const firstSubmission = data.assessment.submissions[0];
+    let reviewerName = null;
+    if (firstSubmission.review) {
+      reviewerName = await this.checkReviewer(firstSubmission.review.reviewer);
+    }
+
     let submission: Submission = {
       id: firstSubmission.id,
       status: firstSubmission.status,
@@ -266,7 +272,7 @@ export class AssessmentService {
       modified: firstSubmission.modified,
       isLocked: firstSubmission.locked,
       completed: firstSubmission.completed,
-      reviewerName: firstSubmission.review ? this.checkReviewer(firstSubmission.review.reviewer) : null,
+      reviewerName,
       answers: {}
     };
     firstSubmission.answers.forEach(eachAnswer => {
@@ -412,9 +418,10 @@ export class AssessmentService {
     );
   }
 
-  saveFeedbackReviewed(submissionId) {
+  async saveFeedbackReviewed(submissionId): Promise<Observable<any>> {
+    const { projectId } = await this.storage.getUser();
     const postData = {
-      project_id: this.storage.getUser().projectId,
+      project_id: projectId,
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
@@ -428,11 +435,12 @@ export class AssessmentService {
     });
   }
 
-  checkReviewer(reviewer): string {
+  async checkReviewer(reviewer): Promise<string> {
+    const { name } = await this.storage.getUser();
     if (!reviewer) {
       return null;
     }
-    return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
+    return reviewer.name !== name ? reviewer.name : null;
   }
 
 }

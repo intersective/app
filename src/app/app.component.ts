@@ -45,8 +45,10 @@ export class AppComponent implements OnInit {
   }
 
   private async configVerification(): Promise<void> {
-    if (await this.storage.nativeGet('fastFeedbackOpening')) { // set default modal status
-      await this.storage.nativeSet('fastFeedbackOpening', false);
+    const fastFeedbackOpening = await this.storage.get('fastFeedbackOpening');
+
+    if (fastFeedbackOpening) { // set default modal status
+      await this.storage.set('fastFeedbackOpening', false);
     }
   }
 
@@ -58,7 +60,7 @@ export class AppComponent implements OnInit {
     // Get the custom branding info and update the theme color if needed
     const domain = window.location.hostname;
     this.authService.getConfig({domain}).subscribe(
-      (response: any) => {
+      async (response: any) => {
         if (response !== null) {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
@@ -80,7 +82,8 @@ export class AppComponent implements OnInit {
               'color': themeColor
             });
             // use brand color if no theme color
-            if (!this.utils.has(this.storage.getUser(), 'themeColor') || !this.storage.getUser().themeColor) {
+            const user = await this.storage.getUser();
+            if (!this.utils.has(user, 'themeColor') || !user.themeColor) {
               this.utils.changeThemeColor(themeColor);
             }
           }

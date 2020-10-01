@@ -106,9 +106,10 @@ export class AchievementsService {
     return this.isPointsConfigured;
   }
 
-  markAchievementAsSeen(achievementId) {
+  async markAchievementAsSeen(achievementId) {
+    const { projectId } = await this.storage.getUser();
     const postData = {
-      project_id: this.storage.getUser().projectId,
+      project_id: projectId,
       identifier: 'Achievement-' + achievementId,
       is_done: true
     };

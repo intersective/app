@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -44,6 +45,7 @@ export class SettingsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
+    private routes: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
@@ -52,34 +54,59 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
-    private pushNotificationService: PushNotificationService
+    private pushNotificationService: PushNotificationService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     super(router);
   }
 
   onEnter() {
+    this.routes.data.subscribe(data => {
+      data.then(user => {
+        console.log('user::', user);
+      })
+    });
     this.newRelic.setPageViewName('Setting');
+    let email,
+      contactNumber,
+      image,
+      name,
+      programName,
+      LtiReturnUrl = null;
+    this.storage.getUser().then(user => {
+      let {
+        email,
+        contactNumber,
+        image,
+        name,
+        programName,
+        LtiReturnUrl
+      } = user;
+    })
 
     // get contact number and email from local storage
-    this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = this.storage.getUser().name;
+    this.profile.email = email;
+    this.profile.contactNumber = contactNumber;
+    this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+    this.profile.name = name;
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
-    this.currentProgramName = this.storage.getUser().programName;
-    this.currentProgramImage = this._getCurrentProgramImage();
+    this.currentProgramName = programName;
+    this._getCurrentProgramImage().then(res => {
+      this.currentProgramImage = res;
+    });
     this.fastFeedbackService.pullFastFeedback().subscribe();
-    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
+    this.returnLtiUrl = LtiReturnUrl;
   }
 
   // loading pragram image to settings page by resizing it depend on device.
   // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
   // because of that we load image also in mobile view.
-  private _getCurrentProgramImage () {
-    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
+  private async _getCurrentProgramImage() {
+    const { programImage } = await this.storage.getUser();
+    if (!this.utils.isEmpty(programImage)) {
       let imagewidth = 600;
-      const imageId = this.storage.getUser().programImage.split('/').pop();
+      const imageId = programImage.split('/').pop();
       if (!this.utils.isMobile()) {
         imagewidth = 1024;
       }
@@ -90,12 +117,12 @@ export class SettingsComponent extends RouterEnter {
 
   openLink() {
     this.newRelic.actionText('Open T&C link');
-    window.open(this.termsUrl, '_system');
+    this.document.open(this.termsUrl, '_system');
   }
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
-      window.location.href = 'https://' + this.returnLtiUrl;
+      this.document.location.href = 'https://' + this.returnLtiUrl;
     } else {
       this.newRelic.actionText('browse to program switcher');
       this.router.navigate(['switcher', 'switcher-program']);
@@ -110,7 +137,7 @@ export class SettingsComponent extends RouterEnter {
   // send email to Help request
   mailTo() {
     this.newRelic.actionText('mail to helpline');
-    const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
+    const mailto = `mailto:${this.helpline}?subject=${this.currentProgramName}`;
     window.open(mailto, '_self');
   }
 
@@ -121,7 +148,8 @@ export class SettingsComponent extends RouterEnter {
   }
 
   async linkUser() {
-    const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
+    const { email, apikey } = await this.storage.getUser();
+    const associated = await this.pushNotificationService.associateDeviceToUser(email, apikey);
     console.log(associated);
     this.associated = associated;
   }
@@ -137,10 +165,10 @@ export class SettingsComponent extends RouterEnter {
       this.settingService.updateProfileImage({
         image: file.data.url
       }).subscribe(
-        success => {
+        async success => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;
-          this.storage.setUser({
+          await this.storage.setUser({
             image: file.data.url
           });
           return this.notificationService.alert({

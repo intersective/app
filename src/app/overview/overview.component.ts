@@ -28,10 +28,11 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit() {
     this.pushNotificationService.initiatePushNotification().then(() => {
-      console.log('done');
+      console.log('push notification initiated.');
     });
-    this.initiator$.subscribe(() => {
-      this.programName = this.storage.getUser().programName;
+    this.initiator$.subscribe(async () => {
+      const { programName } = await this.storage.getUser();
+      this.programName = programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
   }

@@ -147,12 +147,13 @@ export class ActivityComponent {
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
-  goto(task) {
+  async goto(task) {
     this.newRelic.actionText(`Selected Task (${task.type}): ID ${task.id}`);
 
     switch (task.type) {
       case 'Assessment':
-        if (task.isForTeam && !this.storage.getUser().teamId) {
+        const { teamId } = await this.storage.getUser();
+        if (task.isForTeam && !teamId) {
           this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }

@@ -220,14 +220,16 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
+
           // display pop up if it is team assessment and user is not in team
-          if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+          const { teamId } = await this.storage.getUser();
+          if (this.doAssessment && this.assessment.isForTeam && !teamId) {
             return this.notificationService.alert({
               message: 'To do this assessment, you have to be in a team.',
               buttons: [
@@ -656,7 +658,8 @@ export class AssessmentComponent extends RouterEnter {
     this.newRelic.actionText('Waiting for review feedback read.');
     // Mark feedback as read
     try {
-      result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
+      const apiRequest = await this.assessmentService.saveFeedbackReviewed(this.submission.id);
+      result = await apiRequest.toPromise();
       this.feedbackReviewed = true;
       this.newRelic.actionText('Review feedback read.');
       this.continueBtnLoading = false;
@@ -672,7 +675,8 @@ export class AssessmentComponent extends RouterEnter {
     // After marking feedback as read, popup review rating modal if
     // 1. review is successfully marked as read (from above)
     // 2. hasReviewRating (activation): program configuration is set to enable review rating
-    if (!result.success || !this.storage.getUser().hasReviewRating) {
+    const { hasReviewRating } = await this.storage.getUser();
+    if (!result.success || !hasReviewRating) {
       return;
     }
     this.continueBtnLoading = true;
