@@ -68,9 +68,9 @@ export class AuthLoginComponent implements OnInit {
         this.newRelic.actionText('login successful');
         return this._handleNavigation(res.programs);
       },
-      err => {
+      async err => {
         nrLoginTracer(JSON.stringify(err));
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        await this.newRelic.noticeError(`${JSON.stringify(err)}`);
 
         // notify user about weak password
         if (this.utils.has(err, 'data.type')) {

@@ -124,9 +124,9 @@ export class AuthRegistrationComponent implements OnInit {
                       }
                     }
                   },
-                  err => {
+                  async err => {
                     getConfig();
-                    this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
+                    await this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
                     this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
                   }
                 );
@@ -181,15 +181,15 @@ export class AuthRegistrationComponent implements OnInit {
                   const route = await this.switcherService.switchProgramAndNavigate(res.programs);
                   this.showPopupMessages('shortMessage', 'Registration success!', route);
                 },
-                err => {
+                async err => {
                   nrAutoLoginTracer();
-                  this.newRelic.noticeError('auto login failed', JSON.stringify(err));
+                  await this.newRelic.noticeError('auto login failed', JSON.stringify(err));
                   this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
-          error => {
-            this.newRelic.noticeError('registration failed', JSON.stringify(error));
+          async error => {
+            await this.newRelic.noticeError('registration failed', JSON.stringify(error));
 
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {

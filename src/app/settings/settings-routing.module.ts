@@ -5,11 +5,13 @@ import { SettingsRoutingComponent } from './settings-routing.component';
 import { SettingsComponent } from './settings.component';
 import { SettingsResolverService } from './settings-resolver.service';
 
-
 const routes: Routes = [
   {
     path: '',
     component: SettingsRoutingComponent,
+    resolve: {
+      user: SettingsResolverService,
+    },
     children: [
       {
         path: '',

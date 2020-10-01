@@ -4,7 +4,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
-import { PushNotificationService } from '@services/push-notification.service';
 
 @Component({
   selector: 'app-overview',
@@ -20,16 +19,12 @@ export class OverviewComponent implements OnInit {
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private route: ActivatedRoute,
-    private fastFeedbackService: FastFeedbackService,
-    private pushNotificationService: PushNotificationService
+    private fastFeedbackService: FastFeedbackService
   ) {
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
-    this.pushNotificationService.initiatePushNotification().then(() => {
-      console.log('push notification initiated.');
-    });
     this.initiator$.subscribe(async () => {
       const { programName } = await this.storage.getUser();
       this.programName = programName;

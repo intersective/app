@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, flatMap } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -64,10 +64,11 @@ export class HomeService {
     public sharedService: SharedService
   ) {}
 
-  getTodoItems() {
+  async getTodoItems() {
+    const { projectId } = await this.storage.getUser();
     return this.request.get(api.get.todoItem, {
         params: {
-          project_id: this.storage.getUser().projectId
+          project_id: projectId
         }
       })
       .pipe(map(response => {
@@ -246,11 +247,13 @@ export class HomeService {
     return todoItem;
   }
 
-  getProgress() {
+  async getProgress() {
+    const { projectId } = await this.storage.getUser();
+
     return this.request.get(api.get.progress, {
         params: {
           model: 'project',
-          model_id: this.storage.getUser().projectId,
+          model_id: projectId,
           scope: 'activity'
         }
       })
@@ -439,23 +442,25 @@ export class HomeService {
           id: data.meta.id
         }
       })
-      .pipe(map(response => {
+      .pipe(flatMap(async response => {
         if (this.utils.isEmpty(response.data)) {
           return null;
         }
         const event = this.eventsService.normaliseEvents(response.data)[0];
         if (event.isPast) {
           // mark the todo item as done if event starts
-          this.postEventReminder(event);
+          await this.postEventReminder(event);
           return null;
         }
         return event;
       }));
   }
 
-  postEventReminder(event) {
+  async postEventReminder(event) {
+    const { projectId } = await this.storage.getUser();
+
     return this.request.post(api.post.todoItem, {
-      project_id: this.storage.getUser().projectId,
+      project_id: projectId,
       identifier: 'EventReminder-' + event.id,
       is_done: true
     }).subscribe();

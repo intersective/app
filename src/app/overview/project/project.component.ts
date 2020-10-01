@@ -112,8 +112,8 @@ export class ProjectComponent implements OnInit {
           });
         }
       },
-      error => {
-        this.newRelic.noticeError(error);
+      async error => {
+        await this.newRelic.noticeError(error);
       }
     ));
 

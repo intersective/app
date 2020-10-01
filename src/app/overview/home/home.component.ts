@@ -81,10 +81,6 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.refresh.subscribe(params => {
       this.onEnter();
     });
-
-    this.routes.data.subscribe((data: {user: User}) => {
-      console.log('data::', data);
-    });
   }
 
   private _initialise() {
@@ -101,80 +97,94 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   onEnter() {
-
     this._initialise();
-    this.programInfo = {
-      image: this.storage.getUser().programImage,
-      name: this.storage.getUser().programName
-    };
-    this.subscriptions.push(
-      this.homeService.getTodoItems().subscribe(todoItems => {
-        this.todoItems = this.todoItems.concat(todoItems);
-        this.loadingTodoItems = false;
-      })
-    );
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
+    this.routes.data.subscribe(async (data: {user: User}) => {
+      const {
+        programImage,
+        programName,
+        teamId,
+        name,
+        email,
+        id
+      } = data.user;
+
+      this.programInfo = {
+        image: programImage,
+        name: programName
+      };
+      const todoItems = await this.homeService.getTodoItems();
       this.subscriptions.push(
-        this.homeService.getChatMessage().subscribe(chatMessage => {
-          if (!this.utils.isEmpty(chatMessage)) {
-            this._addChatTodoItem(chatMessage);
-          }
+        todoItems.subscribe(todoItems => {
+          this.todoItems = this.todoItems.concat(todoItems);
           this.loadingTodoItems = false;
         })
       );
-    }
-    this.subscriptions.push(
-      this.homeService.getProgress().subscribe(progress => {
-        this.progress = progress;
-        this.progressConfig = {percent: progress};
-        this.loadingProgress = false;
-      })
-    );
+      // only get the number of chats if user is in team
+      if (teamId) {
+        this.subscriptions.push(
+          this.homeService.getChatMessage().subscribe(chatMessage => {
+            if (!this.utils.isEmpty(chatMessage)) {
+              this._addChatTodoItem(chatMessage);
+            }
+            this.loadingTodoItems = false;
+          })
+        );
+      }
 
-    this.subscriptions.push(
-      this.achievementService.getAchievements('desc').subscribe(achievements => {
-        const earned = [];
-        const unEarned = [];
-        achievements.forEach(item => {
-          if (item.isEarned === false) {
-            unEarned.push(item);
-          } else {
-            earned.push(item);
+      const getProcess = await this.homeService.getProgress();
+      this.subscriptions.push(
+        getProcess.subscribe(progress => {
+          this.progress = progress;
+          this.progressConfig = {percent: progress};
+          this.loadingProgress = false;
+        })
+      );
+
+      this.subscriptions.push(
+        this.achievementService.getAchievements('desc').subscribe(achievements => {
+          const earned = [];
+          const unEarned = [];
+          achievements.forEach(item => {
+            if (item.isEarned === false) {
+              unEarned.push(item);
+            } else {
+              earned.push(item);
+            }
+          });
+
+          // retrict quantity of achievements to max 3
+          if (achievements.length <= 3) {
+            this.achievements = achievements;
+          } else if (!earned.length || earned.length === achievements.length) {
+            this.achievements = achievements;
+            this.achievements.length = 3;
+          } else if (earned.length === 1 && unEarned.length > 1) {
+            this.achievements[0] = earned[0];
+            this.achievements[1] = unEarned[0];
+            this.achievements[2] = unEarned[1];
+          } else if (earned.length > 1 && unEarned.length > 0) {
+            this.achievements[0] = earned[0];
+            this.achievements[1] = earned[1];
+            this.achievements[2] = unEarned[0];
+          }
+          this.loadingAchievements = false;
+        })
+      );
+
+      if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
+        this.intercom.boot({
+          app_id: environment.intercomAppId,
+          name: name, // Full name
+          email: email, // Email address
+          user_id: id, // current_user_id
+          // Supports all optional configuration.
+          widget: {
+            'activator': '#intercom'
           }
         });
+      }
 
-        // retrict quantity of achievements to max 3
-        if (achievements.length <= 3) {
-          this.achievements = achievements;
-        } else if (!earned.length || earned.length === achievements.length) {
-          this.achievements = achievements;
-          this.achievements.length = 3;
-        } else if (earned.length === 1 && unEarned.length > 1) {
-          this.achievements[0] = earned[0];
-          this.achievements[1] = unEarned[0];
-          this.achievements[2] = unEarned[1];
-        } else if (earned.length > 1 && unEarned.length > 0) {
-          this.achievements[0] = earned[0];
-          this.achievements[1] = earned[1];
-          this.achievements[2] = unEarned[0];
-        }
-        this.loadingAchievements = false;
-      })
-    );
-
-    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
-      this.intercom.boot({
-        app_id: environment.intercomAppId,
-        name: this.storage.getUser().name, // Full name
-        email: this.storage.getUser().email, // Email address
-        user_id: this.storage.getUser().id, // current_user_id
-        // Supports all optional configuration.
-        widget: {
-          'activator': '#intercom'
-        }
-      });
-    }
+    });
   }
 
   goTo(destination) {

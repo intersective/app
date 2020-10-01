@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -26,6 +26,7 @@ export class TabsComponent extends RouterEnter {
 
   constructor(
     public router: Router,
+    public routes: ActivatedRoute,
     private tabsService: TabsService,
     public storage: BrowserStorageService,
     public utils: UtilsService,
@@ -72,41 +73,50 @@ export class TabsComponent extends RouterEnter {
     this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
       this.noOfTodoItems = noOfTodoItems;
     });
-    // only get the number of chats if user is in team
-    if (this.storage.getUser().teamId) {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
-      });
-    }
-    // display the chat tab if the user is in team
-    if (this.storage.getUser().teamId) {
-      this.showChat = true;
-    } else {
-      this.showChat = false;
-      this.switcherService.getTeamInfo().subscribe(data => {
-        if (this.storage.getUser().teamId) {
-          this.showChat = true;
-        }
-      });
-    }
-    if (this.storage.getUser().hasReviews) {
-      this.showReview = true;
-    } else {
-      this.showReview = false;
-      this.reviewsService.getReviews().subscribe(data => {
-        if (data.length) {
-          this.showReview = true;
-        }
-      });
-    }
-    if (this.storage.getUser().hasEvents) {
-      this.showEvents = true;
-    } else {
-      this.showEvents = false;
-      this.eventsService.getEvents().subscribe(events => {
-        this.showEvents = !this.utils.isEmpty(events);
-      });
-    }
+
+    this.routes.data.subscribe((data: {user: User}) => {
+      const {
+        teamId,
+        hasReviews,
+        hasEvents,
+      } = data.user;
+
+      // only get the number of chats if user is in team
+      if (teamId) {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this.noOfChats = noOfChats;
+        });
+      }
+      // display the chat tab if the user is in team
+      if (teamId) {
+        this.showChat = true;
+      } else {
+        this.showChat = false;
+        this.switcherService.getTeamInfo().subscribe(data => {
+          if (teamId) {
+            this.showChat = true;
+          }
+        });
+      }
+      if (hasReviews) {
+        this.showReview = true;
+      } else {
+        this.showReview = false;
+        this.reviewsService.getReviews().subscribe(data => {
+          if (data.length) {
+            this.showReview = true;
+          }
+        });
+      }
+      if (hasEvents) {
+        this.showEvents = true;
+      } else {
+        this.showEvents = false;
+        this.eventsService.getEvents().subscribe(events => {
+          this.showEvents = !this.utils.isEmpty(events);
+        });
+      }
+    });
   }
 
   private _checkRoute() {

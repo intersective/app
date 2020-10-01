@@ -43,8 +43,8 @@ export class AchievementsComponent extends RouterEnter {
         this.achievements = achievements;
         this.loadingAchievements = false;
       },
-      err => {
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      async err => {
+        await this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     );
   }

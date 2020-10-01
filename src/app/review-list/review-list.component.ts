@@ -37,8 +37,8 @@ export class ReviewListComponent {
           this.loadingReviews = false;
           this.gotoFirstReview();
         },
-        err => {
-          this.newRelic.noticeError('get reviews fail', JSON.stringify(err));
+        async err => {
+          await this.newRelic.noticeError('get reviews fail', JSON.stringify(err));
           const toasted = this.notificationService.alert({
             header: 'Error retrieving latest reviews',
             message: err.msg || JSON.stringify(err)

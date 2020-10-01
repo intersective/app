@@ -117,8 +117,8 @@ export class TopicComponent extends RouterEnter {
           this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
         },
-        err => {
-          this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        async err => {
+          await this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
       );
   }
@@ -169,8 +169,8 @@ export class TopicComponent extends RouterEnter {
           }
           this.loadingMarkedDone = false;
         },
-        err => {
-          this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        async err => {
+          await this.newRelic.noticeError(`${JSON.stringify(err)}`);
         }
       );
   }
@@ -227,7 +227,7 @@ export class TopicComponent extends RouterEnter {
           header: 'Error marking topic as completed.',
           message: err.msg || JSON.stringify(err)
         });
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        await this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
       this.loadingMarkedDone = false;
     }
@@ -260,7 +260,7 @@ export class TopicComponent extends RouterEnter {
           message: err.msg || JSON.stringify(err)
         });
         this.loadingTopic = false;
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+        await this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     }
   }
@@ -333,8 +333,8 @@ export class TopicComponent extends RouterEnter {
                   this.activityId,
                 ]));
               },
-              err => {
-                this.newRelic.noticeError(`${JSON.stringify(err)}`);
+              async err => {
+                await this.newRelic.noticeError(`${JSON.stringify(err)}`);
               });
           }
         }

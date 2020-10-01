@@ -57,9 +57,9 @@ export class ReviewRatingComponent implements OnInit {
         this.isSubmitting = false;
         this._closeReviewRating();
       },
-      err => {
+      async err => {
         nrSubmitRatingTracer();
-        this.newRelic.noticeError('Submit review fail', JSON.stringify(err));
+        await this.newRelic.noticeError('Submit review fail', JSON.stringify(err));
         const toasted = this.notificationService.alert({
           header: 'Error submitting rating',
           message: err.msg || JSON.stringify(err)

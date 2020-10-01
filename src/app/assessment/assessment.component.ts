@@ -249,8 +249,8 @@ export class AssessmentComponent extends RouterEnter {
           }
           this._handleReviewData(result.review);
         },
-        error => {
-          this.newRelic.noticeError(error);
+        async err => {
+          this.newRelic.noticeError(err);
         }
       );
   }
@@ -613,8 +613,8 @@ export class AssessmentComponent extends RouterEnter {
           return this.pullFastFeedback();
         }
       },
-      (err: { msg?: string, message?: string }) => {
-        this.newRelic.noticeError(JSON.stringify(err));
+      async (err: { msg?: string, message?: string }) => {
+        await this.newRelic.noticeError(JSON.stringify(err));
 
         this.submitting = false;
         this.savingButtonDisabled = false;
@@ -687,7 +687,7 @@ export class AssessmentComponent extends RouterEnter {
       this.continueBtnLoading = false;
     } catch (err) {
       const msg = 'Can not get review rating information';
-      this.newRelic.noticeError(msg);
+      await this.newRelic.noticeError(msg);
       const toasted = await this.notificationService.alert({
         header: msg,
         message: err.msg || JSON.stringify(err)

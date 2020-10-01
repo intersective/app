@@ -44,9 +44,9 @@ export class AuthForgotPasswordComponent {
           ['/login']
         );
       },
-      err => {
+      async err => {
         nrForgotpasswordTracer();
-        this.newRelic.noticeError(`Password Reset Error`, JSON.stringify(err));
+        await this.newRelic.noticeError(`Password Reset Error`, JSON.stringify(err));
         this.isSending = false;
         if (this.utils.has(err, 'data.type')) {
           // pop up if trying to reset password too frequently

@@ -7,12 +7,12 @@ import {
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
-import { User, BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from './storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SettingsResolverService implements Resolve<User> {
+export class UserResolverService implements Resolve<User> {
   constructor(private storage: BrowserStorageService, private router: Router) {}
 
   async resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<User> {

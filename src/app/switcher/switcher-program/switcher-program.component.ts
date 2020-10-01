@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
@@ -9,6 +9,8 @@ import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
+import { User } from '@services/storage.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +29,7 @@ export class SwitcherProgramComponent extends RouterEnter {
   constructor(
     public loadingController: LoadingController,
     public router: Router,
+    private routes: ActivatedRoute,
     private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
@@ -34,12 +37,14 @@ export class SwitcherProgramComponent extends RouterEnter {
     private utils: UtilsService
   ) { super(router); }
 
-  async onEnter() {
+  onEnter() {
     this.newRelic.setPageViewName('program switcher');
-    const programs = await this.switcherService.getPrograms()
-    programs.subscribe(programs => {
-      this.programs = programs;
-      this._getProgresses(programs);
+    this.routes.data.subscribe((data: {programs: Observable<ProgramObj[]>}) => {
+      const { programs } = data
+      programs.subscribe(programs => {
+        this.programs = programs;
+        this._getProgresses(programs);
+      });
     });
   }
 
@@ -76,7 +81,7 @@ export class SwitcherProgramComponent extends RouterEnter {
       });
 
       nrSwitchedProgramTracer();
-      this.newRelic.noticeError('switch program failed', JSON.stringify(err));
+      await this.newRelic.noticeError('switch program failed', JSON.stringify(err));
     }
     return;
   }

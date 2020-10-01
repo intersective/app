@@ -31,7 +31,7 @@ export class AuthDirectLoginComponent implements OnInit {
     this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
-      return this._error();
+      return await this._error();
     }
 
     const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
@@ -44,7 +44,7 @@ export class AuthDirectLoginComponent implements OnInit {
           nrDirectLoginTracer();
           return this._redirect();
         } catch (err) {
-          this._error(err);
+          await this._error(err);
         }
         // tslint:disable-next-line:align
       }, 50
@@ -136,8 +136,8 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(route);
   }
 
-  private _error(res?): Promise<any> {
-    this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
+  private async _error(res?): Promise<any> {
+    await this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
     if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
       'User is not registered'
     ].includes(res.data.message)) {

@@ -44,15 +44,15 @@ export class NewRelicService {
     return newrelic.setCustomAttribute(name, value);
   }
 
-  noticeError(error, customAttr?) {
-    const { userHash, enrolment } = this.storage.getUser();
+  async noticeError(error, customAttr?) {
+    const { userHash, enrolment } = await this.storage.getUser();
     if (userHash) {
       this.setAttribute('user hash', userHash);
     }
     if (enrolment && enrolment.id) {
       this.setAttribute('enrolment ID', enrolment.id);
     }
-    return newrelic.noticeError(error);
+    return await newrelic.noticeError(error);
   }
 
   createTracer(name, callback?) {

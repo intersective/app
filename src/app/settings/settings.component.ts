@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -61,42 +61,32 @@ export class SettingsComponent extends RouterEnter {
   }
 
   onEnter() {
-    this.routes.data.subscribe(data => {
-      data.then(user => {
-        console.log('user::', user);
-      })
-    });
     this.newRelic.setPageViewName('Setting');
-    let email,
-      contactNumber,
-      image,
-      name,
-      programName,
-      LtiReturnUrl = null;
-    this.storage.getUser().then(user => {
-      let {
+    this.routes.data.subscribe((data: {user: User}) => {
+      const {
         email,
         contactNumber,
         image,
         name,
         programName,
         LtiReturnUrl
-      } = user;
-    })
+      } = data.user;
 
-    // get contact number and email from local storage
-    this.profile.email = email;
-    this.profile.contactNumber = contactNumber;
-    this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = name;
-    this.acceptFileTypes = this.filestackService.getFileTypes('image');
-    // also get program name
-    this.currentProgramName = programName;
-    this._getCurrentProgramImage().then(res => {
-      this.currentProgramImage = res;
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.acceptFileTypes = this.filestackService.getFileTypes('image');
+      // also get program name
+      this.currentProgramName = programName;
+      this._getCurrentProgramImage().then(res => {
+        this.currentProgramImage = res;
+      });
+      this.returnLtiUrl = LtiReturnUrl;
     });
+
     this.fastFeedbackService.pullFastFeedback().subscribe();
-    this.returnLtiUrl = LtiReturnUrl;
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -181,8 +171,8 @@ export class SettingsComponent extends RouterEnter {
             ]
           });
         },
-        err => {
-          this.newRelic.noticeError(`Image upload failed: ${JSON.stringify(err)}`);
+        async err => {
+          await this.newRelic.noticeError(`Image upload failed: ${JSON.stringify(err)}`);
           this.imageUpdating = false;
           return this.notificationService.alert({
             message: 'File upload failed, please try again later.',

@@ -80,13 +80,13 @@ export class GoMobileComponent implements OnInit {
         });
         return alertBox;
       },
-      err => {
+      async err => {
         const toasted = this.notification.alert({
           header: 'Error submitting contact info',
           message: err.msg || JSON.stringify(err)
         });
         nrSubmitContactTracer();
-        this.newRelic.noticeError('submitting contact error', JSON.stringify(err));
+        await this.newRelic.noticeError('submitting contact error', JSON.stringify(err));
         return toasted;
       }
     );

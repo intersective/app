@@ -60,9 +60,9 @@ export class AuthResetPasswordComponent implements OnInit {
         // verification of key and email is successfuly.
         this.verifySuccess = true;
       },
-      err => {
+      async err => {
         nrVerifyResetTracer();
-        this.newRelic.noticeError('verify reset', JSON.stringify(err));
+        await this.newRelic.noticeError('verify reset', JSON.stringify(err));
         return this._notifyAndRedirect('Invalid reset password link');
       }
     );
@@ -83,9 +83,9 @@ export class AuthResetPasswordComponent implements OnInit {
         nrResetPasswordTracer();
         return this._notifyAndRedirect('Password successfully changed! Please login with the new password.');
       },
-      err => {
+      async err => {
         nrResetPasswordTracer();
-        this.newRelic.noticeError('reset password failed', JSON.stringify(err));
+        await this.newRelic.noticeError('reset password failed', JSON.stringify(err));
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationService.alert({

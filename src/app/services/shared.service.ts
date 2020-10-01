@@ -116,7 +116,7 @@ export class SharedService {
   getIpLocation() {
     this._ipAPI().subscribe(
       res => this.storage.setCountry(res.country_name),
-      err => this.newrelic.noticeError(err)
+      asyncerr => this.newrelic.noticeError(err)
     );
   }
 

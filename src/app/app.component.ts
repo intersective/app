@@ -11,6 +11,7 @@ import { environment } from '@environments/environment';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { PushNotificationService } from '@services/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +32,8 @@ export class AppComponent implements OnInit {
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
     // private splashScreen: SplashScreen,
-    // private statusBar: StatusBar
+    // private statusBar: StatusBar,
+    private pushNotificationService: PushNotificationService
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -89,8 +91,8 @@ export class AppComponent implements OnInit {
           }
         }
       },
-      err => {
-        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      async err => {
+        await this.newRelic.noticeError(`${JSON.stringify(err)}`);
       }
     );
 
@@ -146,6 +148,7 @@ export class AppComponent implements OnInit {
       }
       // initialise Pusher
       await this.pusherService.initialise();
+      await this.pushNotificationService.initiatePushNotification();
     });
   }
 

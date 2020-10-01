@@ -73,7 +73,7 @@ export class SwitcherService {
     private eventsService: EventListService,
   ) {}
 
-  async getPrograms() {
+  async getPrograms(): Promise<Observable<ProgramObj[]>> {
     const programs = await this.storage.nativeGet('programs');
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
@@ -119,14 +119,14 @@ export class SwitcherService {
     }));
   }
 
-  switchProgram(programObj: ProgramObj): Observable<any> {
+  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? programObj.program.config.theme_color : '#2bbfd4';
     let cardBackgroundImage = '';
     if (this.utils.has(programObj, 'program.config.card_style')) {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
 
-    this.storage.setUser({
+    await this.storage.setUser({
       programId: programObj.program.id,
       programName: programObj.program.name,
       programImage: programObj.project.lead_image,
@@ -251,10 +251,12 @@ export class SwitcherService {
         return ['switcher', 'switcher-program'];
       // Array with one program object -> [{}]
       } else if (Array.isArray(programs) && programsChecked) {
-        await this.switchProgram(programs[0]).toPromise();
+        const switching = await this.switchProgram(programs[0]);
+        await switching.toPromise();
       } else {
       // one program object -> {}
-        await this.switchProgram(programs).toPromise();
+        const switching = await this.switchProgram(programs);
+        await switching.toPromise();
       }
 
       await this.pusherService.initialise({ unsubscribe: true });

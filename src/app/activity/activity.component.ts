@@ -56,8 +56,8 @@ export class ActivityComponent {
       event => {
         this._getEvents();
       },
-      (error) => {
-        this.newRelic.noticeError(error);
+      async err => {
+        await this.newRelic.noticeError(err);
       }
     );
   }
@@ -120,8 +120,8 @@ export class ActivityComponent {
           this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
           this.tasksReady.emit(activity.tasks);
         },
-        (error) => {
-          this.newRelic.noticeError(error);
+        async err => {
+          await this.newRelic.noticeError(err);
         }
       );
   }
@@ -135,8 +135,8 @@ export class ActivityComponent {
           this.events = res;
           this.loadingEvents = false;
         },
-        error => {
-          this.newRelic.noticeError(error);
+        async err => {
+          await this.newRelic.noticeError(err);
         }
       );
     }
