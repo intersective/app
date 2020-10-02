@@ -46,19 +46,23 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   }
 
   calculateHeight(): void {
-    if (!this.storage.getUser().truncateDescription) {
-      return;
-    }
-    setTimeout(
-      () => {
-        this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
-        this.heightExceeded = this.elementHeight >= this.heightLimit;
-        if (this.heightExceeded) {
-          this.isTruncating = true;
-        }
-      },
-      1000
-    );
+    // if false: avoid displaying content partially, true: proceed with hiding
+    this.storage.getUser().then(user => {
+      if (!user.truncateDescription) {
+        return;
+      }
+
+      setTimeout(
+        () => {
+          this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
+          this.heightExceeded = this.elementHeight >= this.heightLimit;
+          if (this.heightExceeded) {
+            this.isTruncating = true;
+          }
+        },
+        1000
+      );
+    });
   }
 }
 

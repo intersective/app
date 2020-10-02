@@ -31,7 +31,10 @@
   <ng-container *ngIf="!loadingActivity">
     <h1 class="headline-4">{{ activity.name }}</h1>
     <div class="ion-text-left">
-      <app-description *ngIf="activity.description" [content]="activity.description" class="body-1"></app-description>
+      <app-description
+        *ngIf="activity.description"
+        [content]="activity.description"
+        class="body-1"></app-description>
     </div>
     <div class="ion-text-left ion-margin-top">
       <ion-label color="medium" class="subtitle-2 gray-2">Tasks</ion-label>

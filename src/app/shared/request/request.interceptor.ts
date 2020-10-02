@@ -3,7 +3,7 @@ import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, Http
 import { RequestConfig } from './request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { switchMap, take } from 'rxjs/operators';
-import { Observable } from 'rxjs/observable';
+ import { Observable } from 'rxjs';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 
 @Injectable()

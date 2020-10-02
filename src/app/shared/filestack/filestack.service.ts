@@ -5,7 +5,7 @@ import { PreviewComponent } from './preview/preview.component';
 import { environment } from '@environments/environment';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
-import { Observable } from 'rxjs/Observable';
+ import { Observable } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -93,7 +93,8 @@ export class FilestackService {
     // add user hash to the path
     const { userHash } = await this.storage.getUser();
     path = path + userHash + '/';
-    if (this.storage.getCountry() === 'China') {
+    const country = await this.storage.getCountry();
+    if (country === 'China') {
       container = environment.filestack.s3Config.containerChina;
       region = environment.filestack.s3Config.regionChina;
     }

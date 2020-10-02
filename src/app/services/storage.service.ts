@@ -145,7 +145,7 @@ export class BrowserStorageService {
     this.set('country', country);
   }
 
-  getCountry() {
+  getCountry(): Promise<string> {
     return this.get('country');
   }
 
