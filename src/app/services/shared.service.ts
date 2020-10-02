@@ -38,18 +38,25 @@ export class SharedService {
   ) {}
 
   // call this function on every page refresh and after switch program
-  onPageLoad() {
+  async onPageLoad(): Promise<void> {
     this.getIpLocation();
+
+    const {
+      timelineId,
+      themeColor,
+      activityCardImage,
+    } = await this.storage.getUser();
+
     // only do these if a timeline is choosen
-    if (!this.storage.getUser().timelineId) {
+    if (!timelineId) {
       return;
     }
     // check and change theme color on every page refresh
-    const color = this.storage.getUser().themeColor;
+    const color = themeColor;
     if (color) {
       this.utils.changeThemeColor(color);
     }
-    const image = this.storage.getUser().activityCardImage;
+    const image = activityCardImage;
     if (image) {
       this.utils.changeCardBackgroundImage(image);
     }
@@ -116,7 +123,7 @@ export class SharedService {
   getIpLocation() {
     this._ipAPI().subscribe(
       res => this.storage.setCountry(res.country_name),
-      asyncerr => this.newrelic.noticeError(err)
+      err => this.newrelic.noticeError(err)
     );
   }
 

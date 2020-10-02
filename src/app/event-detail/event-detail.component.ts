@@ -34,13 +34,14 @@ export class EventDetailComponent implements OnInit {
     this.newRelic.setPageViewName('event-detail');
   }
 
-  confirmed() {
+  async confirmed() {
     this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
     this.ctaIsActing = true;
     switch (this.buttonText()) {
       case 'Book':
         // we only show the single booking pop up if user has booked an event under the same activity
-        if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
+        const bookedIds = await this.storage.getBookedEventActivityIds();
+        if (this.event.singleBooking && bookedIds.includes(this.event.activityId)) {
           this.notificationService.alert({
             message: 'Booking this event will cancel your booking for other events within the same activity, do you still wanna book?',
             buttons: [

@@ -157,15 +157,16 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  async logout(navigationParams = {}, redirect = true) {
     // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().color || '#2bbfd4');
+    const { color } = await this.storage.getConfig();
+    this.utils.changeThemeColor(color || '#2bbfd4');
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
-    const config = this.storage.getConfig();
+    const config = await this.storage.getConfig();
     this.storage.clear();
     // still store config info even logout
-    this.storage.setConfig(config);
+    await this.storage.setConfig(config);
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }

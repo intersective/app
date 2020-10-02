@@ -144,7 +144,7 @@ export class SwitcherService {
       hasReviews: false
     });
 
-    this.sharedService.onPageLoad();
+    await this.sharedService.onPageLoad();
     return forkJoin([
       this.getNewJwt(),
       this.getTeamInfo(),

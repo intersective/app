@@ -108,13 +108,15 @@ export class ContactNumberFormComponent implements OnInit {
     this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
     this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
     // if user has the contact number
-    if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
-      this._checkCurrentContactNumberOrigin();
-    }
+    this.storage.getUser().then(user => {
+      const { contactNumber } = user;
+      if (this.page === 'settings' && (contactNumber && contactNumber != null)) {
+        this._checkCurrentContactNumberOrigin(contactNumber);
+      }
+    });
   }
 
-  private _checkCurrentContactNumberOrigin() {
-    const contactNum = this.storage.getUser().contactNumber;
+  private _checkCurrentContactNumberOrigin(contactNum) {
     let prefix = contactNum.substring(0, 3);
     let number = contactNum.substring(3);
     this.contactNumber = this._separeteContactNumber(number);
@@ -251,14 +253,14 @@ export class ContactNumberFormComponent implements OnInit {
           handler: () => {
             this.settingService.updateProfile({
               contact_number: this.profile.contactNumber,
-            }).subscribe(result => {
+            }).subscribe(async result => {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
                 this.storage.setUser({ contactNumber: this.profile.contactNumber });
                 const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
-                const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
+                const { timelineId } = await this.storage.getUser();  // get current timeline Id
                 const programsObj = this.utils.each(this.storage.nativeGet('programs'), function(program) {
                     if (program.timeline.id === timelineId) {
                       program.enrolment.contact_number = newContactNumber;

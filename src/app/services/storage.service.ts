@@ -100,8 +100,9 @@ export class BrowserStorageService {
     return true;
   }
 
-  getConfig() {
-    return this.get('config') || {};
+  async getConfig(): Promise<Config> {
+    const result = await this.get('config');
+    return result || {};
   }
 
   setConfig(config: Config) {
@@ -112,27 +113,28 @@ export class BrowserStorageService {
     'bookedEventActivityIds' records the single booking activity ids that event has been booked for current user
   **********/
   // get the list of activity ids in local storage to check whether we need to show the single booking pop up or not
-  getBookedEventActivityIds(): Array<number> {
-    return this.get('bookedEventActivityIds') || [];
+  async getBookedEventActivityIds(): Promise<number[]> {
+    const result = await this.get('bookedEventActivityIds');
+    return result || [];
   }
 
   // 1. set this value when we get events data from API
   // 2. record the activity id when user book an event
-  setBookedEventActivityIds(id: number): void {
-    const ids = this.getBookedEventActivityIds();
+  async setBookedEventActivityIds(id: number): Promise<void> {
+    const ids = await this.getBookedEventActivityIds();
     ids.push(id);
     this.set('bookedEventActivityIds', ids);
   }
 
   // remove the activity id when user cancel booking
-  removeBookedEventActivityIds(id: number): void {
-    const ids = this.getBookedEventActivityIds();
+  async removeBookedEventActivityIds(id: number): Promise<void> {
+    const ids = await this.getBookedEventActivityIds();
     const index = ids.indexOf(id);
     if (index < 0) {
       return;
     }
     ids.splice(index, 1);
-    this.set('bookedEventActivityIds', ids);
+    await this.set('bookedEventActivityIds', ids);
     return;
   }
 
