@@ -68,16 +68,18 @@ export class TabsComponent extends RouterEnter {
     this._checkRoute();
     this._stopPlayingVideos();
     this._topicStopReading();
-    this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
-      this.noOfTodoItems = noOfTodoItems;
-    });
 
     this.routes.data.subscribe((data: {user: User}) => {
       const {
         teamId,
         hasReviews,
         hasEvents,
+        projectId
       } = data.user;
+
+      this.tabsService.getNoOfTodoItems(projectId).subscribe(noOfTodoItems => {
+        this.noOfTodoItems = noOfTodoItems;
+      });
 
       // only get the number of chats if user is in team
       if (teamId) {

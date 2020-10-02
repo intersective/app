@@ -47,7 +47,7 @@ export class FilestackComponent {
   ) { }
 
   async uploadFile() {
-    const s3Config = this.filestackService.getS3Config(this.fileType);
+    const s3Config = await this.filestackService.getS3Config(this.fileType);
     const pickerOptions = {
       storeTo: s3Config,
       onFileUploadFailed: data => {
@@ -76,7 +76,7 @@ export class FilestackComponent {
       this.isDroped = true;
       this.uploadingFile.fileName = dropData.file.name;
       this.uploadingFile.fileSize = this._bytesToSize(dropData.file.size);
-      const s3Config = this.filestackService.getS3Config(this.fileType);
+      const s3Config = await this.filestackService.getS3Config(this.fileType);
       this.uploadToken = {};
       const uploadOptions = {
         onProgress: progressData => {

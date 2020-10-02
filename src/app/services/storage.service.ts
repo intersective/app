@@ -62,7 +62,7 @@ export class BrowserStorageService {
     return this.nativeStorage.setObject(key, value);
   }
 
-  get(key: string) {
+  get(key: string): Promise<any> {
     if (this.isNative) {
       return this.nativeGet(key);
     }
@@ -81,14 +81,6 @@ export class BrowserStorageService {
     return this.storage.setItem(key, JSON.stringify(value));
   }
 
-  append(key: string, value: any) {
-    let actual = this.get(key);
-    if (!actual) {
-      actual = {};
-    }
-    return this.set(key, Object.assign(actual, value));
-  }
-
   remove(key: string) {
     this.storage.removeItem(key);
   }
@@ -97,8 +89,9 @@ export class BrowserStorageService {
     this.storage.clear();
   }
 
-  getUser(): Promise<any> {
-    return this.get('me') || {};
+  async getUser(): Promise<any> {
+    const result = await this.get('me');
+    return result || {};
   }
 
   async setUser(user: User) {

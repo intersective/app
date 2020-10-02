@@ -1,7 +1,7 @@
 import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, User } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
@@ -30,6 +30,7 @@ export class ChatRoomComponent extends RouterEnter {
     lastMessageCreated: ''
   };
 
+  username: string;
   routeUrl = '/chat/chat-room';
   channelId: number | string;
   // message history list
@@ -94,6 +95,9 @@ export class ChatRoomComponent extends RouterEnter {
     this._subscribeToPusherChannel();
     this._loadMessages();
     this._scrollToBottom();
+    this.route.data.subscribe((data: {user: User}) => {
+      this.username = data.user.name;
+    });
   }
 
   private _initialise() {
@@ -105,6 +109,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.sendingMessage = false;
     this.whoIsTyping = '';
     this.showBottomAttachmentButtons = false;
+    this.username = '';
   }
 
   private _subscribeToPusherChannel() {
@@ -395,13 +400,14 @@ export class ChatRoomComponent extends RouterEnter {
     } else {
       this.showBottomAttachmentButtons = false;
     }
-    this.pusherService.triggerTyping(this.chatChannel.pusherChannelName);
+    this.pusherService.triggerTyping(this.chatChannel.pusherChannelName, {
+      username: this.username
+    });
   }
 
-  private async _showTyping(event) {
+  private _showTyping(event) {
     // don't need to show typing message if the current user is the one who is typing
-    const { name } = await this.storage.getUser();
-    if (event.user === name) {
+    if (event.user === this.username) {
       return;
     }
     this.whoIsTyping = event.user + ' is typing';
@@ -440,7 +446,7 @@ export class ChatRoomComponent extends RouterEnter {
 
     if (this.filestackService.getFileTypes(type)) {
       options.accept = this.filestackService.getFileTypes(type);
-      options.storeTo = this.filestackService.getS3Config(type);
+      options.storeTo = await this.filestackService.getS3Config(type);
     }
     await this.filestackService.open(
       options,

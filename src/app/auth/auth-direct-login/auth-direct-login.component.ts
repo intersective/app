@@ -90,7 +90,8 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['switcher', 'switcher-program']);
       }
       // switch to the program
-      await this.switcherService.switchProgram(program).toPromise();
+      const switching = await this.switcherService.switchProgram(program);
+      switching.toPromise();
     }
 
     switch (redirect) {

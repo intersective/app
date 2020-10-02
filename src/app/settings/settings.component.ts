@@ -77,15 +77,15 @@ export class SettingsComponent extends RouterEnter {
       this.profile.contactNumber = contactNumber;
       this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
       this.profile.name = name;
-      this.acceptFileTypes = this.filestackService.getFileTypes('image');
       // also get program name
       this.currentProgramName = programName;
-      this._getCurrentProgramImage().then(res => {
-        this.currentProgramImage = res;
-      });
       this.returnLtiUrl = LtiReturnUrl;
     });
 
+    this.acceptFileTypes = this.filestackService.getFileTypes('image');
+    this._getCurrentProgramImage().then(res => {
+      this.currentProgramImage = res;
+    });
     this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
@@ -109,6 +109,7 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('Open T&C link');
     this.document.open(this.termsUrl, '_system');
   }
+
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
@@ -148,7 +149,7 @@ export class SettingsComponent extends RouterEnter {
     return this.authService.logout();
   }
 
-  async uploadProfileImage(file, type = null) {
+  uploadProfileImage(file, type = null) {
     if (file.success) {
       this.newRelic.actionText('Upload profile image');
       this.imageUpdating = true;

@@ -75,7 +75,7 @@ export class FilestackService {
   }
 
   // get s3 config
-  getS3Config(fileType) {
+  async getS3Config(fileType) {
     let location, container, region, workflows, paths;
     ({
       location,
@@ -91,7 +91,8 @@ export class FilestackService {
       path = paths[fileType];
     }
     // add user hash to the path
-    path = path + this.storage.getUser().userHash + '/';
+    const { userHash } = await this.storage.getUser();
+    path = path + userHash + '/';
     if (this.storage.getCountry() === 'China') {
       container = environment.filestack.s3Config.containerChina;
       region = environment.filestack.s3Config.regionChina;
@@ -174,7 +175,7 @@ export class FilestackService {
         'gmail',
         'video'
       ],
-      storeTo: this.getS3Config(this.getFileTypes()),
+      storeTo: await this.getS3Config(this.getFileTypes()),
       onFileSelected: data => {
         // replace space with underscore '_' in file name
         data.filename = data.filename.replace(/ /g, '_');
@@ -196,7 +197,7 @@ export class FilestackService {
     };
 
     if (!path) {
-      path = this.getS3Config(this.getFileTypes());
+      path = await this.getS3Config(this.getFileTypes());
     }
 
     await this.filestack.upload(file, option, path, uploadToken)

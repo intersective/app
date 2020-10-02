@@ -27,17 +27,17 @@ export class TabsService {
     private utils: UtilsService,
   ) {}
 
-  getNoOfTodoItems() {
+  getNoOfTodoItems(project_id: number): Observable<any> {
     return this.request.get(api.todoItem, {
-        params: {
-          project_id: this.storage.getUser().projectId
-        }
-      })
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseNoOfTodoItems(response.data);
-        }
-      }));
+      params: {
+        project_id
+      }
+    })
+    .pipe(map(response => {
+      if (response.success && response.data) {
+        return this._normaliseNoOfTodoItems(response.data);
+      }
+    }));
   }
 
   private _normaliseNoOfTodoItems(data) {

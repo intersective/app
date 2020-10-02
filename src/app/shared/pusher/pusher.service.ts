@@ -112,7 +112,7 @@ export class PusherService {
     }
 
     // prevent pusher auth before user authenticated (skip silently)
-    const { apikey, timelineId } = this.storage.getUser();
+    const { apikey, timelineId } = await this.storage.getUser();
     if (!apikey || !timelineId) {
       return this.pusher;
     }
@@ -131,8 +131,8 @@ export class PusherService {
           headers: {
             'Authorization': 'pusherKey=' + this.pusherKey,
             'appkey': environment.appkey,
-            'apikey': this.storage.getUser().apikey,
-            'timelineid': this.storage.getUser().timelineId
+            'apikey': apikey,
+            'timelineid': timelineId
           },
         },
       };
@@ -263,13 +263,13 @@ export class PusherService {
    * - Client events can only be triggered on 'private' and 'presence' channels because they require authentication
    * - private channel name start with 'private-' and presence channel name start with 'presence-'
    */
-  triggerTyping(channelName): void {
+  triggerTyping(channelName, data: { username: string }): void {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {
       return;
     }
     channel.subscription.trigger('client-typing-event', {
-      user: this.storage.getUser().name
+      user: data.username
     });
   }
 
