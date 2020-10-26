@@ -5,6 +5,7 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-achievements',
@@ -28,6 +29,7 @@ export class AchievementsComponent extends RouterEnter {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public storage: BrowserStorageService,
+    private notificationService: NotificationService,
   ) {
     super(router);
   }
@@ -39,11 +41,22 @@ export class AchievementsComponent extends RouterEnter {
         name: data.user.name,
       };
     });
+
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {
         this.achievements = achievements;
         this.loadingAchievements = false;
+        this.routes.queryParams.subscribe(params => {
+          if (!this.utils.isEmpty(params)) {
+            const popup = this.utils.find(achievements, achievement => {
+              return achievement.id.toString() === params.id.toString();
+            });
+            if (popup) {
+              this.popupBadge(popup);
+            }
+          }
+        });
       },
       err => {
         this.newRelic.noticeError(`${JSON.stringify(err)}`);
@@ -53,5 +66,9 @@ export class AchievementsComponent extends RouterEnter {
 
   back() {
     return this.ngZone.run(() => this.router.navigate(['app', 'home']));
+  }
+
+  private popupBadge(achievement) {
+    this.notificationService.achievementPopUp('', achievement);
   }
 }
