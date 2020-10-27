@@ -12,7 +12,7 @@ export const environment = {
   chatGraphQL: 'https://pgun23p1ob.execute-api.ap-southeast-2.amazonaws.com/dev/graphql',
   intercomAppId: '',
   filestack: {
-    key: 'AO6F4C72uTPGRywaEijdLz',
+    key: '',
     s3Config: {
       location: 's3',
       container: 'practera-aus',
