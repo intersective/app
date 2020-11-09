@@ -5,6 +5,7 @@ import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;
@@ -16,6 +17,7 @@ describe('FastFeedbackService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         FastFeedbackService,
         {
           provide: RequestService,
@@ -58,6 +60,9 @@ describe('FastFeedbackService', () => {
         data: {
           slider: {
             length: 1
+          },
+          meta: {
+            any: 'data'
           }
         }
       }));
@@ -67,7 +72,8 @@ describe('FastFeedbackService', () => {
         expect(notificationSpy.modal.calls.count()).toBe(1);
       });
     });
-    it('should not pop up modal', () => {
+
+    it('should not pop up modal when slider object length is 0', () => {
       requestSpy.get.and.returnValue(of({
         data: {
           slider: {
@@ -81,12 +87,52 @@ describe('FastFeedbackService', () => {
         expect(notificationSpy.modal.calls.count()).toBe(0);
       });
     });
-    it('should not pop up modal', () => {
+
+    it('should not pop up modal when get storage returns false', () => {
       requestSpy.get.and.returnValue(throwError(''));
       storageSpy.get.and.returnValue(false);
       service.pullFastFeedback().subscribe(res => {
         expect(storageSpy.set.calls.count()).toBe(0);
         expect(notificationSpy.modal.calls.count()).toBe(0);
+      });
+    });
+
+    it('should not popup modal when slider & meta are not available', () => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          slider: undefined,
+          meta: undefined,
+        }
+      }));
+
+      service.pullFastFeedback().subscribe(res => {
+        expect(notificationSpy.modal).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should not popup modal when slider is not available', () => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          slider: [],
+          meta: { hasValue: true},
+        }
+      }));
+
+      service.pullFastFeedback().subscribe(res => {
+        expect(notificationSpy.modal).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should not popup modal when meta is not available', () => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          slider: [1, 2],
+          meta: undefined,
+        }
+      }));
+
+      service.pullFastFeedback().subscribe(res => {
+        expect(notificationSpy.modal).not.toHaveBeenCalled();
       });
     });
   });

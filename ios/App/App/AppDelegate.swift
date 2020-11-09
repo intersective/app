@@ -1,4 +1,3 @@
-import Firebase
 import UIKit
 import Capacitor
 import PushNotifications
@@ -7,15 +6,13 @@ import PushNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  let beamsClient = PushNotifications.shared
-
+  let pushNotifications = PushNotifications.shared
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
-    FirebaseApp.configure()
-    self.beamsClient.start(instanceId: "f5df7283-144c-458c-ac23-622b2d47eed9")
-    self.beamsClient.registerForRemoteNotifications()
-    try? self.beamsClient.addDeviceInterest(interest: "hello")
+    self.pushNotifications.start(instanceId: "c0ba349e-66c6-440d-8ac7-fe229709d088")
+    self.pushNotifications.registerForRemoteNotifications()
+    try? self.pushNotifications.addDeviceInterest(interest: "general")
     return true
   }
 
@@ -68,26 +65,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   #if USE_PUSH
 
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    self.beamsClient.registerDeviceToken(deviceToken)
-    Messaging.messaging().apnsToken = deviceToken
-    InstanceID.instanceID().instanceID { (result, error) in
-      if let error = error {
-        NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidFailToRegisterForRemoteNotificationsWithError.name()), object: error)
-      } else if let result = result {
-        NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: result.token)
-      }
-    }
+    self.pushNotifications.registerDeviceToken(deviceToken)
+    NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: deviceToken)
   }
 
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     NotificationCenter.default.post(name: Notification.Name(CAPNotifications.DidFailToRegisterForRemoteNotificationsWithError.name()), object: error)
   }
 
-  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    print(userInfo)
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+      self.pushNotifications.handleNotification(userInfo: userInfo)
   }
-  
-  #endif
+#endif
 
 }
 

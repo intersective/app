@@ -130,4 +130,25 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     this.control.setValue(this.innerValue);
   }
 
+  // check question audience have more that one audience and is it includes reviewer as audience.
+  // then will identify it as a student and mentor answering in the same question and
+  // border need to add only for mentor section not for full question
+  audienceContainReviewer() {
+    return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
+  }
+
+  /**
+   * This method checking passed choice id is inside the answer array.
+   * innerValue is the question answers and it's a array for checkbox questions
+   * @param choiceId question choice ID
+   */
+  checkInnerValue(choiceId) {
+    if (!choiceId) {
+      return;
+    }
+    if (this.utils.indexOf(this.innerValue, choiceId) > -1) {
+      return true;
+    }
+  }
+
 }

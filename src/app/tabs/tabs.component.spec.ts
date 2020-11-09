@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -33,6 +34,7 @@ describe('TabsComponent', () => {
       declarations: [ TabsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         UtilsService,
         {
           provide: ModalController,
@@ -54,7 +56,8 @@ describe('TabsComponent', () => {
               name: 'Test User',
               email: 'user@test.com',
               id: 1
-            }
+            },
+            get: ''
           })
         },
         {
@@ -115,16 +118,15 @@ describe('TabsComponent', () => {
       utils.broadcastEvent('event-reminder', '');
       expect(component.noOfTodoItems).toBe(2);
       tabsSpy.getNoOfChats.and.returnValue(of(3));
-      utils.broadcastEvent('team-message', '');
+      utils.broadcastEvent('chat:new-message', '');
       expect(component.noOfChats).toBe(3);
       tabsSpy.getNoOfChats.and.returnValue(of(4));
-      utils.broadcastEvent('team-no-mentor-message', '');
-      expect(component.noOfChats).toBe(4);
     });
   });
 
   describe('when testing onEnter()', () => {
     it('should get correct data', () => {
+      storageSpy.get.and.returnValue(0);
       fixture.detectChanges();
       expect(component.noOfTodoItems).toBe(5);
       expect(component.noOfChats).toBe(4);

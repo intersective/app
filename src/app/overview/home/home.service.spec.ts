@@ -8,6 +8,7 @@ import { HomeService } from './home.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import * as moment from 'moment';
+import { Apollo } from 'apollo-angular';
 
 describe('HomeService', () => {
   let service: HomeService;
@@ -20,6 +21,7 @@ describe('HomeService', () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
+        Apollo,
         HomeService,
         UtilsService,
         {
@@ -149,7 +151,7 @@ describe('HomeService', () => {
         {
           type: 'assessment_submission_reminder',
           name: requestResponse.data[5].meta.assessment_name,
-          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm a')}`,
+          description: `Overdue 3 Feb 2019 ${moment(new Date(requestResponse.data[5].meta.due_date + ' GMT+0000')).format('h:mm A')}`,
           time: '2 Feb',
           meta: requestResponse.data[5].meta
         }
@@ -174,25 +176,17 @@ describe('HomeService', () => {
         data: [
           {
             unread_messages: 1,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last',
-            last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
+            last_message_created: '2019-02-02'
           }
         ]
       };
       const expected = {
         type: 'chat',
-        name: requestResponse.data[0].name,
+        name: requestResponse.data[0].channel_name,
         description: requestResponse.data[0].last_message,
-        time: '2 Feb',
-        meta: {
-          team_id: requestResponse.data[0].team_id,
-          team_member_id: requestResponse.data[0].team_member_id,
-          participants_only: requestResponse.data[0].participants_only
-        }
+        time: '2 Feb'
       };
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getChatMessage().subscribe(
@@ -207,21 +201,15 @@ describe('HomeService', () => {
         data: [
           {
             unread_messages: 1,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last 1',
             last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
           },
           {
             unread_messages: 2,
-            name: 'name',
+            channel_name: 'name',
             last_message: 'last 2',
             last_message_created: '2019-02-02',
-            team_id: 2,
-            team_member_id: 3,
-            participants_only: true
           }
         ]
       };
@@ -437,7 +425,7 @@ describe('HomeService', () => {
       const expected = {
         type: 'assessment_submission_reminder',
         name: event.meta.AssessmentSubmissionReminder.assessment_name,
-        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-GB', {
+        description: 'Overdue 2 Feb 2019 ' + new Intl.DateTimeFormat('en-US', {
             hour12: true,
             hour: 'numeric',
             minute: 'numeric'

@@ -38,7 +38,7 @@
   max-width: 320px;
 
   &.registration {
-    margin-top: 7vh;
+    margin-top: 5vh;
   }
 }
 
@@ -259,7 +259,7 @@ ion-skeleton-text {
           margin-right: auto;
         }
         &.button-container {
-          
+
           margin: 0 15px 4px;
         }
         .description {
@@ -474,5 +474,36 @@ for videos in topics
     max-width: 710px;
     max-height: 400px;
     transform: translate(-50%, -50%);
+  }
+}
+/***************
+use for custom header (*Study perth)
+***************/
+
+.custom-header {
+  top: 85px !important;
+  &.mobile {
+    top: 65px !important;
+  }
+}
+
+.mobile {
+  .posper-header-container {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  .prosper-col-logo {
+    padding-left: 10px !important;
+    img {
+      width: 98px !important;
+      height: 41px !important;
+    }
+  }
+  .prosper-col-button {
+    padding-right: 10px !important;
+    .prosper-button {
+      font-size: 12px !important;
+      padding: 9px !important;
+    }
   }
 }
