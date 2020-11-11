@@ -57,6 +57,7 @@ Run `npm run local` to start a development server on your local, and calling 127
 1. `npm run e2e` test all features for desktop & Android & Iphone
 1. `npm run e2e-dev` used for devs to develop tests
 1. `npm run e2e-sandbox` used to run automation test on sandbox
+1. `npm run e2e-appium` to run e2e test on native AppV2 (prerequisite: appium server)
 
 ### Development
 
@@ -66,7 +67,21 @@ Run `npm run local` to start a development server on your local, and calling 127
 - If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
 - run `npm run e2e-dev` to see the result
 
-#### Capacitor
+#### Appium - e2e for Native AppV2 (hybrid app)
+
+Prerequisite: 
+Appium - installed globally `npm i -g appium`
+APK file (android) - generated from Android studio
+App.app (iOS) - from xcode achieve
+
+1. In order to run e2e test on native AppV2, _appium_ must be installed globally beforehand `npm i -g appium`
+1. Run `appium` to start server
+1. Make sure you have the correct binary build of your app placed in `experiments/appium/` folder (*appV2-debug.apk* for android, *App.zip* for iOS)
+1. Start/run emulators
+1. Make sure `e2e/protractor-appium.conf.js` has the correct information about your emulator (have to specify accurately)
+1. Run `npm run e2e-appium` to let protractor communicate with Appium to run test based on appium's instruction
+
+## Capacitor
 
 On **[feature/AV2-625/capacitor](https://github.com/intersective/practera-app-v2/tree/feature/AV2-625/capacitor)** branch, run `npm install` to make sure you have capacitor cli and its dependencies installed.
 
@@ -75,7 +90,7 @@ On **[feature/AV2-625/capacitor](https://github.com/intersective/practera-app-v2
   - `npm run build` - ensure build is latest version 
   - `npx cap copy`  - sync ionic app with Capacitor
 
-##### iOS
+### iOS
 
 - Requirements:
   - xcode
@@ -83,7 +98,7 @@ On **[feature/AV2-625/capacitor](https://github.com/intersective/practera-app-v2
 
 - iOS code is located inside `./ios`
 
-##### android
+### android
 
 - Requirements:
   - Android Studio
