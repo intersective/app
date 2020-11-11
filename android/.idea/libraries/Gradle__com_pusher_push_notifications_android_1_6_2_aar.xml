@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.pusher:push-notifications-android:1.6.2@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/75561ccad531bb456570152fb56a8de6/jetified-push-notifications-android-1.6.2/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/50170b1e081a24ea682ca510a79c31ee/jetified-push-notifications-android-1.6.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/50170b1e081a24ea682ca510a79c31ee/jetified-push-notifications-android-1.6.2/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

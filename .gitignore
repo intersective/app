@@ -27,6 +27,8 @@ e2e/config/index.ts
 e2e/protractor-dev.conf.js
 android/app/google-services.json
 android/app/build/
+android/app/src/main/assets/
+
 ios/App/App/GoogleService-Info.plist
 release.keystore
 dist
@@ -36,3 +38,13 @@ android/local.properties
 .gitsecret/keys/random_seed
 !*.secret
 src/environments/environment.alpha-native.ts
+
+# Android Studio
+*.iml
+.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
+build/
+.navigation
+captures/
+output.json
