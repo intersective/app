@@ -210,6 +210,7 @@ export class PushNotificationService {
   // temporary place this function here (as it's part of the capacitor plugin)
   // ideally, should place at utility service
   goToAppSetting() {
+    console.log('show mw inside the push noti service');
     return PusherBeams.goToAppSetting();
   }
 }

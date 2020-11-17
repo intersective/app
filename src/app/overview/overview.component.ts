@@ -39,9 +39,10 @@ export class OverviewComponent implements OnInit {
   }
 
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
+    console.log('inside overview component');
     const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
-      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive new push notification?');
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?','assets/img/permissions.svg');
     }
     return;
   }
