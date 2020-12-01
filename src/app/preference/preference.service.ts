@@ -1,32 +1,72 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
+import { tap, distinctUntilChanged } from 'rxjs/operators';
+import { Observable } from 'rxjs/Observable';
+import { of, BehaviorSubject, Subscription } from 'rxjs';
 
-const ENDPOINT = 'http://localhost:3000/local/preferences';
+export const APIs = {
+  // preference: 'https://4d052q3ph6.execute-api.ap-southeast-2.amazonaws.com/notify',
+  preference: 'http://localhost:3000/local/preferences',
+};
+
+export interface PreferenceOption {
+  name: string;
+  medium: string;
+  value: boolean;
+  locked: boolean;
+  locked_name: string;
+}
+
+export interface Preference {
+  key: string;
+  name: string;
+  description: string;
+  remarks?: string;
+  options?: PreferenceOption[];
+}
+
+export interface Category {
+  name: string;
+  order: number;
+  preferences: Preference[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class PreferenceService {
+  private _preferences$ = new BehaviorSubject<any>({});
+
+  preference$ = this._preferences$.asObservable();
 
   constructor(private request: RequestService) { }
 
+  getPreference(): Subscription {
+    return this.request.post(APIs.preference, {}).pipe(
+      distinctUntilChanged(),
+      tap(res => {
+        this._preferences$.next(res);
+      })
+    ).subscribe();
+  }
+
   create() {
-    return this.request.post(`${ENDPOINT}`, {
+    return this.request.post(`${APIs.preference}`, {
       body: 'newdata'
     });
   }
 
   update(id) {
-    return this.request.post(`${ENDPOINT}/${id}`, {
+    return this.request.post(`${APIs.preference}/${id}`, {
       body: 'test'
     });
   }
 
   remove(id) {
-    return this.request.delete(`${ENDPOINT}/${id}`);
+    return this.request.delete(`${APIs.preference}/${id}`);
   }
 
   get(id) {
-    return this.request.get(`${ENDPOINT}/${id}`);
+    return this.request.get(`${APIs.preference}/${id}`);
   }
 }
