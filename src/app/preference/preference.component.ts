@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PreferenceService } from '@services/preference.service';
+import { PreferenceService } from './preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs/Subscription';
 export class PreferenceComponent implements OnDestroy, OnInit {
   preferences$ = this.preferenceService.preference$;
   preferenceSubject$: Subscription;
+  prefAPI: any;
 
   constructor(
     private preferenceService: PreferenceService,
@@ -21,7 +22,7 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
-     });
+    });
   }
 
   ngOnDestroy() {
@@ -32,5 +33,25 @@ export class PreferenceComponent implements OnDestroy, OnInit {
 
   goTo(direction) {
     return this.router.navigate(direction);
+  }
+
+  create() {
+    return this.preferenceService.create().subscribe(res => {
+      this.prefAPI = res;
+      console.log('create-res::', res);
+      return res;
+    });
+  }
+
+  update() {
+    return;
+  }
+
+  getOne() {
+    return this.preferenceService.get().subscribe(res => {
+      this.prefAPI = res;
+      console.log('get-res::', res);
+      return res;
+    })
   }
 }
