@@ -66,7 +66,7 @@ export class PreferenceService {
     return this.request.delete(`${APIs.preference}/${id}`);
   }
 
-  get(id) {
-    return this.request.get(`${APIs.preference}/${id}`);
+  get() {
+    return this.request.get(`${APIs.preference}`);
   }
 }
