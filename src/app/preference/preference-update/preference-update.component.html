@@ -17,16 +17,20 @@
       </ion-label>
     </ion-item>
 
-    <ion-item *ngFor="let option of currentPreference.options">
+    <form [formControl]="form">
+      <ion-item *ngFor="let option of currentPreference.options">
       <ion-label class="preference-option preference-header-item">{{ option.name }}</ion-label>
+
       <ng-container *ngIf="!option.locked; else locked">
-        <ion-toggle slot="end" name="{{option.name}}" [attr.checked]="option.value"></ion-toggle>
+        <ion-toggle [formControlName]="option.medium" slot="end" name="{{option.name}}" [attr.checked]="option.value" (ionChange)="updatePreference()"></ion-toggle>
       </ng-container>
 
       <ng-template #locked>
         <ion-label slot="end" >{{ option.locked_name }}</ion-label>
       </ng-template>
-    </ion-item>
+      </ion-item>
+    </form>
+
     <ion-item *ngIf="currentPreference.remarks" lines="none" color="light">
       <ion-label>
         <p class="gray-2 subtitle-1 preference-option item-content">{{ currentPreference.remarks }}</p>

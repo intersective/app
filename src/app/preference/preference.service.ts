@@ -42,7 +42,7 @@ export class PreferenceService {
   constructor(private request: RequestService) { }
 
   getPreference(): Subscription {
-    return this.request.post(APIs.preference, {}).pipe(
+    return this.request.get(APIs.preference).pipe(
       distinctUntilChanged(),
       tap(res => {
         this._preferences$.next(res);
@@ -50,23 +50,13 @@ export class PreferenceService {
     ).subscribe();
   }
 
-  create() {
+  update(data) {
     return this.request.post(`${APIs.preference}`, {
-      body: 'newdata'
-    });
-  }
-
-  update(id) {
-    return this.request.post(`${APIs.preference}/${id}`, {
       body: 'test'
     });
   }
 
-  remove(id) {
-    return this.request.delete(`${APIs.preference}/${id}`);
-  }
-
-  get() {
-    return this.request.get(`${APIs.preference}`);
+  remove() {
+    return this.request.delete(`${APIs.preference}`);
   }
 }

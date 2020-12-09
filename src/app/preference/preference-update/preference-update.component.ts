@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-preference-update',
@@ -14,10 +15,12 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     categories: any;
   };
 
+  form = new FormGroup({});
 
   preferenceSubject$: Subscription;
   currentPreference;
   private key: string;
+  private newUpdates; // required when toggle has modified
 
   constructor(
     private preferenceService: PreferenceService,
@@ -51,6 +54,8 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * show medium choices for current preference key
+   *
    * @name filterPreferences
    * @param {Category[] }} preferences   entire preferences object
    * @param {string}        key  url parameter
@@ -67,6 +72,13 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     }
 
     return result;
+  }
+
+  updatePreference() {
+    console.log('key::', this.key);
+    // this.form.add
+    console.log(this.form);
+    console.log(this.currentPreference);
   }
 
   /**
