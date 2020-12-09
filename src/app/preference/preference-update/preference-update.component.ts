@@ -3,7 +3,6 @@ import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-preference-update',
@@ -15,8 +14,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   preferences: {
     categories: any;
   };
-
-  form = new FormGroup({});
 
   preferenceSubject$: Subscription;
   currentPreference;
@@ -39,14 +36,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       this.preferences = res;
       if (this.preferences && key) {
        this.currentPreference = this.filterPreferences(this.preferences, key);
-
-       if (this.currentPreference) {
-         let controllers = {};
-         this.currentPreference.options.forEach(option => {
-           controllers[option.medium] = new FormControl({ value: option.value });
-         })
-         this.form = new FormGroup(controllers);
-       }
       }
     });
   }
