@@ -5,6 +5,7 @@ import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
+import { UtilsService } from '@services/utils.service';
 import { PreferenceUpdateComponent } from './preference-update.component';
 
 describe('PreferenceUpdateComponent', () => {
@@ -39,6 +40,12 @@ describe('PreferenceUpdateComponent', () => {
             navigate: true
           })
         },
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', {
+            isEmpty: false
+          })
+        }
       ]
     })
     .compileComponents();
