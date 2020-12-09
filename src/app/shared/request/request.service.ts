@@ -103,6 +103,23 @@ export class RequestService {
     return endpointUrl;
   }
 
+  private preprocessHttpEvent(options?: {
+    headers?: any;
+    params?: any;
+  }) {
+    if (!options) {
+      options = {};
+    }
+
+    if (!this.utils.has(options, 'headers')) {
+      options.headers = '';
+    }
+    if (!this.utils.has(options, 'params')) {
+      options.params = '';
+    }
+    return options;
+  }
+
   /**
    *
    * @param {string} endPoint
@@ -111,16 +128,7 @@ export class RequestService {
    * @returns {Observable<any>}
    */
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
-
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
+    httpOptions = this.preprocessHttpEvent(httpOptions);
 
     return this.http.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
@@ -136,21 +144,28 @@ export class RequestService {
   }
 
   post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
-
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
+    httpOptions = this.preprocessHttpEvent(httpOptions);
 
     return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  put(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+    httpOptions = this.preprocessHttpEvent(httpOptions);
+
+    const headers = this.appendHeaders(httpOptions.headers);
+    const params = this.setParams(httpOptions.params);
+
+    return this.http.put<any>(this.getEndpointUrl(endPoint), data, { headers, params })
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);

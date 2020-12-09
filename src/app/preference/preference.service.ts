@@ -51,9 +51,7 @@ export class PreferenceService {
   }
 
   update(data) {
-    return this.request.post(`${APIs.preference}`, {
-      body: 'test'
-    });
+    return this.request.put(`${APIs.preference}`, data);
   }
 
   remove() {
