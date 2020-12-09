@@ -41,7 +41,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
        this.currentPreference = this.filterPreferences(this.preferences, key);
 
        if (this.currentPreference) {
-  console.log(this.currentPreference);
          let controllers = {};
          this.currentPreference.options.forEach(option => {
            controllers[option.medium] = new FormControl({ value: option.value });
@@ -101,8 +100,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     } else {
       this.newUpdates[this.currentPreference.key][event.id] = event.checked;
     }
-
-    console.log('event::', this.newUpdates);
   }
 
   /**

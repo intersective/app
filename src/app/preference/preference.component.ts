@@ -34,24 +34,4 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   goTo(direction) {
     return this.router.navigate(direction);
   }
-
-  create() {
-    return this.preferenceService.create().subscribe(res => {
-      this.prefAPI = res;
-      console.log('create-res::', res);
-      return res;
-    });
-  }
-
-  update() {
-    return;
-  }
-
-  getOne() {
-    return this.preferenceService.get().subscribe(res => {
-      this.prefAPI = res;
-      console.log('get-res::', res);
-      return res;
-    })
-  }
 }
