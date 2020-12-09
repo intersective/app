@@ -15,7 +15,9 @@ describe('PreferenceService', () => {
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', {
-            post: of(TEST_DATA)
+            post: of(TEST_DATA),
+            get: of(TEST_DATA),
+            put: of(TEST_DATA),
           })
         }
       ]
@@ -36,7 +38,7 @@ describe('PreferenceService', () => {
       service['_preferences$'].subscribe(res => {
         expect(res).toBe(TEST_DATA);
       });
-      expect(requestSpy.post).toHaveBeenCalledWith(APIs.preference, {});
+      expect(requestSpy.get).toHaveBeenCalledWith(APIs.preference);
     });
   });
 });
