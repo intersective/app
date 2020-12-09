@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -20,12 +21,17 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   preferenceSubject$: Subscription;
   currentPreference;
   private key: string;
-  private newUpdates; // required when toggle has modified
+  private newUpdates: {
+    [propName: string]: {
+      [propName: string]: boolean;
+    };
+  }; // required when toggle has modified
 
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private utils: UtilsService,
   ) {
     preferenceService.getPreference();
     const key = activatedRoute.snapshot.params.key;
@@ -33,6 +39,15 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       this.preferences = res;
       if (this.preferences && key) {
        this.currentPreference = this.filterPreferences(this.preferences, key);
+
+       if (this.currentPreference) {
+  console.log(this.currentPreference);
+         let controllers = {};
+         this.currentPreference.options.forEach(option => {
+           controllers[option.medium] = new FormControl({ value: option.value });
+         })
+         this.form = new FormGroup(controllers);
+       }
       }
     });
   }
@@ -74,18 +89,42 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  updatePreference() {
-    console.log('key::', this.key);
-    // this.form.add
-    console.log(this.form);
-    console.log(this.currentPreference);
+  updatePreference(event) {
+    if (!this.newUpdates) {
+      this.newUpdates = {};
+    }
+
+    if (!this.newUpdates[this.currentPreference.key]) {
+      this.newUpdates[this.currentPreference.key] = {
+        [event.id]: event.checked
+      };
+    } else {
+      this.newUpdates[this.currentPreference.key][event.id] = event.checked;
+    }
+
+    console.log('event::', this.newUpdates);
+  }
+
+  /**
+   * @description if `this.newUpdates` is detected has value, an API request sent
+   *              to server
+   * @return void
+   */
+  private async pushPreferenceUpdate(): Promise<void> {
+    if (!this.utils.isEmpty(this.newUpdates)) {
+      await this.preferenceService.update(this.newUpdates).toPromise();
+    }
+    return;
   }
 
   /**
    * @name back
-   * @description manual back button to go back to a pre-structured routing (back to "/preference")
+   * @description manual back button to go back to a pre-structured routing
+   *              (back to "/preference")
    */
   back() {
-    this.router.navigate(['/preferences']);
+    this.pushPreferenceUpdate().then(() => {
+      this.router.navigate(['/preferences']);
+    });
   }
 }
