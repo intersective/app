@@ -11,24 +11,6 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <ion-list>
-    <ion-item>
-      <ion-button (click)="create()">Create</ion-button>
-    </ion-item>
-    <ion-item>
-      <ion-button (click)="update()">Update</ion-button>
-    </ion-item>
-    <ion-item>
-      <ion-button (click)="getOne()">Get</ion-button>
-    </ion-item>
-  </ion-list>
-
-  <ion-list>
-    <ion-item>
-      <pre>{{ prefAPI | json }}</pre>
-    </ion-item>
-  </ion-list>
-
   <ng-container *ngIf="(preferences$ | async ) as preferences; else noPreferenceAvailable">
     <ion-list *ngFor="let cat of preferences.categories">
       <ion-list-header class="no-bg preference-cat-item">{{cat.name}}</ion-list-header>
