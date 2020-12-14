@@ -214,4 +214,5 @@ export class PushNotificationService {
   // ideally, should place at utility service
   goToAppSetting() {
     return PusherBeams.goToAppSetting();
+  }
 }

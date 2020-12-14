@@ -28,6 +28,7 @@ export class OverviewComponent implements OnInit {
   ) {
     this.isMobile = this.utils.isMobile();
     route.data.subscribe(() => this.checkPNPermission(router.routerState.snapshot));
+    this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?','assets/img/permissions.svg');
   }
 
   ngOnInit() {
@@ -39,7 +40,6 @@ export class OverviewComponent implements OnInit {
   }
 
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
-    console.log('inside overview component');
     const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
       await this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?','assets/img/permissions.svg');

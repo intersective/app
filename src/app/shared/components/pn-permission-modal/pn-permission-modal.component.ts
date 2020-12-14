@@ -14,8 +14,8 @@ export class PNPermissionModalComponent {
     public modalController: ModalController,
     public utils: UtilsService,
     private pushNotificationService: PushNotificationService,
-  ) {}
-
+    
+  ){}
   dismiss() {
     this.modalController.dismiss();
   }
