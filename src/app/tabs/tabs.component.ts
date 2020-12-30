@@ -163,9 +163,15 @@ export class TabsComponent extends RouterEnter {
     this.sharedService.markTopicStopOnNavigating();
   }
 
-  hidingChatTab() {
-    const checkHideTab = this.requestService.hideChatTab();
-    if (checkHideTab) {
+  /**
+   * @name hidingChatTab
+   * @description check if chat API respond HTTP200, otherwise
+   *              hide chat tab when HTTP500 (API server's fatal error)
+   *
+   * @return void
+   */
+  hidingChatTab(): void {
+    if (this.requestService.hideChatTab()) {
       this.showChat = false;
     }
   }
