@@ -390,4 +390,8 @@ export class UtilsService {
     const goSettingStatus = await CustomNativePlugin.goToAppSetting();
     return goSettingStatus;
   }
+
+  redirectToUrl(url: string) {
+    window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
+  }
 }
