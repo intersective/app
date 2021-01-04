@@ -5,12 +5,14 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { RequestService } from '@shared/request/request.service';
 import { fromPromise } from 'rxjs/observable/fromPromise';
+import { of, BehaviorSubject, Subscription } from 'rxjs';
+import { tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tabs',
@@ -26,8 +28,18 @@ export class TabsComponent extends RouterEnter {
   noOfChats = 0;
   selectedTab = '';
 
+  private _me$ = new BehaviorSubject<any>({});
+  private _showReview$ = new BehaviorSubject<any>(false);
+  private _showChat$ = new BehaviorSubject<any>(false);
+  private _showEvents$ = new BehaviorSubject<any>(false);
+  me$ = this._me$.asObservable();
+  showReview$ = this._showReview$.asObservable();
+  showChat$ = this._showChat$.asObservable();
+  showEvents$ = this._showEvents$.asObservable();
+
   constructor(
     public router: Router,
+    private routes: ActivatedRoute,
     private tabsService: TabsService,
     public utils: UtilsService,
     private switcherService: SwitcherService,
@@ -57,7 +69,6 @@ export class TabsComponent extends RouterEnter {
         this.noOfChats = noOfChats;
       });
     });
-
   }
 
   private _initialise() {
@@ -77,52 +88,67 @@ export class TabsComponent extends RouterEnter {
       });
     });
 
-    fromPromise(this.nativeStorage.getObject('me')).subscribe(user => {
-      const {
-        teamId,
-        hasReviews,
-        hasEvents
-      } = user;
-      // only get the number of chats if user is in team
-      if (teamId) {
-        this.tabsService.getNoOfChats().subscribe(noOfChats => {
-          this.noOfChats = noOfChats;
-        });
-      }
-      // display the chat tab if the user is in team
-      if (teamId) {
-        this.showChat = true;
-      } else {
-        this.showChat = false;
-        this.switcherService.getTeamInfo().subscribe(data => {
-          if (teamId) {
-            this.showChat = true;
-          }
-        });
-      }
-      if (hasReviews) {
-        this.showReview = true;
-      } else {
-        this.showReview = false;
-        this.reviewsService.getReviews().subscribe(data => {
-          if (data.length) {
-            this.showReview = true;
-          }
-        });
-      }
-      if (hasEvents) {
-        this.showEvents = true;
-      } else {
-        this.showEvents = false;
-        this.eventsService.getEvents().subscribe(events => {
-          this.showEvents = !this.utils.isEmpty(events);
-        });
-      }
+    fromPromise(this.nativeStorage.getObject('me')).pipe(
+      distinctUntilChanged(),
+      tap(res => {
+        console.log('msg::user', res);
+        this._me$.next(res);
+      }),
+      distinctUntilChanged(),
+    ).subscribe(user => this.updateShowList(user));
+
+
+    this.routes.data.subscribe(data => {
+      console.log('asdasds::', data);
     });
 
     this.hidingChatTab();
   }
 
+  private updateShowList(user) {
+    const {
+      teamId,
+      hasReviews,
+      hasEvents
+    } = user;
+    // only get the number of chats if user is in team
+    if (teamId) {
+      this.tabsService.getNoOfChats().subscribe(noOfChats => {
+        this.noOfChats = noOfChats;
+      });
+    }
+    // display the chat tab if the user is in team
+    if (teamId) {
+      this.showChat = true;
+    } else {
+      this.switcherService.getTeamInfo().subscribe(data => {
+        if (teamId) {
+          this.showChat = true;
+        }
+      });
+    }
+    if (hasReviews) {
+      this.showReview = true;
+    } else {
+      this.reviewsService.getReviews().subscribe(data => {
+        if (data.length) {
+          this.showReview = true;
+        }
+      });
+    }
+    if (hasEvents) {
+      this.showEvents = true;
+    } else {
+      this.eventsService.getEvents().subscribe(events => {
+        this.showEvents = !this.utils.isEmpty(events);
+      });
+    }
+  }
+
+  /**
+   * highlight active tab (on focus)
+   * @return void
+   */
   private _checkRoute() {
     this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
@@ -154,6 +180,9 @@ export class TabsComponent extends RouterEnter {
     }
   }
 
+  /**
+   * stop any playing video
+   */
   private _stopPlayingVideos() {
     this.sharedService.stopPlayingVideos();
   }
