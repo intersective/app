@@ -21,11 +21,7 @@ import { tap, distinctUntilChanged } from 'rxjs/operators';
 })
 export class TabsComponent extends RouterEnter {
   routeUrl = '/app';
-  showReview = false;
-  showChat = false;
-  showEvents = false;
   noOfTodoItems = 0;
-  noOfChats = 0;
   selectedTab = '';
 
   private _me$ = new BehaviorSubject<any>({});
@@ -89,9 +85,8 @@ export class TabsComponent extends RouterEnter {
       if (!this.utils.isEqual(this._me$.value, res)) {
         this._me$.next(res);
       }
+      this.hidingChatTab();
     });
-
-    this.hidingChatTab();
   }
 
   private updateShowList(user) {
@@ -197,7 +192,7 @@ export class TabsComponent extends RouterEnter {
    */
   hidingChatTab(): void {
     if (this.requestService.hideChatTab()) {
-      this.showChat = false;
+      this._showChat$.next(false);
     }
   }
 
