@@ -115,7 +115,7 @@ export class AuthDirectLoginComponent implements OnInit {
         const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
           // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
+          this.nativeStorage.setObject('referrer', {
             activityTaskUrl: referrerUrl
           });
         }

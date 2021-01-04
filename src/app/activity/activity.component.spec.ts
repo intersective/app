@@ -217,7 +217,6 @@ describe('ActivityComponent', () => {
     storageSpy.getUser.and.returnValue({
       teamId: 1
     });
-    storageSpy.getReferrer.and.returnValue('');
   });
 
   it('should create', () => {
@@ -254,18 +253,22 @@ describe('ActivityComponent', () => {
   });
 
   describe('when testing back()', () => {
-    it('should navigate to the project page', () => {
+    it('should navigate to the project page', fakeAsync(() => {
       component.back();
+      flush();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-    });
-    it('should navigate to the external url', () => {
-      storageSpy.getReferrer.and.returnValue({
+    }));
+
+    it('should navigate to the external url', fakeAsync(() => {
+      nativeStorageSpy.getObject.and.returnValue({
         activityTaskUrl: 'abc',
       });
       const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       component.back();
+      flush();
+      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
       expect(redirectToUrlSpy).toHaveBeenCalled();
-    });
+    }));
   });
 
   describe('when testing goto()', () => {
