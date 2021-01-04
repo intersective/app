@@ -46,6 +46,10 @@ export class PushNotificationService {
         },
         register: (): Promise<void> => new Promise(resolve => resolve())
       };
+    } else {
+      this.pushNotificationPlugin.addListener('registrationError', (error: any) => {
+        console.log('browser does not have access to native code');
+      })
     }
   }
 
