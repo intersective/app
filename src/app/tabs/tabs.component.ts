@@ -114,7 +114,6 @@ export class TabsComponent extends RouterEnter {
         }
       });
     }
-
     if (hasReviews) {
       this._showReview$.next(true);
     } else {
