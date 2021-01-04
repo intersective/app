@@ -24,6 +24,7 @@ describe('TabsComponent', () => {
   let tabsSpy: jasmine.SpyObj<TabsService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let reviewsSpy: jasmine.SpyObj<ReviewListService>;
@@ -125,6 +126,7 @@ describe('TabsComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
@@ -160,6 +162,37 @@ describe('TabsComponent', () => {
   });
 
   describe('when testing onEnter()', () => {
+    it('should update tabs if user data get updated', fakeAsync(() => {
+      const RESULT = {
+        teamId: 1,
+        hasReviews: true,
+        hasEvents: true,
+      };
+
+      nativeStorageSpy.getObject.and.returnValue(of(RESULT));
+      component.onEnter();
+      flush();
+
+      expect(tabsSpy.getNoOfChats).toHaveBeenCalled();
+    }));
+
+    it('should make API calls to update tabs if teamId is N/A', fakeAsync(() => {
+      const RESULT = {
+        teamId: null,
+        hasReviews: false,
+        hasEvents: false,
+      };
+
+      nativeStorageSpy.getObject.and.returnValue(of(RESULT));
+      component.onEnter();
+      flush();
+
+      expect(tabsSpy.getNoOfChats).not.toHaveBeenCalled();
+      expect(switcherSpy.getTeamInfo).toHaveBeenCalled();
+      expect(reviewsSpy.getReviews).toHaveBeenCalled();
+      expect(eventsSpy.getEvents).toHaveBeenCalled();
+    }));
+
     it('should get correct data', fakeAsync(() => {
       storageSpy.get.and.returnValue(0);
       flush();
