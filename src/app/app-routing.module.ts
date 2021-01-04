@@ -7,7 +7,6 @@ import { DeviceInfoComponent } from './device-info/device-info.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
 import { UserResolverService } from '@services/user-resolver.service';
-import { TabsResolverService } from './tabs/tabs-resolver.service';
 
 const routes: Routes = [
   {
@@ -65,9 +64,6 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: './tabs/tabs.module#TabsModule',
-    resolve: {
-      tabsData: TabsResolverService
-    },
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
   },

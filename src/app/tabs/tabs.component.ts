@@ -29,13 +29,15 @@ export class TabsComponent extends RouterEnter {
   selectedTab = '';
 
   private _me$ = new BehaviorSubject<any>({});
-  private _showReview$ = new BehaviorSubject<any>(false);
+  private _noOfChats$ = new BehaviorSubject<any>(0);
   private _showChat$ = new BehaviorSubject<any>(false);
   private _showEvents$ = new BehaviorSubject<any>(false);
+  private _showReview$ = new BehaviorSubject<any>(false);
   me$ = this._me$.asObservable();
-  showReview$ = this._showReview$.asObservable();
+  noOfChats$ = this._noOfChats$.asObservable();
   showChat$ = this._showChat$.asObservable();
   showEvents$ = this._showEvents$.asObservable();
+  showReview$ = this._showReview$.asObservable();
 
   constructor(
     public router: Router,
@@ -61,24 +63,19 @@ export class TabsComponent extends RouterEnter {
     });
     this.utils.getEvent('chat:new-message').subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
+        this._noOfChats$.next(noOfChats);
       });
     });
     this.utils.getEvent('chat-badge-update').subscribe(event => {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
+        this._noOfChats$.next(noOfChats);
       });
     });
-  }
 
-  private _initialise() {
-    this.showChat = false;
-    this.showReview = false;
-    this.showEvents = false;
+    this.me$.subscribe(user => this.updateShowList(user));
   }
 
   onEnter() {
-    this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
     this._topicStopReading();
@@ -88,18 +85,10 @@ export class TabsComponent extends RouterEnter {
       });
     });
 
-    fromPromise(this.nativeStorage.getObject('me')).pipe(
-      distinctUntilChanged(),
-      tap(res => {
-        console.log('msg::user', res);
+    fromPromise(this.nativeStorage.getObject('me')).subscribe(res => {
+      if (!this.utils.isEqual(this._me$.value, res)) {
         this._me$.next(res);
-      }),
-      distinctUntilChanged(),
-    ).subscribe(user => this.updateShowList(user));
-
-
-    this.routes.data.subscribe(data => {
-      console.log('asdasds::', data);
+      }
     });
 
     this.hidingChatTab();
@@ -111,36 +100,43 @@ export class TabsComponent extends RouterEnter {
       hasReviews,
       hasEvents
     } = user;
+
     // only get the number of chats if user is in team
     if (teamId) {
       this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this.noOfChats = noOfChats;
+        this._noOfChats$.next(noOfChats);
       });
     }
+
     // display the chat tab if the user is in team
     if (teamId) {
-      this.showChat = true;
+      this._showChat$.next(true);
     } else {
-      this.switcherService.getTeamInfo().subscribe(data => {
+      this._showChat$.next(false);
+      this.switcherService.getTeamInfo().subscribe(() => {
         if (teamId) {
-          this.showChat = true;
+          this._showChat$.next(true);
         }
       });
     }
+
     if (hasReviews) {
-      this.showReview = true;
+      this._showReview$.next(true);
     } else {
+      this._showReview$.next(false);
       this.reviewsService.getReviews().subscribe(data => {
         if (data.length) {
-          this.showReview = true;
+          this._showReview$.next(true);
         }
       });
     }
+
     if (hasEvents) {
-      this.showEvents = true;
+      this._showEvents$.next(true);
     } else {
+      this._showEvents$.next(false);
       this.eventsService.getEvents().subscribe(events => {
-        this.showEvents = !this.utils.isEmpty(events);
+        this._showEvents$.next(!this.utils.isEmpty(events));
       });
     }
   }
