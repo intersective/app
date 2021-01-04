@@ -337,8 +337,10 @@ describe('SwitcherService', () => {
 
   describe('switchProgram() with null experience', () => {
     it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[3]).subscribe(() => {
-        spyOn(utils, 'has');
+      service.switchProgram(ProgramFixture[3]).then(switcher => {
+        switcher.subscribe(() => {
+          spyOn(utils, 'has');
+        });
       });
     });
   });
