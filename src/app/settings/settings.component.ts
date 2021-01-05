@@ -172,6 +172,9 @@ export class SettingsComponent extends RouterEnter {
    */
   async goToSystemSetting() {
     const goToSetting = await this.utils.goToSystemSetting();
+    if ( this.pushNotificationService.hasPermission()) {
+      this.notificationService.dismiss();
+    }
     return goToSetting;
   }
 
