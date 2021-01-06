@@ -118,7 +118,7 @@ export class PushNotificationService {
   listenToStateChangeToActive(): any {
     App.addListener('appStateChange', (state: AppState) => {
       console.log('App state changed. Is active?', JSON.stringify(state));
-      return state.isActive ? true : false
+      return JSON.stringify(state) ? true : false
     })
   }
 
