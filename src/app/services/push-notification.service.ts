@@ -15,10 +15,11 @@ import {
   PermissionsOptions,
   PermissionType,
   Capacitor,
-  NotificationPermissionResponse
+  NotificationPermissionResponse,
+  AppState
 } from '@capacitor/core';
 
-const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
+const { App, PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 const { Notifications } = PermissionType;
 
 export enum PermissionTypes {
@@ -55,6 +56,7 @@ export class PushNotificationService {
     await this.listenToError();
     await this.listenToReceiver();
     await this.listenToActionPerformed();
+    await this.listenToStateChangeToActive();
   }
 
   /**
@@ -111,6 +113,13 @@ export class PushNotificationService {
         console.log('Push action performed: ' + JSON.stringify(notification));
       }
     );
+  }
+  
+  listenToStateChangeToActive(): any {
+    App.addListener('appStateChange', (state: AppState) => {
+      console.log('App state changed. Is active?', JSON.stringify(state));
+      return state.isActive ? true : false
+    })
   }
 
   /**
