@@ -43,10 +43,10 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-   checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
-    const showPrompt =  this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
+  async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
+    const showPrompt =  await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
-       this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?', 'assets/img/permissions.svg');
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?', 'assets/img/permissions.svg');
     }
     return;
   }
