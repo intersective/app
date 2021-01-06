@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterStateSnapshot } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
-import { NativeStorageService, Referrer } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { PNPermissionModalComponent } from '@shared/components/pn-permission-modal/pn-permission-modal.component';
-import { ModalController } from '@ionic/angular';
+
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -21,14 +19,13 @@ export class OverviewComponent implements OnInit {
 
   constructor(
     private storage: BrowserStorageService,
-    private nativeStorage: NativeStorageService,
     private utils: UtilsService,
     private route: ActivatedRoute,
     private router: Router,
     private fastFeedbackService: FastFeedbackService,
     private pushNotificationService: PushNotificationService,
     private notificationService: NotificationService,
-    private modal: ModalController
+    
   ) {
     this.isMobile = this.utils.isMobile();
     route.data.subscribe(() => this.checkPNPermission(router.routerState.snapshot));
