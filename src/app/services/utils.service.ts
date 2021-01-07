@@ -390,4 +390,15 @@ export class UtilsService {
     const goSettingStatus = await CustomNativePlugin.goToAppSetting();
     return goSettingStatus;
   }
+
+  redirectToUrl(url: string) {
+    window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
+  }
+
+  /**
+   * inherit lodash's deep equal
+   */
+  isEqual(current, comparedTarget) {
+    return this.lodash.isEqual(current, comparedTarget);
+  }
 }

@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { ActivityService, Activity, Task } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageService, Referrer } from '@services/native-storage.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { SharedService } from '@services/shared.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
@@ -142,7 +142,13 @@ export class ActivityComponent {
     }
   }
 
-  back() {
+  async back() {
+    const referrer: Referrer = await this.nativeStorage.getObject('referrer');
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
+      this.newRelic.actionText('browse to Activity Task return link');
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
     this._navigate([ 'app', 'home' ]);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
