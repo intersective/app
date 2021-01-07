@@ -17,6 +17,7 @@ import {
   Capacitor,
   NotificationPermissionResponse
 } from '@capacitor/core';
+import 'capacitor-pusher-beams';
 
 const { PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
 const { Notifications } = PermissionType;
