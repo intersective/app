@@ -3,9 +3,10 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService, Referrer } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Router } from '@angular/router';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 /**
  * @name api
@@ -53,8 +54,9 @@ export class ActivityService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    public storage: BrowserStorageService,
+    private storage: NativeStorageService,
     private router: Router,
+    private readonly newRelic: NewRelicService,
     private notification: NotificationService
   ) {}
 
@@ -156,6 +158,15 @@ export class ActivityService {
       }
       return route;
     }
+
+    // check if we need to redirect user to external url
+    const referrer: Referrer = await this.storage.getObject('referrer');
+    if (this.utils.has(referrer, 'activityTaskUrl')) {
+      this.newRelic.actionText('browse to Activity Task return link');
+      this.utils.redirectToUrl(referrer.activityTaskUrl);
+      return ;
+    }
+
     if (res.task) {
       // pop up activity completed modal
       this.notification.activityCompletePopUp(activityId, justFinished);

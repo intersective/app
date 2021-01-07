@@ -4,6 +4,8 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
@@ -13,6 +15,8 @@ describe('ActivityService', () => {
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
+  let utils: UtilsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -33,6 +37,10 @@ describe('ActivityService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['activityCompletePopUp'])
         },
         {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
           provide: Router,
           useClass: MockRouter,
         },
@@ -42,6 +50,8 @@ describe('ActivityService', () => {
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
   it('should be created', () => {
@@ -176,6 +186,22 @@ describe('ActivityService', () => {
       tick();
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({ queryParams: { activityId: 1, activityCompleted: true }});
+    }));
+    it('should go to external url', fakeAsync(() => {
+      requestSpy.get.and.returnValue(of({
+        data: {
+          is_last: true,
+          task: null
+        }
+      }));
+      nativeStorageSpy.getObject.and.returnValue({
+        activityTaskUrl: 'abc',
+      });
+      const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
+      service.gotoNextTask(1, 'assessment', 2);
+      tick();
+      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
+      expect(redirectToUrlSpy).toHaveBeenCalled();
     }));
     it('should pop up modal', fakeAsync(() => {
       requestSpy.get.and.returnValue(of({
