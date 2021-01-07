@@ -49,10 +49,14 @@
 }
 .permission-icon {
   margin:40px auto ;
-  width: 124px;
-  height: 124px;
+  width: 100px !important;
+  height: 100px !important;
 
 }
 .pop-text {
   font-weight: bolder !important;
+}
+.pn-title {
+  margin-top: 25px;
+  font-size: 16px;
 }
