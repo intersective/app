@@ -38,15 +38,6 @@ export class PushNotificationService {
   ) {
     const hasPlugin = Capacitor.isPluginAvailable('PushNotifications');
     if (!hasPlugin) {
-      this.pushNotificationPlugin = {
-        requestPermission: (): Promise<NotificationPermissionResponse> => {
-          return new Promise(resolve => {
-            return resolve({ granted: false });
-          });
-        },
-        register: (): Promise<void> => new Promise(resolve => resolve())
-      };
-    } else {
       this.pushNotificationPlugin.addListener('registrationError', (error: any) => {
         console.log('browser does not have access to native code');
       })
