@@ -3,9 +3,10 @@ import { RequestService } from '@shared/request/request.service';
 import { tap, distinctUntilChanged } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { of, BehaviorSubject, Subscription } from 'rxjs';
+import { environment } from '@environments/environment';
 
 export const APIs = {
-  preference: 'https://4d052q3ph6.execute-api.ap-southeast-2.amazonaws.com/notify',
+  preference: environment.lambdaServices.preferences,
 };
 
 export interface PreferenceOption {
@@ -41,7 +42,7 @@ export class PreferenceService {
   constructor(private request: RequestService) { }
 
   getPreference(): Subscription {
-    return this.request.post(APIs.preference, {}).pipe(
+    return this.request.get(APIs.preference, {}).pipe(
       distinctUntilChanged(),
       tap(res => {
         this._preferences$.next(res);

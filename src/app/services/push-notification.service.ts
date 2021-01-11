@@ -120,7 +120,7 @@ export class PushNotificationService {
         appkey: environment.appkey,
         apikey: token,
       },
-      beamsAuthURL: 'https://wchpiwp904.execute-api.us-east-2.amazonaws.com/beams'
+      beamsAuthURL: environment.lambdaServices.pusherBeamsAuth
     });
     return linkedUser;
   }
