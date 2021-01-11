@@ -293,10 +293,17 @@ ion-skeleton-text {
     }
   }
   &.push-notification-popup {
+    .ios {
+      --max-height: 62%;
+    }
     .modal-wrapper {
+      &.sc-ion-modal-ios{
+        --max-height: 60%;
+      }
       --max-height: 57%;
       min-height: 200px;
     }
+    
   }
   &.mobile-view {
     .modal-wrapper {
