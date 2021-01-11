@@ -48,8 +48,23 @@
   }
 }
 .permission-icon {
-  margin:40px auto ;
+  margin:35px auto ;
+  width: 85px !important;
+  height: 85px !important;
+
 }
 .pop-text {
   font-weight: bolder !important;
+}
+.pn-title {
+  margin-top: 25px;
+  font-size: 16px;
+  
+}
+.pn-title-toolbar {
+  .ios {
+    margin-top: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
 }
