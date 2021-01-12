@@ -48,7 +48,7 @@ export class OverviewComponent implements OnInit {
     return;
   }
 
-   dismissPermissionModal (){
+  dismissPermissionModal (){
     const stateChange =  this.pushNotificationService.listenToStateChangeToActive();
     if (stateChange ) {
       this.notificationService.dismiss();}
