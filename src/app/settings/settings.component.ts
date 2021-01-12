@@ -192,6 +192,11 @@ export class SettingsComponent extends RouterEnter {
     this.associated = associated;
   }
 
+  async stopLink() {
+    const unlinked = await this.pushNotificationService.stopAuth();
+    console.log(unlinked);
+  }
+
   logout() {
     return this.authService.logout();
   }
