@@ -125,6 +125,10 @@ export class PushNotificationService {
     return linkedUser;
   }
 
+  async stopAuth() {
+    return this.pusherBeams.stop();
+  }
+
   unsubscribeInterest(interest: string) {
     return this.pusherBeams.removeDeviceInterest(interest);
   }
