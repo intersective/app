@@ -41,7 +41,7 @@ export class OverviewComponent implements OnInit {
   }
 
   async checkPNPermission(snapshot: RouterStateSnapshot): Promise<void> {
-    const showPrompt =  await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
+    const showPrompt =  await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot); 
     if (showPrompt) {
       await this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?', 'assets/img/permissions.svg');
     }
@@ -50,7 +50,11 @@ export class OverviewComponent implements OnInit {
 
   dismissPermissionModal (){
     const stateChange =  this.pushNotificationService.listenToStateChangeToActive();
-    if (stateChange ) {
-      this.notificationService.dismiss();}
+    const permissionGranted = this.pushNotificationService.hasPermission();
+    if (stateChange && permissionGranted ) {
+      this.notificationService.dismiss();
+    }
+    return;
   }
+
 } 
