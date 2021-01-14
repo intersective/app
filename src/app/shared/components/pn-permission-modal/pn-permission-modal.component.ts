@@ -16,7 +16,7 @@ export class PNPermissionModalComponent {
     public utils: UtilsService,
   ) {}
 
-  dismiss() {
+  dismissPermissionModal() {
     this.modalController.dismiss();
   }
 
