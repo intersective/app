@@ -35,6 +35,7 @@ export class OverviewComponent implements OnInit {
     this.initiator$.subscribe(() => {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
+      this.dismissPermissionModal();
     });
   }
 
@@ -45,4 +46,14 @@ export class OverviewComponent implements OnInit {
     }
     return;
   }
+
+  dismissPermissionModal (){
+    const stateChange =  this.pushNotificationService.listenToStateChangeToActive();
+    const permissionGranted = this.pushNotificationService.hasPermission();
+    if (stateChange && permissionGranted ) {
+      this.notificationService.dismiss();
+    }
+    return;
+  }
+
 }
