@@ -104,6 +104,7 @@ export class SettingsComponent extends RouterEnter {
     // also get program name
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+    //this.pushNotificationService.listenToStateChangeToActive();
   }
 
   /**

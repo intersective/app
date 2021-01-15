@@ -35,7 +35,6 @@ export class OverviewComponent implements OnInit {
     this.initiator$.subscribe(() => {
       this.programName = this.storage.getUser().programName;
       this.fastFeedbackService.pullFastFeedback().subscribe();
-      this.dismissPermissionModal();
     });
   }
 
@@ -43,15 +42,6 @@ export class OverviewComponent implements OnInit {
     const showPrompt = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, snapshot);
     if (showPrompt) {
       await this.notificationService.pushNotificationPermissionPopUp('Would you like to receive  push notification?', 'assets/img/permissions.svg');
-    }
-    return;
-  }
-
-  dismissPermissionModal (){
-    const stateChange =  this.pushNotificationService.listenToStateChangeToActive();
-    const permissionGranted = this.pushNotificationService.hasPermission();
-    if (stateChange && permissionGranted ) {
-      this.notificationService.dismiss();
     }
     return;
   }
