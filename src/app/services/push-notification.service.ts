@@ -115,16 +115,17 @@ export class PushNotificationService {
   }
 
   listenToStateChangeToActive(): any {
-    App.addListener('appStateChange', (state: AppState) => {
-      console.log('App state changed. Is active?', JSON.stringify(state));
-      const permissionGranted = this.hasPermission();
-      if (JSON.stringify(state) && permissionGranted ) {
+    App.addListener('appStateChange', async (state: AppState) => {
+      console.log('App state changed. Is active?', state);
+      const permissionGranted = await this.hasPermission();
+      console.log('permissionGranted', permissionGranted)
+      if (state.isActive && permissionGranted ) {
+        console.log('PNS, I can dismiss now')
         this.notificationService.dismiss();
       }
-
-      return JSON.stringify(state) ? true : false
+      return state.isActive ? true : false
     })
-  }
+ }
 
   /**
    * @name associateDeviceToUser
