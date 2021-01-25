@@ -48,7 +48,7 @@ export class SettingsComponent extends RouterEnter {
   acceptFileTypes;
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-  interests: string;
+  interests: string[];
   associated: any;
   firstVisitPermission: any;
 

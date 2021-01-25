@@ -66,6 +66,9 @@ const routes: Routes = [
     loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
+    resolve: {
+      user: UserResolverService,
+    },
   },
   {
     path: '',

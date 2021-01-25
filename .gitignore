@@ -31,3 +31,5 @@ src/environments/environment.alpha-native.ts
 src/environments/environment.ts
 android/local.properties
 .gradle/*/executionHistory/*.lock
+
+electron
