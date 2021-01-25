@@ -147,7 +147,7 @@ export class PushNotificationService {
   }
 
   unsubscribeInterest(interest: string) {
-    return this.pusherBeams.removeDeviceInterest(interest);
+    return this.pusherBeams.removeDeviceInterest({interest});
   }
 
   /**
@@ -155,28 +155,28 @@ export class PushNotificationService {
    * @param  {string}        interest
    * @return {Promise<void>}
    */
-  subscribeToInterest(interest): Promise<void> {
+  subscribeToInterest(interest): Promise<{message: string}> {
     return this.pusherBeams.addDeviceInterest({ interest });
   }
 
-  subscribeToInterests(interests: string[] | string): Promise<void> {
+  subscribeToInterests(interests: string[] | string): Promise<{message: string} | { interests: string[]}> {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return this.pusherBeams.setDeviceInterests({ interests });
+    return this.pusherBeams.setDeviceInterests(interests);
   }
 
-  clearInterest(): Promise<void> {
+  clearInterest(): Promise<{success: boolean}> {
     return this.pusherBeams.clearDeviceInterests();
   }
 
-  getSubscribedInterests(): Promise<any[]> {
+  getSubscribedInterests(): Promise<{interests: string[]}> {
     return this.pusherBeams.getDeviceInterests();
   }
 
-  async ensureSubscribedToBeams(userUuid: string): Promise<void> {
-    const subscribedInterests = await this.getSubscribedInterests();
-    if (subscribedInterests.includes(userUuid)) {
+  async ensureSubscribedToBeams(userUuid: string): Promise<{message: string} | { interests: string[]}> {
+    const subscribed = await this.getSubscribedInterests();
+    if (subscribed.interests.includes(userUuid)) {
       return;
     }
 

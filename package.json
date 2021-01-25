@@ -90,7 +90,7 @@
     "@types/node": "~10.12.0",
     "@types/pusher-js": "^4.2.2",
     "angular-cli-ghpages": "^0.6.2",
-    "capacitor-pusher-beams": "intersective/capacitor-pusher-beams#master",
+    "capacitor-pusher-beams": "github:intersective/capacitor-pusher-beams#master",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "codelyzer": "~4.5.0",
