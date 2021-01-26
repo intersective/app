@@ -4,6 +4,7 @@ import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
+import { AuthService } from '../auth/auth.service';
 import { SwitcherService } from '../switcher/switcher.service';
 import { ReviewListService } from '../review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
@@ -17,6 +18,7 @@ import { ModalController } from '@ionic/angular';
 import { MockRouter, MockActivatedRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
 import { RequestService } from '@shared/request/request.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 describe('TabsComponent', () => {
   let component: TabsComponent;
@@ -25,8 +27,11 @@ describe('TabsComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
+  let pushNotificationSpy: jasmine.SpyObj<PushNotificationService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let shareSpy: jasmine.SpyObj<SharedService>;
   let reviewsSpy: jasmine.SpyObj<ReviewListService>;
   let eventsSpy: jasmine.SpyObj<EventListService>;
   let utils: UtilsService;
@@ -67,20 +72,6 @@ describe('TabsComponent', () => {
           })
         },
         {
-          provide: BrowserStorageService,
-          // we've already used BrowserStorageService in the constructor(), so we have to mock the return data when defined
-          useValue: jasmine.createSpyObj('BrowserStorageService', {
-            getUser: {
-              role: 'participant',
-              teamId: 1,
-              name: 'Test User',
-              email: 'user@test.com',
-              id: 1
-            },
-            get: ''
-          })
-        },
-        {
           provide: NewRelicService,
           useValue: jasmine.createSpyObj('NewRelicService', ['setPageViewName', 'actionText', 'noticeError'])
         },
@@ -107,12 +98,20 @@ describe('TabsComponent', () => {
           useValue: jasmine.createSpyObj('RequestService', ['hideChatTab'])
         },
         {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', ['subscribeToInterests'])
+        },
+        {
           provide: Router,
           useClass: MockRouter
         },
         {
           provide: ActivatedRoute,
           useClass: MockActivatedRouter
+        },
+        {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', ['getUUID'])
         },
       ],
     })
@@ -132,6 +131,7 @@ describe('TabsComponent', () => {
     reviewsSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    shareSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
 
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
@@ -169,11 +169,13 @@ describe('TabsComponent', () => {
         hasEvents: true,
       };
 
-      nativeStorageSpy.getObject.and.returnValue(of(RESULT));
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve(RESULT));
       component.onEnter();
       flush();
 
-      expect(tabsSpy.getNoOfChats).toHaveBeenCalled();
+      expect(shareSpy.stopPlayingVideos).toHaveBeenCalled();
+      expect(shareSpy.markTopicStopOnNavigating).toHaveBeenCalled();
+      // expect(tabsSpy.getNoOfChats).toHaveBeenCalled();
     }));
 
     it('should make API calls to update tabs if teamId is N/A', fakeAsync(() => {
@@ -183,7 +185,7 @@ describe('TabsComponent', () => {
         hasEvents: false,
       };
 
-      nativeStorageSpy.getObject.and.returnValue(of(RESULT));
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve(RESULT));
       component.onEnter();
       flush();
 
@@ -194,7 +196,7 @@ describe('TabsComponent', () => {
     }));
 
     it('should get correct data', fakeAsync(() => {
-      storageSpy.get.and.returnValue(0);
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve(0));
       flush();
 
       requestSpy.hideChatTab.and.returnValue(false);
@@ -217,13 +219,6 @@ describe('TabsComponent', () => {
     });
 
     it('should get correct data without team id', () => {
-      storageSpy.getUser.and.returnValue({
-        role: 'participant',
-        teamId: null,
-        name: 'Test User',
-        email: 'user@test.com',
-        id: 1
-      });
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));
       requestSpy.hideChatTab.and.returnValue(of(''));
