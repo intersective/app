@@ -47,19 +47,6 @@ export class PreferenceService {
   ) { }
 
   getPreference(apikey?): Subscription {
-    if (Capacitor.isNative) {
-      return from(this.http.get(APIs.preference, {}, {
-        apikey,
-        'Content-Type': 'application/json',
-        appkey: this.request['appkey'],
-      })).pipe(
-        distinctUntilChanged(),
-        tap(res => {
-          this._preferences$.next(res);
-        })
-      ).subscribe();
-    }
-
     return this.request.get(APIs.preference, {}).pipe(
       distinctUntilChanged(),
       tap(res => {
