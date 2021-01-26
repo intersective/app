@@ -87,7 +87,6 @@ describe('PushNotificationService', () => {
 
     service.listenToActionPerformed();
     expect(PushNotifications.addListener).toHaveBeenCalled();
-
   });
 
   describe('hasPermission()', () => {
@@ -181,7 +180,7 @@ describe('PushNotificationService', () => {
               appkey: APPKEY,
               apikey: TOKEN,
             },
-            beamsAuthURL: 'https://wchpiwp904.execute-api.us-east-2.amazonaws.com/beams'
+            beamsAuthURL: environment.lambdaServices.pusherBeamsAuth
         }));
         expect(res).toBeTruthy();
       });
@@ -259,9 +258,7 @@ describe('PushNotificationService', () => {
       it('should use back subscribeToInterest() to subcribe to interest', fakeAsync(() => {
         service.subscribeToInterests(INTERESTS);
         // expect(service.subscribeToInterest).toHaveBeenCalledTimes(2);
-        expect(PusherBeams.setDeviceInterests).toHaveBeenCalledWith({
-          interests: INTERESTS
-        });
+        expect(PusherBeams.setDeviceInterests).toHaveBeenCalledWith(INTERESTS);
       }));
 
       it('should accept single interest subscription', fakeAsync(() => {
