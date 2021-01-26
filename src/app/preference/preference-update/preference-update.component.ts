@@ -42,10 +42,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       options: '',
       remarks: '',
     };
-
-    this.preferenceService.test().subscribe(res => {
-      console.log('blablabla', res);
-    });
   }
 
   ngOnDestroy() {
