@@ -5,6 +5,7 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { AuthService } from '../auth/auth.service';
 import { SwitcherService } from '../switcher/switcher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
@@ -48,7 +49,8 @@ export class TabsComponent extends RouterEnter {
     private newRelic: NewRelicService,
     private requestService: RequestService,
     private nativeStorage: NativeStorageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private pushNotificationService: PushNotificationService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -81,6 +83,10 @@ export class TabsComponent extends RouterEnter {
       if (!user.uuid) {
         this.authService.getUUID().subscribe(uuid => {
           this.nativeStorage.setObject('me', { uuid });
+          this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+            console.log('interests::', res);
+            console.log('subscribed to::', uuid);
+          });
         });
       }
     });
