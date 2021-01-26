@@ -8,7 +8,9 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { HTTP } from '@ionic-native/http/ngx';
 import { Apollo } from 'apollo-angular';
+import { Capacitor } from '@capacitor/core';
 import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
@@ -50,7 +52,8 @@ export class RequestService {
   private loggedOut: boolean;
 
   constructor(
-    private http: HttpClient,
+    private httpClient: HttpClient,
+    private httpNative: HTTP,
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
@@ -73,8 +76,15 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {}) {
-    const headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
+  appendHeaders(header = {}): HttpHeaders | {
+    [key: string]: string;
+  } {
+    let headers;
+    if (Capacitor.isNative) {
+      headers = Object.assign({'Content-Type': 'application/json'}, header);
+    } else {
+      headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
+    }
     return headers;
   }
 
@@ -83,8 +93,8 @@ export class RequestService {
    * @param options
    * @returns {any}
    */
-  setParams(options) {
-    let params: any;
+  setParams(options): HttpParams {
+    let params: HttpParams;
     if (!this.utils.isEmpty(options)) {
       params = new HttpParams();
       this.utils.each(options, (value, key) => {
@@ -94,7 +104,7 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint) {
+  private getEndpointUrl(endpoint): string {
     let endpointUrl = this.prefixUrl + endpoint;
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;
@@ -122,10 +132,15 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.get<any>(this.getEndpointUrl(endPoint), {
+    let request = this.httpClient.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+    if (Capacitor.isNative) {
+      request = from(this.httpNative.get(this.getEndpointUrl(endPoint), httpOptions.params, this.appendHeaders(httpOptions.headers)));
+    }
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -135,7 +150,7 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  post(endPoint: string = '', data: string | object, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -147,10 +162,21 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
+
+    let request = this.httpClient.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+    if (Capacitor.isNative) {
+      // turn params into URL params, as http plugin do not support it
+      const url = `${this.getEndpointUrl(endPoint)}/${this.setParams(httpOptions.params)}`;
+      if (typeof data === 'string') {
+        this.httpNative.setDataSerializer("utf8");
+      }
+      request = from(this.httpNative.post(this.getEndpointUrl(endPoint), data, this.appendHeaders(httpOptions.headers)));
+    }
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -208,10 +234,16 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
+
+    let request = this.httpClient.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+    if (Capacitor.isNative) {
+      request = from(this.httpNative.delete(this.getEndpointUrl(endPoint), httpOptions.params, this.appendHeaders(httpOptions.headers)));
+    }
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
