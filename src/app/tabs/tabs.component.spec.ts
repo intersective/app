@@ -196,9 +196,17 @@ describe('TabsComponent', () => {
     }));
 
     it('should get correct data', fakeAsync(() => {
+      tabsSpy.getNoOfChats.and.returnValue(of(4));
+      tabsSpy.getNoOfTodoItems.and.returnValue(Promise.resolve(of(5)));
       nativeStorageSpy.getObject.and.returnValue(Promise.resolve(0));
       flush();
 
+      component['_me$'].next({
+        teamId: true,
+        hasReviews: true,
+        hasEvents: true,
+      });
+      utils.broadcastEvent('chat:new-message', '');
       requestSpy.hideChatTab.and.returnValue(false);
       fixture.detectChanges();
       flush();
