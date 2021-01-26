@@ -55,12 +55,15 @@ describe('PushNotificationService', () => {
     service.listenToError = jasmine.createSpy('listenToError');
     service.listenToReceiver = jasmine.createSpy('listenToReceiver');
     service.listenToActionPerformed = jasmine.createSpy('listenToActionPerformed');
+    service.listenToStateChangeToActive = jasmine.createSpy('listenToStateChangeToActive');
+
     service.initiatePushNotification().then(() => {
       expect(service.requestPermission).toHaveBeenCalled();
       expect(service.registerToServer).toHaveBeenCalled();
       expect(service.listenToError).toHaveBeenCalled();
       expect(service.listenToReceiver).toHaveBeenCalled();
       expect(service.listenToActionPerformed).toHaveBeenCalled();
+      expect(service.listenToStateChangeToActive).toHaveBeenCalled();
     });
     flush();
   }));
