@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import { of, BehaviorSubject, Subscription, from } from 'rxjs';
 import { environment } from '@environments/environment';
 import { Capacitor } from '@capacitor/core';
-import { HTTP } from '@ionic-native/http/ngx';
 
 export const APIs = {
   preference: `${environment.lambdaServices.preferences}preferences`,
@@ -43,7 +42,6 @@ export class PreferenceService {
 
   constructor(
     private request: RequestService,
-    private http: HTTP
   ) { }
 
   getPreference(apikey?): Subscription {
