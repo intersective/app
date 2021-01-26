@@ -45,7 +45,7 @@ describe('PushNotificationService', () => {
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
   });
 
-  xit('should be created', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
