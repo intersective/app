@@ -8,9 +8,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { HTTP } from '@ionic-native/http/ngx';
 import { Apollo } from 'apollo-angular';
-import { Capacitor } from '@capacitor/core';
 import gql from 'graphql-tag';
 
 @Injectable({ providedIn: 'root' })
@@ -53,7 +51,6 @@ export class RequestService {
 
   constructor(
     private httpClient: HttpClient,
-    private httpNative: HTTP,
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
@@ -76,16 +73,8 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {}): HttpHeaders | {
-    [key: string]: string;
-  } {
-    let headers;
-    if (Capacitor.isNative) {
-      headers = Object.assign({'Content-Type': 'application/json'}, header);
-    } else {
-      headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
-    }
-    return headers;
+  appendHeaders(header = {}): HttpHeaders {
+    return new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
   }
 
   /**
@@ -136,9 +125,6 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
-    if (Capacitor.isNative) {
-      request = from(this.httpNative.get(this.getEndpointUrl(endPoint), httpOptions.params, this.appendHeaders(httpOptions.headers)));
-    }
 
     return request
       .pipe(concatMap(response => {
@@ -167,14 +153,6 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
-    if (Capacitor.isNative) {
-      // turn params into URL params, as http plugin do not support it
-      const url = `${this.getEndpointUrl(endPoint)}/${this.setParams(httpOptions.params)}`;
-      if (typeof data === 'string') {
-        this.httpNative.setDataSerializer("utf8");
-      }
-      request = from(this.httpNative.post(this.getEndpointUrl(endPoint), data, this.appendHeaders(httpOptions.headers)));
-    }
 
     return request
       .pipe(concatMap(response => {
@@ -239,9 +217,6 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
-    if (Capacitor.isNative) {
-      request = from(this.httpNative.delete(this.getEndpointUrl(endPoint), httpOptions.params, this.appendHeaders(httpOptions.headers)));
-    }
 
     return request
       .pipe(concatMap(response => {
