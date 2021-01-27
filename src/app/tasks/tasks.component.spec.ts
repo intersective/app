@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TasksComponent } from './tasks.component';
@@ -7,31 +8,33 @@ import { AssessmentModule } from '../assessment/assessment.module';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
-import { BrowserStorageService } from '@services/storage.service';
 import { TasksRoutingModule } from './tasks-routing.module';
 import { SharedModule } from '@shared/shared.module';
 import { NativeStorageService } from '@services/native-storage.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Apollo } from 'apollo-angular';
+import { SharedService } from '@services/shared.service';
 import { EmbedVideoService } from 'ngx-embed-video';
+import { TasksRoutingComponent } from './tasks-routing.component';
+
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
   let fixture: ComponentFixture<TasksComponent>;
   let routeSpy: ActivatedRoute;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         TopicModule,
-        HttpClientTestingModule,
-        RouterTestingModule,
-        AssessmentModule
+        AssessmentModule,
+        TasksRoutingModule,
+        ActivityModule
       ],
-      declarations: [ TasksComponent ],
+      declarations: [ TasksComponent, TasksRoutingComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         Apollo,
         EmbedVideoService, // required by TopicModule
@@ -52,8 +55,8 @@ describe('TasksComponent', () => {
           useClass: NativeStorageServiceMock
         },
         {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get'])
+          provider: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['markTopicStopOnNavigating'])
         },
       ]
     })
@@ -65,7 +68,6 @@ describe('TasksComponent', () => {
     component = fixture.componentInstance;
     routeSpy = TestBed.inject(ActivatedRoute);
     nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     // mock the activity object
     component.activity = { onEnter() {} };
     // mock the topic object
