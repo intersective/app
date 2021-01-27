@@ -29,7 +29,6 @@ describe('TasksComponent', () => {
       imports: [
         SharedModule,
         TopicModule,
-        AssessmentModule,
         TasksRoutingModule,
         ActivityModule
       ],
@@ -143,6 +142,7 @@ describe('TasksComponent', () => {
         expect(component.contextId).toEqual(expectedContextId);
       });
     }));
+
     it('should not do anything if topicId exist already', () => {
       component.topicId = 1;
       expectedTopicId = 1;
