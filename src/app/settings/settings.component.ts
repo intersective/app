@@ -9,6 +9,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
+import { PreferenceService } from '@services/preference.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Capacitor } from '@capacitor/core';
@@ -65,6 +66,7 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private preferenceService: PreferenceService,
     private pushNotificationService: PushNotificationService
   ) {
     super(router);

@@ -26,8 +26,9 @@ describe('FastFeedbackSubmitterService', () => {
   });
 
   it('should submit fastfeedback', () => {
+    const SAMPLE_VALUE = 1;
     requestSpy.post.and.returnValue(of({}));
-    service.submit({}, {}).subscribe();
+    service.submit({}, { context_id: SAMPLE_VALUE }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 

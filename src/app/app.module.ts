@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { HttpLinkModule, HttpLink } from 'apollo-angular-link-http';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import { HTTP } from '@ionic-native/http/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -93,6 +94,7 @@ import { IonicStorageModule } from '@ionic/storage';
     },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
+    HTTP,
     UtilsService,
     VersionCheckService,
   ],
