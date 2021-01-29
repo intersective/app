@@ -4,9 +4,9 @@ import { Observable, interval, pipe } from 'rxjs';
 import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { NativeStorageService } from '@services/native-storage.service';
 import { environment } from '@environments/environment';
-import { NotificationService } from '@shared/notification/notification.service'
+import { NotificationService } from '@shared/notification/notification.service';
+
 import {
   Plugins,
   PushNotification,
@@ -20,7 +20,6 @@ import {
   NotificationPermissionResponse,
   AppState
 } from '@capacitor/core';
-
 import 'capacitor-pusher-beams';
 
 const { App, PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
@@ -40,7 +39,6 @@ export class PushNotificationService {
 
   constructor(
     private storage: BrowserStorageService,
-    private nativeStorage: NativeStorageService,
     private notificationService: NotificationService,
   ) {
     const hasPlugin = Capacitor.isPluginAvailable('PushNotifications');
