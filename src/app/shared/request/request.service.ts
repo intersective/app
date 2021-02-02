@@ -168,7 +168,7 @@ export class RequestService {
     const headers = this.appendHeaders(httpOptions.headers);
     const params = this.setParams(httpOptions.params);
 
-    return this.http.put<any>(this.getEndpointUrl(endPoint), data, { headers, params })
+    return this.httpClient.put<any>(this.getEndpointUrl(endPoint), data, { headers, params })
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
