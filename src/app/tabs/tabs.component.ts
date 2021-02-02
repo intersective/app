@@ -3,7 +3,9 @@ import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { AuthService } from '../auth/auth.service';
 import { SwitcherService } from '../switcher/switcher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
@@ -46,7 +48,9 @@ export class TabsComponent extends RouterEnter {
     private eventsService: EventListService,
     private newRelic: NewRelicService,
     private requestService: RequestService,
-    private nativeStorage: NativeStorageService
+    private nativeStorage: NativeStorageService,
+    private authService: AuthService,
+    private pushNotificationService: PushNotificationService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -68,6 +72,25 @@ export class TabsComponent extends RouterEnter {
       });
     });
 
+    this.routes.data.subscribe(data => {
+      const { user } = data;
+      if (!this.utils.isEqual(this._me$.value, user)) {
+        this._me$.next(user);
+      }
+      this.hidingChatTab();
+
+      // enforced inside tabComponent to guarantee successful retrieval of uuid
+      if (!user.uuid) {
+        this.authService.getUUID().subscribe(uuid => {
+          this.nativeStorage.setObject('me', { uuid });
+          this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+            console.log('interests::', res);
+            console.log('subscribed to::', uuid);
+          });
+        });
+      }
+    });
+
     this.me$.subscribe(user => this.updateShowList(user));
   }
 
@@ -79,13 +102,6 @@ export class TabsComponent extends RouterEnter {
       noOfTodoItems.subscribe(quantity => {
         this.noOfTodoItems = quantity;
       });
-    });
-
-    fromPromise(this.nativeStorage.getObject('me')).subscribe(res => {
-      if (!this.utils.isEqual(this._me$.value, res)) {
-        this._me$.next(res);
-      }
-      this.hidingChatTab();
     });
   }
 

@@ -1,18 +1,25 @@
 import { Injectable, Optional } from '@angular/core';
-import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpParams } from '@angular/common/http';
+import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpParams, HttpResponse } from '@angular/common/http';
+import { HTTP } from '@ionic-native/http/ngx';
+import { Platform } from '@ionic/angular';
 import { Observable } from 'rxjs/Observable';
 import { switchMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { RequestConfig } from './request.service';
 import { BrowserStorageService, User } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
+import { Capacitor } from '@capacitor/core';
+
+type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'upload' | 'download';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
   currenConfig: any;
   constructor(
+    private platform: Platform,
     private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
+    private httpNative: HTTP,
     @Optional() config: RequestConfig,
   ) {
     this.currenConfig = config;
@@ -56,10 +63,72 @@ export class RequestInterceptor implements HttpInterceptor {
         headers['teamId'] = teamId.toString();
       }
 
+
+      if (Capacitor.isNative) {
+        return this.handleNativeRequest(req.clone({
+          headers: new HttpHeaders(headers),
+          params: paramsInject,
+        }));
+      }
+
       return next.handle(req.clone({
         headers: new HttpHeaders(headers),
         params: paramsInject,
       }));
     }));
+  }
+
+  private async handleNativeRequest(request: HttpRequest<any>): Promise<HttpResponse<any>> {
+    const headerKeys = request.headers.keys();
+    const headers = {};
+
+    headerKeys.forEach((key) => {
+      headers[key] = request.headers.get(key);
+    });
+
+    try {
+      await this.platform.ready();
+
+      const method = <HttpMethod> request.method.toLowerCase();
+
+      const nativeHttpResponse = await this.httpNative.sendRequest(request.url, {
+        method: method,
+        data: request.body,
+        headers: headers,
+        serializer: (typeof request.body === 'string') ? 'utf8' : 'json',
+      });
+
+      let body;
+
+      try {
+        body = JSON.parse(nativeHttpResponse.data);
+      } catch (error) {
+        body = {
+          response: nativeHttpResponse.data
+        };
+      }
+
+      const response = new HttpResponse({
+        body: body,
+        status: nativeHttpResponse.status,
+        headers: new HttpHeaders(nativeHttpResponse.headers),
+        url: nativeHttpResponse.url,
+      });
+
+      return Promise.resolve(response);
+    } catch (error) {
+      if (!error.status) {
+        return Promise.reject(error);
+      }
+
+      const response = new HttpResponse({
+        body: JSON.parse(error.error),
+        status: error.status,
+        headers: error.headers,
+        url: error.url,
+      });
+
+      return Promise.reject(response);
+    }
   }
 }
