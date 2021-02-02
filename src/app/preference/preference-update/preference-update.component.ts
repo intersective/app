@@ -47,7 +47,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       options: '',
       remarks: '',
     };
-
   }
 
   ngOnDestroy() {

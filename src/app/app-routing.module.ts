@@ -38,6 +38,11 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
+    path: 'activity-task',
+    loadChildren: './tasks/tasks.module#TasksModule',
+    canLoad: [AuthGuard]
+  },
+  {
     path: 'fast-feedback',
     component: FastFeedbackComponent,
     canLoad: [AuthGuard]
@@ -61,6 +66,9 @@ const routes: Routes = [
     loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
+    resolve: {
+      user: UserResolverService,
+    },
   },
   {
     path: '',
