@@ -8,6 +8,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { asyncData } from '@testing/async-observable-helpers';
 import { BrowserStorageService, User } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
+import { HTTP } from '@ionic-native/http/ngx';
 
 import { Router } from '@angular/router';
 import { TestUtils } from '@testing/utils';
@@ -50,6 +51,9 @@ describe('RequestInterceptor', () => {
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: HTTP,
         }
       ]
     });

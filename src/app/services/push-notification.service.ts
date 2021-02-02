@@ -5,7 +5,8 @@ import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operator
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
-import { NotificationService } from '@shared/notification/notification.service'
+import { NotificationService } from '@shared/notification/notification.service';
+
 import {
   Plugins,
   PushNotification,
@@ -19,7 +20,6 @@ import {
   NotificationPermissionResponse,
   AppState
 } from '@capacitor/core';
-
 import 'capacitor-pusher-beams';
 
 const { App, PushNotifications, LocalNotifications, PusherBeams, Permissions } = Plugins;
@@ -135,13 +135,17 @@ export class PushNotificationService {
         appkey: environment.appkey,
         apikey: token,
       },
-      beamsAuthURL: 'https://wchpiwp904.execute-api.us-east-2.amazonaws.com/beams'
+      beamsAuthURL: environment.lambdaServices.pusherBeamsAuth
     });
     return linkedUser;
   }
 
+  async stopAuth() {
+    return this.pusherBeams.stop();
+  }
+
   unsubscribeInterest(interest: string) {
-    return this.pusherBeams.removeDeviceInterest(interest);
+    return this.pusherBeams.removeDeviceInterest({interest});
   }
 
   /**
@@ -149,23 +153,32 @@ export class PushNotificationService {
    * @param  {string}        interest
    * @return {Promise<void>}
    */
-  subscribeToInterest(interest): Promise<void> {
+  subscribeToInterest(interest): Promise<{message: string}> {
     return this.pusherBeams.addDeviceInterest({ interest });
   }
 
-  subscribeToInterests(interests: string[] | string): Promise<void> {
+  subscribeToInterests(interests: string[] | string): Promise<{message: string} | { interests: string[]}> {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return this.pusherBeams.setDeviceInterests({ interests });
+    return this.pusherBeams.setDeviceInterests(interests);
   }
 
-  clearInterest(): Promise<void> {
+  clearInterest(): Promise<{success: boolean}> {
     return this.pusherBeams.clearDeviceInterests();
   }
 
-  getSubscribedInterests(): Promise<any> {
+  getSubscribedInterests(): Promise<{interests: string[]}> {
     return this.pusherBeams.getDeviceInterests();
+  }
+
+  async ensureSubscribedToBeams(userUuid: string): Promise<{message: string} | { interests: string[]}> {
+    const subscribed = await this.getSubscribedInterests();
+    if (subscribed.interests.includes(userUuid)) {
+      return;
+    }
+
+    return this.subscribeToInterests(userUuid);
   }
 
   clearPusherBeams() {

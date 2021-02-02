@@ -21,6 +21,7 @@ public class MainActivity extends BridgeActivity {
       // Ex: add(TotallyAwesomePlugin.class);
       PushNotifications.start(getApplicationContext(), "c0ba349e-66c6-440d-8ac7-fe229709d088");
       PushNotifications.addDeviceInterest("general");
+      PushNotifications.addDeviceInterest("debug-general");
       add(PusherBeams.class);
       add(CustomNativePlugin.class);
     }});

@@ -9,6 +9,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
+import { PreferenceService } from '@services/preference.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Capacitor } from '@capacitor/core';
@@ -48,7 +49,7 @@ export class SettingsComponent extends RouterEnter {
   acceptFileTypes;
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-  interests: string;
+  interests: string[];
   associated: any;
   firstVisitPermission: any;
 
@@ -65,6 +66,7 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private preferenceService: PreferenceService,
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
@@ -176,7 +178,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   async getInterests() {
-    const interests = await this.pushNotificationService.getSubscribedInterests();
+    const { interests } = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
     console.log(interests);
   }
@@ -190,6 +192,11 @@ export class SettingsComponent extends RouterEnter {
     const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
     console.log(associated);
     this.associated = associated;
+  }
+
+  async stopLink() {
+    const unlinked = await this.pushNotificationService.stopAuth();
+    console.log(unlinked);
   }
 
   logout() {
