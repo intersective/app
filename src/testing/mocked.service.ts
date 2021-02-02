@@ -82,6 +82,7 @@ export class MockActivatedRouter extends MockRouter {
   events;
   url;
   snapshot;
+  data;
 
   constructor() {
     super();
@@ -100,6 +101,13 @@ export class MockActivatedRouter extends MockRouter {
     this.url = 'abc';
     this.snapshot = {
       url: TEST_EVENT.url,
+    };
+    this.data = {
+      subscribe: () => of({
+        user: {
+          uuid: ''
+        }
+      })
     };
   }
 }

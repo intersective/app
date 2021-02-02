@@ -29,3 +29,7 @@ out-tsc
 android/app/google-services.json
 src/environments/environment.alpha-native.ts
 src/environments/environment.ts
+android/local.properties
+.gradle/*/executionHistory/*.lock
+
+electron

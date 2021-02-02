@@ -50,7 +50,7 @@ export class RequestService {
   private loggedOut: boolean;
 
   constructor(
-    private http: HttpClient,
+    private httpClient: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
@@ -73,9 +73,8 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {}) {
-    const headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
-    return headers;
+  appendHeaders(header = {}): HttpHeaders {
+    return new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
   }
 
   /**
@@ -83,8 +82,8 @@ export class RequestService {
    * @param options
    * @returns {any}
    */
-  setParams(options) {
-    let params: any;
+  setParams(options): HttpParams {
+    let params: HttpParams;
     if (!this.utils.isEmpty(options)) {
       params = new HttpParams();
       this.utils.each(options, (value, key) => {
@@ -94,7 +93,7 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint) {
+  private getEndpointUrl(endpoint): string {
     let endpointUrl = this.prefixUrl + endpoint;
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
       endpointUrl = endpoint;
@@ -130,10 +129,12 @@ export class RequestService {
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
     httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    return this.http.get<any>(this.getEndpointUrl(endPoint), {
+    let request = this.httpClient.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -143,13 +144,15 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  post(endPoint: string = '', data: string | object, httpOptions?: any): Observable<any> {
     httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
+    let request = this.httpClient.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -223,10 +226,13 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
+
+    let request = this.httpClient.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);

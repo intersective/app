@@ -492,7 +492,7 @@ export class AssessmentComponent extends RouterEnter {
     const promptForPermission = await this.pushNotificationService.promptForPermission(PermissionTypes.firstVisit, this.router.routerState.snapshot);
 
     if (promptForPermission && this.assessment.type === 'moderated') {
-      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive feedback for your assessment?');
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be notified when you receive feedback for your assessment?', '/assets/img/feedback.svg');
     }
   }
 
@@ -736,6 +736,9 @@ export class AssessmentComponent extends RouterEnter {
         return 'submitting';
       }
       if (this.submitted) {
+        if (this.assessment.type === 'moderated') {
+          return 'pending review';
+        }
         return 'submitted';
       }
       // display the submit button, don't need the text in the footer

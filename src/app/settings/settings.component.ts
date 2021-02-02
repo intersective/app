@@ -9,6 +9,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
+import { PreferenceService } from '@services/preference.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
 import { Capacitor } from '@capacitor/core';
@@ -17,10 +18,6 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Subject } from 'rxjs/Subject';
 import { flatMap, filter } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
-import { Plugins } from '@capacitor/core';
-
-const { CustomNativePlugin } = Plugins;
-
 
 @Component({
   selector: 'app-settings',
@@ -52,7 +49,7 @@ export class SettingsComponent extends RouterEnter {
   acceptFileTypes;
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-  interests: string;
+  interests: string[];
   associated: any;
   firstVisitPermission: any;
 
@@ -69,6 +66,7 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private preferenceService: PreferenceService,
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
@@ -123,7 +121,7 @@ export class SettingsComponent extends RouterEnter {
       this.router.routerState.snapshot
     );
     if (this.firstVisitPermission) {
-      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?');
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?', '/assets/img/permissions off.svg');
     }
     return;
   }
@@ -151,7 +149,7 @@ export class SettingsComponent extends RouterEnter {
   switchProgram() {
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
-      window.location.href = 'https://' + this.returnLtiUrl;
+      this.utils.redirectToUrl(this.returnLtiUrl);
     } else {
       this.newRelic.actionText('browse to program switcher');
       this.router.navigate(['switcher', 'switcher-program']);
@@ -170,13 +168,17 @@ export class SettingsComponent extends RouterEnter {
     window.open(mailto, '_self');
   }
 
-  async goToSettingPermission() {
-    const goSettingStatus = await this.pushNotificationService.goToAppSetting();
-    return goSettingStatus;
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goToSetting = await this.utils.goToSystemSetting();
+    return goToSetting;
   }
 
   async getInterests() {
-    const interests = await this.pushNotificationService.getSubscribedInterests();
+    const { interests } = await this.pushNotificationService.getSubscribedInterests();
     this.interests = interests;
     console.log(interests);
   }
@@ -190,6 +192,11 @@ export class SettingsComponent extends RouterEnter {
     const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
     console.log(associated);
     this.associated = associated;
+  }
+
+  async stopLink() {
+    const unlinked = await this.pushNotificationService.stopAuth();
+    console.log(unlinked);
   }
 
   logout() {
@@ -243,11 +250,5 @@ export class SettingsComponent extends RouterEnter {
         ]
       });
     }
-  }
-
-  goToSetting() {
-    console.log('I am here');
-    CustomNativePlugin.goToAppSetting();
-    console.log('done');
   }
 }
