@@ -80,13 +80,12 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     if (!this.newUpdates) {
       this.newUpdates = {};
     }
-
     if (!this.newUpdates[this.currentPreference.key]) {
       this.newUpdates[this.currentPreference.key] = {
-        [event.id]: event.checked
+        [event.name]: event.checked
       };
     } else {
-      this.newUpdates[this.currentPreference.key][event.id] = event.checked;
+      this.newUpdates[this.currentPreference.key][event.name] = event.checked;
     }
   }
 
@@ -96,8 +95,12 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
    * @return void
    */
   private async pushPreferenceUpdate(): Promise<void> {
-    if (!this.utils.isEmpty(this.newUpdates)) {
-      await this.preferenceService.update(this.newUpdates).toPromise();
+    try {
+      if (!this.utils.isEmpty(this.newUpdates)) {
+        await this.preferenceService.update(this.newUpdates).toPromise();
+      }
+    } catch (err) {
+      console.log(err);
     }
     return;
   }

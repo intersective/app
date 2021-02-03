@@ -44,7 +44,7 @@ export class PreferenceService {
     private request: RequestService,
   ) { }
 
-  getPreference(apikey?): Subscription {
+  getPreference(): Subscription {
     return this.request.get(APIs.preference, {}).pipe(
       distinctUntilChanged(),
       tap(res => {
