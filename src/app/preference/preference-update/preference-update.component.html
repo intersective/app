@@ -21,7 +21,7 @@
       <ion-label class="preference-option preference-header-item">{{ option.name }}</ion-label>
 
       <ng-container *ngIf="!option.locked; else locked">
-        <ion-toggle #C id="{{option.medium}}" slot="end" name="{{option.name}}" [attr.checked]="option.value" (ionChange)="updatePreference(C)"></ion-toggle>
+        <ion-toggle #C id="{{option.medium}}" slot="end" name="{{option.name.toLowerCase()}}" [attr.checked]="option.value" (ionChange)="updatePreference(C)"></ion-toggle>
       </ng-container>
 
       <ng-template #locked>
