@@ -129,7 +129,7 @@ export class RequestService {
   get(endPoint: string = '', httpOptions?: any): Observable<any> {
     httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    let request = this.httpClient.get<any>(this.getEndpointUrl(endPoint), {
+    const request = this.httpClient.get<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
@@ -147,7 +147,7 @@ export class RequestService {
   post(endPoint: string = '', data: string | object, httpOptions?: any): Observable<any> {
     httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    let request = this.httpClient.post<any>(this.getEndpointUrl(endPoint), data, {
+    const request = this.httpClient.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
@@ -227,7 +227,7 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let request = this.httpClient.delete<any>(this.getEndpointUrl(endPoint), {
+    const request = this.httpClient.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     });
