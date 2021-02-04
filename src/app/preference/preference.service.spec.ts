@@ -15,7 +15,9 @@ describe('PreferenceService', () => {
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', {
-            get: of(TEST_DATA)
+            post: of(TEST_DATA),
+            get: of(TEST_DATA),
+            put: of(TEST_DATA),
           })
         }
       ]

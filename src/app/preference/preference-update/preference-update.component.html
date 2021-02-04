@@ -19,14 +19,16 @@
 
     <ion-item *ngFor="let option of currentPreference.options">
       <ion-label class="preference-option preference-header-item">{{ option.name }}</ion-label>
+
       <ng-container *ngIf="!option.locked; else locked">
-        <ion-toggle slot="end" name="{{option.name}}" [attr.checked]="option.value"></ion-toggle>
+        <ion-toggle #C id="{{option.medium}}" slot="end" name="{{option.medium}}" [attr.checked]="option.value" (ionChange)="updatePreference({medium: option.medium, event: C})"></ion-toggle>
       </ng-container>
 
       <ng-template #locked>
         <ion-label slot="end" >{{ option.locked_name }}</ion-label>
       </ng-template>
     </ion-item>
+
     <ion-item *ngIf="currentPreference.remarks" lines="none" color="light">
       <ion-label>
         <p class="gray-2 subtitle-1 preference-option item-content">{{ currentPreference.remarks }}</p>

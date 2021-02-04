@@ -45,7 +45,7 @@ export class PushNotificationService {
     if (!hasPlugin) {
       this.pushNotificationPlugin.addListener('registrationError', (error: any) => {
         console.log('browser does not have access to native code');
-      })
+      });
     }
   }
 
@@ -120,8 +120,8 @@ export class PushNotificationService {
       if (state.isActive && permissionGranted ) {
         this.notificationService.dismiss();
       }
-      return state.isActive ? true : false
-    })
+      return state.isActive ? true : false;
+    });
  }
 
   /**
