@@ -1,3 +1,4 @@
+import { IonToggle } from '@ionic/angular';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
@@ -76,16 +77,23 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  updatePreference(event) {
+  /**
+   * @name updatePreference
+   * @description prepare new data changes for PUT request to preference API (with @func back())
+   * @param {string, IonToggle} changes medium in string, event is ionic ion-toggle event object
+   */
+  updatePreference(changes: { medium: string; event: IonToggle }) {
+    const { medium, event } = changes;
     if (!this.newUpdates) {
       this.newUpdates = {};
     }
+
     if (!this.newUpdates[this.currentPreference.key]) {
       this.newUpdates[this.currentPreference.key] = {
-        [event.name]: event.checked
+        [medium]: event.checked
       };
     } else {
-      this.newUpdates[this.currentPreference.key][event.name] = event.checked;
+      this.newUpdates[this.currentPreference.key][medium] = event.checked;
     }
   }
 
