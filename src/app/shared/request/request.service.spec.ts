@@ -200,7 +200,7 @@ describe('RequestService', () => {
       sample: 'data'
     };
 
-    it('should perform a GET request based on provided URL', fakeAsync(() => {
+    it('should perform a POST request based on provided URL', fakeAsync(() => {
       let res = { body: true };
 
       service.post(testURL, sampleData).subscribe(_res => {
@@ -234,6 +234,52 @@ describe('RequestService', () => {
         }
       );
       const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
+
+      expect(res).toBeUndefined();
+      expect(errRes).toEqual(ERR_MESSAGE);
+    }));
+  });
+
+  describe('put()', () => {
+    const testURL = 'https://www.put-test.com';
+    const sampleData = {
+      sample: 'data'
+    };
+
+    it('should perform a PUT request based on provided URL', fakeAsync(() => {
+      let res = { body: true };
+
+      service.put(testURL, sampleData).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'PUT' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(testURL);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform error handling when fail', fakeAsync(() => {
+      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
+
+      const ERR_MESSAGE = 'Invalid PUT Request';
+      const err = { success: false, status: 400, statusText: 'Bad Request' };
+      let res: any;
+      let errRes: any;
+      service.put(testURL, sampleData).subscribe(
+        _res => {
+          res = _res;
+        },
+        _err => {
+          errRes = _err;
+        }
+      );
+      const req = mockBackend.expectOne({ url: testURL, method: 'PUT'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
