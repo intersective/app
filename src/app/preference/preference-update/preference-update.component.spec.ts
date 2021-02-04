@@ -9,85 +9,85 @@ import { UtilsService } from '@services/utils.service';
 import { PreferenceUpdateComponent } from './preference-update.component';
 
 const bestKey = {
-  "description": "When I receive chat messages",
-  "key": "best key",
-  "name": "Chat messages",
-  "options": [
+  'description': 'When I receive chat messages',
+  'key': 'best key',
+  'name': 'Chat messages',
+  'options': [
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "email",
-      "name": "Email",
-      "value": true
+      'locked': false,
+      'locked_name': '',
+      'medium': 'email',
+      'name': 'Email',
+      'value': true
     },
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "sms",
-      "name": "SMS",
-      "value": false
+      'locked': false,
+      'locked_name': '',
+      'medium': 'sms',
+      'name': 'SMS',
+      'value': false
     }
   ],
-  "remarks": "Chat messages can be muted from within individual chat channels"
+  'remarks': 'Chat messages can be muted from within individual chat channels'
 };
 const new_member_added = {
-  "description": "How do you want to be told when a member was added to the team",
-  "key": "new_member_added",
-  "name": "When a member has been added to the team",
-  "options": [
+  'description': 'How do you want to be told when a member was added to the team',
+  'key': 'new_member_added',
+  'name': 'When a member has been added to the team',
+  'options': [
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "email",
-      "name": "Email",
-      "value": true
+      'locked': false,
+      'locked_name': '',
+      'medium': 'email',
+      'name': 'Email',
+      'value': true
     },
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "sms",
-      "name": "SMS",
-      "value": false
+      'locked': false,
+      'locked_name': '',
+      'medium': 'sms',
+      'name': 'SMS',
+      'value': false
     }
   ],
-  "remarks": ""
+  'remarks': ''
 };
 const member_removed = {
-  "description": "How do you want to be told when a member was removed from the team",
-  "key": "member_removed",
-  "name": "When a member has been removed",
-  "options": [
+  'description': 'How do you want to be told when a member was removed from the team',
+  'key': 'member_removed',
+  'name': 'When a member has been removed',
+  'options': [
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "email",
-      "name": "Email",
-      "value": true
+      'locked': false,
+      'locked_name': '',
+      'medium': 'email',
+      'name': 'Email',
+      'value': true
     },
     {
-      "locked": false,
-      "locked_name": "",
-      "medium": "sms",
-      "name": "SMS",
-      "value": false
+      'locked': false,
+      'locked_name': '',
+      'medium': 'sms',
+      'name': 'SMS',
+      'value': false
     }
   ],
-  "remarks": ""
+  'remarks': ''
 };
 
 const SAMPLE_PREFERENCE = {
-  "categories": [
+  'categories': [
     {
-      "name": "Chat Notifications",
-      "order": 1,
-      "preferences": [
+      'name': 'Chat Notifications',
+      'order': 1,
+      'preferences': [
         bestKey
       ]
     },
     {
-      "name": "Team Changes Notifications",
-      "order": 2,
-      "preferences": [
+      'name': 'Team Changes Notifications',
+      'order': 2,
+      'preferences': [
         new_member_added,
         member_removed
       ]
@@ -177,7 +177,7 @@ describe('PreferenceUpdateComponent', () => {
 
   describe('updatePreference()', () => {
     it('should updatePreference', () => {
-      const preferenceKey: string = 'best key';
+      const preferenceKey = 'best key';
 
       component.currentPreference = component.filterPreferences(SAMPLE_PREFERENCE, preferenceKey);
       expect(component.currentPreference).toEqual(bestKey);
