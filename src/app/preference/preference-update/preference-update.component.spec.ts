@@ -170,7 +170,6 @@ describe('PreferenceUpdateComponent', () => {
   describe('filterPreferences()', () => {
     it('should filter preferences', () => {
       const result = component.filterPreferences(SAMPLE_PREFERENCE, 'best key');
-      console.log(result);
       expect(result).toEqual(bestKey);
     });
   });

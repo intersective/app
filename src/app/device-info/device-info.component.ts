@@ -22,7 +22,6 @@ export class DeviceInfoComponent implements OnInit {
 
   ngOnInit() {
     this.platform.ready().then(res => {
-      console.log(this.platform);
       const {
         isLandscape,
         isRTL,
