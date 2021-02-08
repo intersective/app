@@ -126,6 +126,10 @@ export class SettingsComponent extends RouterEnter {
     return;
   }
 
+  async showPreferenceModal() {
+    await this.notificationService.PreferenceDesktopModal('Notification'); 
+  }
+
   // loading pragram image to settings page by resizing it depend on device.
   // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
   // because of that we load image also in mobile view.

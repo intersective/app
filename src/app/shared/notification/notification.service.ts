@@ -8,6 +8,7 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activ
 import { PNPermissionModalComponent } from '@shared/components/pn-permission-modal/pn-permission-modal.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
+import { PreferenceComponent } from '@app/preference/preference.component';
 
 export interface CustomTostOptions {
   message: string;
@@ -193,5 +194,18 @@ export class NotificationService {
 
     });
     return loading.present();
+  }
+
+  async PreferenceDesktopModal(message: string) {
+    const cssClass = 'practera-popup push-notification-popup';
+    return  await this.modal(
+      PreferenceComponent,
+      { message },
+      {
+        cssClass: cssClass,
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    )
   }
 }
