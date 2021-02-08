@@ -9,6 +9,7 @@ import { PNPermissionModalComponent } from '@shared/components/pn-permission-mod
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceComponent } from '@app/preference/preference.component';
+import { OptionsComponent } from '@app/preference/options/options.component';
 
 export interface CustomTostOptions {
   message: string;
@@ -196,11 +197,23 @@ export class NotificationService {
     return loading.present();
   }
 
-  async PreferenceDesktopModal(message: string) {
-    const cssClass = 'practera-popup push-notification-popup';
-    return  await this.modal(
+  PreferenceDesktopModal(message: string) {
+    const cssClass = 'practera-popup push-notification-popup prefernce-modal';
+    return   this.modal(
       PreferenceComponent,
       { message },
+      {
+        cssClass: cssClass,
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    )
+  }
+
+  PreferenceOptionsModal() {
+    const cssClass = 'practera-popup push-notification-popup prefernce-modal';
+    return   this.modal(
+      OptionsComponent,
       {
         cssClass: cssClass,
         keyboardClose: false,

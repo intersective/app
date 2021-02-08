@@ -270,8 +270,11 @@ ion-skeleton-text {
           text-align: -webkit-center;
         }
       }
-
+    .prefernce-modal {
+      width: 500px !important;
+     }
     }
+  
   }
   &.desktop-view {
     .modal-wrapper {
@@ -295,8 +298,6 @@ ion-skeleton-text {
       --max-height: 62%;
     }
     .modal-wrapper {
-      
-      //--max-height: 54%;
       min-height: 200px;
     }
     

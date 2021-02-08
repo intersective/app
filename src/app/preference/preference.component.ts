@@ -2,6 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PreferenceService } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { UtilsService } from '@services/utils.service';
+import { ThrowStmt } from '@angular/compiler';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-preference',
@@ -14,8 +17,10 @@ export class PreferenceComponent implements OnDestroy, OnInit {
 
   constructor(
     private preferenceService: PreferenceService,
+    private util: UtilsService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -32,5 +37,12 @@ export class PreferenceComponent implements OnDestroy, OnInit {
 
   goTo(direction) {
     return this.router.navigate(direction);
+  }
+
+  preferenceClick() {
+    if (this.util.isMobile) {
+    } else {
+     this.notificationService.PreferenceOptionsModal(); 
+    }
   }
 }

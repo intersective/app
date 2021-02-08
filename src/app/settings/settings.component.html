@@ -83,7 +83,7 @@
           <div class="ion-margin-top subtitle-1">
             <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
 
-            <ion-item class="no-bg" lines="none" (click)="router.navigate(['/preferences'])">
+            <ion-item class="no-bg" lines="none" (click)="showPreferenceModal()">
               <ion-icon class="ion-padding-end" color="primary" name="notifications"></ion-icon>
               Notifications
             </ion-item>
