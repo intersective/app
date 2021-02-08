@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@services/storage.service';
 import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 /**
  * @name api
@@ -72,11 +73,18 @@ export class AuthService {
     private nativeStorage: NativeStorageService,
     private utils: UtilsService,
     private router: Router,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private pushNotificationService: PushNotificationService
   ) {}
 
-  private _clearCache(): any {
+  private async _clearCache(): Promise<void> {
     // do clear user cache here
+    this.pusherService.unsubscribeChannels();
+    this.pusherService.disconnect();
+    this.storage.clear();
+
+    await this.pushNotificationService.clearInterest();
+    await this.nativeStorage.clear();
   }
 
   private _login(body: HttpParams) {
@@ -166,20 +174,20 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  async logout(navigationParams = {}, redirect = true) {
+  async logout(navigationParams = {}, redirect = true): Promise<any> {
     // use the config color
     const config = await this.nativeStorage.getObject('config');
     this.utils.changeThemeColor(config.color || '#2bbfd4');
-    this.pusherService.unsubscribeChannels();
-    this.pusherService.disconnect();
-    this.storage.clear();
-    await this.nativeStorage.clear();
+
+    this._clearCache();
     // still store config info even logout
     await this.nativeStorage.setObject('config', config);
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
+    return;
   }
+
    /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url

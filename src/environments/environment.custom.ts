@@ -1,7 +1,10 @@
 export const environment = {
   production: true,
   appkey: '<CUSTOM_APPKEY>',
-  pusherKey: '<CUSTOM_PUSHERKEY>',
+  pusher: {
+    key: '<CUSTOM_PUSHERKEY>',
+    beamsDefaultInterest: ['general']
+  },
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
