@@ -123,7 +123,6 @@ export class AuthService {
       await this.logout({}, false);
       return this._login(body);
     } catch (err) {
-      console.log('directLogin', err);
       return err;
     }
   }
@@ -179,7 +178,7 @@ export class AuthService {
     const config = await this.nativeStorage.getObject('config');
     this.utils.changeThemeColor(config.color || '#2bbfd4');
 
-    this._clearCache();
+    await this._clearCache();
     // still store config info even logout
     await this.nativeStorage.setObject('config', config);
     if (redirect) {

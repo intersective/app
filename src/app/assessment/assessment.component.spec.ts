@@ -564,13 +564,10 @@ describe('AssessmentComponent', () => {
     it('submitting', fakeAsync(() => {
       savingButtonDisabled = true;
       component.submit(false).then(() => {
-        console.log('asdasdasd', assessmentServiceSpy.saveAnswers.calls.first());
-
         expect(assessmentServiceSpy.saveAnswers).toHaveBeenCalled();
         assessment = assessmentServiceSpy.saveAnswers.calls.first().args[0];
         answers = assessmentServiceSpy.saveAnswers.calls.first().args[1];
 
-        console.log('saving?', component.saving);
         expect(component.submitting).toEqual(false);
         expect(component.saving).toBe(true);
       });
