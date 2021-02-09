@@ -10,6 +10,7 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
 import { NativeStorageServiceMock } from '@testing/mocked.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -52,6 +53,10 @@ describe('AuthService', () => {
         {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
+        },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', ['clearInterest'])
         },
       ]
     });

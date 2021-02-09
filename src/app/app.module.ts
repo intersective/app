@@ -63,7 +63,7 @@ import { IonicStorageModule } from '@ionic/storage';
     EventDetailModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
-      pusherKey: environment.pusherKey,
+      pusherKey: environment.pusher.key,
     }),
     IntercomModule.forRoot({
       appId: environment.intercomAppId,

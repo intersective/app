@@ -85,7 +85,6 @@ export class TabsComponent extends RouterEnter {
           this.nativeStorage.setObject('me', { uuid });
           this.pushNotificationService.subscribeToInterests(uuid).then(res => {
             console.log('interests::', res);
-            console.log('subscribed to::', uuid);
           });
         });
       }
