@@ -35,4 +35,8 @@ export const environment = {
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,
   goMobile: false,
+  lambdaServices: {
+    pusherBeamsAuth: '<CUSTOM_PUSHER_BEAMS_ENDPOINT>',
+    preferences: '<CUSTOM_PREFERENCE_ENDPOINT>'
+  },
 };
