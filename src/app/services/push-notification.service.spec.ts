@@ -94,9 +94,7 @@ describe('PushNotificationService', () => {
       // Capacitor.isPluginAvailable = () => true;
 
       /*PushNotifications.requestPermission = (): Promise<NotificationPermissionResponse> => {
-        console.log('from spec?');
         return new Promise(resolve => {
-          console.log('from specasd?');
           return resolve({ granted: false });
         });
       };*/

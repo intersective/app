@@ -47,7 +47,6 @@ export class NativeStorageService {
   async keys() {
     try {
       const { keys } = await this.storage.keys();
-      console.log('Got keys: ', keys);
     } catch (err) {
       return err;
     }

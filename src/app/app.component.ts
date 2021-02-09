@@ -169,6 +169,7 @@ export class AppComponent implements OnInit {
 
 
     if (Capacitor.isNative) {
+      this.pushNotificationService.subscribeToInterests(environment.pusher.beamsDefaultInterest);
       App.addListener('appStateChange', (state: AppState) => {
         const pnPermission = this.storage.get('pushnotifications');
         if (!pnPermission) {
