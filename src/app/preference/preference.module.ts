@@ -6,12 +6,16 @@ import { PreferenceComponent } from './preference.component';
 import { PreferenceRoutingModule } from './preference-routing.module';
 import { OptionsComponent } from './options/options.component';
 import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
+import { PreferenceModalComponent } from './preference-modal/preference-modal.component';
+import { NotificationsPreferenceComponent } from './notifications-preference/notifications-preference.component';
 
 @NgModule({
   declarations: [
     PreferenceComponent,
     OptionsComponent,
-    PreferenceUpdateComponent
+    PreferenceUpdateComponent,
+    PreferenceModalComponent,
+    NotificationsPreferenceComponent
   ],
   imports: [
     SharedModule,
