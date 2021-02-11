@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NotificationsPreferenceComponent } from './notifications-preference/notifications-preference.component';
+import { PreferenceComponent } from './preference.component';
 import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: NotificationsPreferenceComponent,
+    component: PreferenceComponent,
   },
   {
     path: ':key',

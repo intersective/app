@@ -1,4 +1,4 @@
-<!-- <ion-header mode="ios">
+<ion-header mode="ios">
   <ion-toolbar class="ion-toolbar-absolute">
     <ion-buttons slot="start">
       <ion-button  (click)="goTo(['/app', 'settings'])">
@@ -8,7 +8,7 @@
 
     <ion-title class="ion-text-center">Notifications</ion-title>
   </ion-toolbar>
-</ion-header> -->
+</ion-header>
 
 <ion-content fullscreen>
   <ng-container *ngIf="(preferences$ | async ) as preferences; else noPreferenceAvailable">
