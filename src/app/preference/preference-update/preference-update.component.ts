@@ -28,7 +28,6 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     const key = activatedRoute.snapshot.params.key;
     this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
       this.preferences = res;
-      console.log('preference',this.preferences)
       if (this.preferences && key) {
        this.currentPreference = this.filterPreferences(this.preferences, key);
       }
