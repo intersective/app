@@ -26,13 +26,11 @@ export class PreferenceModalComponent implements OnDestroy, OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {
-    this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
-      this.preferenceService.getPreference();
-    });
   }
   
   
   ngOnInit() {
+    this.preferenceSubject$ = this.preferenceService.getPreference();
     this.currentPreference = {
       name: '',
       description: '',

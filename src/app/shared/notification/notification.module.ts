@@ -6,7 +6,6 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activ
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { NotificationService } from './notification.service';
 
-
 @NgModule({
   imports: [
     SharedModule
@@ -18,8 +17,8 @@ import { NotificationService } from './notification.service';
     PopUpComponent,
     AchievementPopUpComponent,
     LockTeamAssessmentPopUpComponent,
-    ActivityCompletePopUpComponent
-  ],
+    ActivityCompletePopUpComponent,
+    ],
   exports: [
     PopUpComponent,
     AchievementPopUpComponent,

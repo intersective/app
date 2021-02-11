@@ -270,9 +270,6 @@ ion-skeleton-text {
           text-align: -webkit-center;
         }
       }
-    .prefernce-modal {
-      width: 500px !important;
-     }
     }
   
   }
@@ -298,9 +295,17 @@ ion-skeleton-text {
       --max-height: 62%;
     }
     .modal-wrapper {
-      min-height: 200px;
+      min-height: 200px;    
     }
     
+    
+  }
+  &.push-notification-popup {
+    &.preference-modal {
+      .modal-wrapper {
+        --min-width: 420px;
+      }
+    }
   }
   &.mobile-view {
     .modal-wrapper {
