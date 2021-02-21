@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./preference.component.scss']
 })
 export class PreferenceComponent implements OnDestroy, OnInit {
+  loadingPreference = true;
   preferences$ = this.preferenceService.preference$;
   preferenceSubject$: Subscription;
   prefAPI: any;
@@ -22,6 +23,7 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
+      this.loadingPreference = false;
     });
   }
 
