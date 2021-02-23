@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PreferenceService } from '@services/preference.service';
+import { PreferenceService } from './preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { UtilsService } from '@services/utils.service';
@@ -13,6 +13,7 @@ import { ThrowStmt } from '@angular/compiler';
 export class PreferenceComponent implements OnDestroy, OnInit {
   preferences$ = this.preferenceService.preference$;
   preferenceSubject$: Subscription;
+  prefAPI: any;
 
   constructor(
     private preferenceService: PreferenceService,

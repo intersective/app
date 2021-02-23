@@ -130,6 +130,8 @@ describe('TabsComponent', () => {
     eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     shareSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    pushNotificationSpy = TestBed.inject(PushNotificationService) as jasmine.SpyObj<PushNotificationService>;
+    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
 
     switcherSpy.getTeamInfo.and.returnValue(of(''));
     reviewsSpy.getReviews.and.returnValue(of(['', '']));

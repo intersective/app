@@ -44,12 +44,20 @@ export class PreferenceService {
     private request: RequestService,
   ) { }
 
-  getPreference(apikey?): Subscription {
+  getPreference(): Subscription {
     return this.request.get(APIs.preference, {}).pipe(
       distinctUntilChanged(),
       tap(res => {
         this._preferences$.next(res);
       })
     ).subscribe();
+  }
+
+  update(data) {
+    return this.request.put(`${APIs.preference}`, data);
+  }
+
+  remove() {
+    return this.request.delete(`${APIs.preference}`);
   }
 }

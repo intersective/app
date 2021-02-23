@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PreferenceService, Category } from '@services/preference.service';
+import { UtilsService } from '@services/utils.service';
+import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -14,15 +15,20 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     categories: any;
   };
 
-
   preferenceSubject$: Subscription;
   currentPreference;
   private key: string;
+  private newUpdates: {
+    [propName: string]: {
+      [propName: string]: boolean;
+    };
+  }; // required when toggle has modified
 
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private utils: UtilsService,
   ) {
     preferenceService.getPreference();
     const key = activatedRoute.snapshot.params.key;
@@ -50,6 +56,8 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * show medium choices for current preference key
+   *
    * @name filterPreferences
    * @param {Category[] }} preferences   entire preferences object
    * @param {string}        key  url parameter
@@ -69,10 +77,49 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * @name updatePreference
+   * @description prepare new data changes for PUT request to preference API (with @func back())
+   * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
+   */
+  updatePreference(changes: { medium: string; checked: boolean; }) {
+    const { medium, checked } = changes;
+    if (!this.newUpdates) {
+      this.newUpdates = {};
+    }
+
+    if (!this.newUpdates[this.currentPreference.key]) {
+      this.newUpdates[this.currentPreference.key] = {
+        [medium]: checked
+      };
+    } else {
+      this.newUpdates[this.currentPreference.key][medium] = checked;
+    }
+  }
+
+  /**
+   * @description if `this.newUpdates` is detected has value, an API request sent
+   *              to server
+   * @return void
+   */
+  private async pushPreferenceUpdate(): Promise<void> {
+    try {
+      if (!this.utils.isEmpty(this.newUpdates)) {
+        await this.preferenceService.update(this.newUpdates).toPromise();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return;
+  }
+
+  /**
    * @name back
-   * @description manual back button to go back to a pre-structured routing (back to "/preference")
+   * @description manual back button to go back to a pre-structured routing
+   *              (back to "/preference")
    */
   back() {
-    this.router.navigate(['/preferences']);
+    this.pushPreferenceUpdate().then(() => {
+      this.router.navigate(['/preferences']);
+    });
   }
 }
