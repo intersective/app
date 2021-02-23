@@ -145,7 +145,6 @@ export class RequestService {
 
   post(endPoint: string = '', data: string | object, httpOptions?: any): Observable<any> {
     httpOptions = this.preprocessHttpEvent(httpOptions);
-    
     const request = this.httpClient.post<any>(this.getEndpointUrl(endPoint), data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
