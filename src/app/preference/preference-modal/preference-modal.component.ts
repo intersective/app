@@ -27,8 +27,6 @@ export class PreferenceModalComponent implements OnDestroy, OnInit {
     private router: Router
   ) {
   }
-  
-  
   ngOnInit() {
     this.preferenceSubject$ = this.preferenceService.getPreference();
     this.currentPreference = {
@@ -72,10 +70,9 @@ export class PreferenceModalComponent implements OnDestroy, OnInit {
         return result;
       });
     }
-   
     return result;
   }
   back() {
-    this.showUpdateModal= false;
+    this.showUpdateModal = false;
   }
 }

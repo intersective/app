@@ -13,7 +13,6 @@ import { PreferenceModalComponent } from './preference-modal/preference-modal.co
     OptionsComponent,
     PreferenceUpdateComponent,
     PreferenceModalComponent,
-   
   ],
   imports: [
     SharedModule,

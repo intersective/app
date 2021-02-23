@@ -206,7 +206,7 @@ export class NotificationService {
         keyboardClose: false,
         backdropDismiss: false
       }
-    )
+    );
   }
 
 }

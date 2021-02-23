@@ -27,8 +27,6 @@ describe('TabsComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
-  let pushNotificationSpy: jasmine.SpyObj<PushNotificationService>;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let shareSpy: jasmine.SpyObj<SharedService>;
