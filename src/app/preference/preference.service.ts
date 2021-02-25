@@ -31,13 +31,12 @@ export interface Category {
   order: number;
   preferences: Preference[];
 }
-
+ 
 @Injectable({
   providedIn: 'root'
 })
 export class PreferenceService {
   private _preferences$ = new BehaviorSubject<any>({});
-
   preference$ = this._preferences$.asObservable();
 
   constructor(

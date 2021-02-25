@@ -19,8 +19,9 @@ export class PreferenceComponent implements OnDestroy, OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {}
-
+  
   ngOnInit() {
+    this.loadingPreference = true;
     this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
       this.loadingPreference = false;
