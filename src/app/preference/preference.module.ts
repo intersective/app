@@ -2,18 +2,16 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
-import { PreferenceComponent } from './preference.component';
+import { PreferenceMobileComponent } from './preference-mobile/preference-mobile.component';
 import { PreferenceRoutingModule } from './preference-routing.module';
 import { OptionsComponent } from './options/options.component';
-import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
 import { PreferenceModalComponent } from './preference-modal/preference-modal.component';
 import { PreferenceService } from '@services/preference.service';
 
 @NgModule({
   declarations: [
-    PreferenceComponent,
+    PreferenceMobileComponent,
     OptionsComponent,
-    PreferenceUpdateComponent,
     PreferenceModalComponent,
   ],
   imports: [
