@@ -125,7 +125,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   showPreferenceModal() {
-    this.notificationService.PreferenceDesktopModal('Notification');
+    this.notificationService.preferenceDesktopModal('Notification');
   }
 
   // loading pragram image to settings page by resizing it depend on device.

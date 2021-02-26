@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PreferenceService } from './preference.service';
+import { PreferenceService } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { UtilsService } from '@services/utils.service';

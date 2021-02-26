@@ -196,7 +196,7 @@ export class NotificationService {
     return loading.present();
   }
 
-  async PreferenceDesktopModal(message: string) {
+  async preferenceDesktopModal(message: string) {
     const cssClass = 'practera-popup push-notification-popup preference-modal';
     return  await this.modal(
       PreferenceModalComponent,

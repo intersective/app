@@ -3,8 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { PreferenceService, Category } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { UtilsService } from '@services/utils.service';
-import { ThrowStmt } from '@angular/compiler';
+import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
 @Component({
   selector: 'app-preference-modal',
   templateUrl: './preference-modal.component.html',
@@ -23,6 +22,7 @@ export class PreferenceModalComponent implements OnDestroy, OnInit {
   constructor(
     private preferenceService: PreferenceService,
     public modalController: ModalController,
+    public preferenceUpdate: PreferenceUpdateComponent,
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {
@@ -34,12 +34,13 @@ export class PreferenceModalComponent implements OnDestroy, OnInit {
       description: '',
       options: '',
       remarks: '',
+      key: ''
     };
   }
   close () {
     this.modalController.dismiss();
   }
-  PreferenceUpdateModal(event, key) {
+  preferenceUpdateModal(event, key) {
     this.showUpdateModal = true;
     this.key = key;
     this.preferenceService.getPreference();

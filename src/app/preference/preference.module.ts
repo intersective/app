@@ -5,8 +5,9 @@ import { SharedModule } from '@shared/shared.module';
 import { PreferenceComponent } from './preference.component';
 import { PreferenceRoutingModule } from './preference-routing.module';
 import { OptionsComponent } from './options/options.component';
-import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
+import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
 import { PreferenceModalComponent } from './preference-modal/preference-modal.component';
+import { PreferenceService } from '@services/preference.service';
 
 @NgModule({
   declarations: [

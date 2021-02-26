@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
-import { PreferenceService, Category } from '../preference.service';
+import { PreferenceService, Category } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -10,14 +10,21 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./preference-update.component.scss']
 })
 export class PreferenceUpdateComponent implements OnInit, OnDestroy {
+  @Input() currentPreference: {
+    name: string,
+    description: string,
+    options: string,
+    remarks: string,
+    key: string
+  }
   noHistoryStack = true;
   preferences: {
     categories: any;
   };
 
   preferenceSubject$: Subscription;
-  currentPreference;
-  private key: string;
+  //currentPreference;
+  //private key: string;
   private newUpdates: {
     [propName: string]: {
       [propName: string]: boolean;
@@ -46,6 +53,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       description: '',
       options: '',
       remarks: '',
+      key: ''
     };
   }
 

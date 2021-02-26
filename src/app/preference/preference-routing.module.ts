@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PreferenceComponent } from './preference.component';
-import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
+import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
 
 const routes: Routes = [
   {

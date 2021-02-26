@@ -15,6 +15,7 @@ import { FloatDirective } from './directives/float/float.directive';
 import { ImgComponent } from '@shared/components/img/img.component';
 import { DragAndDropDirective } from './directives/drag-and-drop/drag-and-drop.directive';
 import { PNPermissionModalComponent } from './components/pn-permission-modal/pn-permission-modal.component';
+import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -52,6 +53,7 @@ const largeCircleDefaultConfig = {
     DragAndDropDirective,
     ImgComponent,
     PNPermissionModalComponent,
+    PreferenceUpdateComponent,
   ],
   exports: [
     ActivityCardComponent,
@@ -69,6 +71,7 @@ const largeCircleDefaultConfig = {
     ImgComponent,
     DragAndDropDirective,
     PNPermissionModalComponent,
+    PreferenceUpdateComponent,
   ],
 })
 export class SharedModule {}
