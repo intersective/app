@@ -9,10 +9,7 @@ import { SharedModule } from '@shared/shared.module';
   templateUrl: './preference-mobile.component.html',
   styleUrls: ['./preference-mobile.component.scss']
 })
-export class PreferenceMobileComponent implements OnDestroy, OnInit {
-preferences$ = this.preferenceService.preference$;
-preferenceSubject$: Subscription;
-prefAPI: any;
+export class PreferenceMobileComponent implements  OnInit {
 
 constructor(
   private preferenceService: PreferenceService,
@@ -21,14 +18,9 @@ constructor(
 ) {}
 
 ngOnInit() {
-  this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
-    this.preferenceService.getPreference();
-  });
 }
 
-ngOnDestroy() {
-  if (this.preferenceSubject$ instanceof Subscription) {
-    this.preferenceSubject$.unsubscribe();
-  }
+goTo(direction) {
+  return this.router.navigate(direction);
 }
 }

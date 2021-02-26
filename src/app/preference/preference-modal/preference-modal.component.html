@@ -12,7 +12,7 @@
       <ion-title class="ion-text-center pm-title">Notifications</ion-title>
     </ion-toolbar>
   
-    <ng-container *ngIf="(preferences$ | async ) as preferences; else noPreferenceAvailable">
+    <!-- <ng-container *ngIf="(preferences$ | async ) as preferences; else noPreferenceAvailable">
       <ion-list *ngFor="let cat of preferences.categories">
         <ion-list-header class="no-bg preference-cat-item">{{cat.name}}</ion-list-header>
   
@@ -30,7 +30,8 @@
       <div class="ion-text-center ion-margin-bottom">
         <p>No preferences setting available.</p>
       </div>
-    </ng-template>
+    </ng-template> -->
+    <app-preference></app-preference>
   </ng-container>
  
   

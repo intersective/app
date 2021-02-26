@@ -4,6 +4,7 @@ import { PreferenceService, Category } from '@services/preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { PreferenceUpdateComponent } from '@shared/components/preference-update/preference-update.component';
+import { SharedModule } from '@shared/shared.module';
 @Component({
   selector: 'app-preference-modal',
   templateUrl: './preference-modal.component.html',
