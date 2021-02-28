@@ -10,21 +10,21 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./preference-update.component.scss']
 })
 export class PreferenceUpdateComponent implements OnInit, OnDestroy {
-  @Input() currentPreference: {
-    name: string,
-    description: string,
-    options: string,
-    remarks: string,
-    key: string
-  }
+  // @Input() currentPreference: {
+  //   name: string,
+  //   description: string,
+  //   options: string,
+  //   remarks: string,
+  //   key: string
+  // }
   noHistoryStack = true;
   preferences: {
     categories: any;
   };
 
   preferenceSubject$: Subscription;
-  //currentPreference;
-  //private key: string;
+  currentPreference;
+  private key: string;
   private newUpdates: {
     [propName: string]: {
       [propName: string]: boolean;
