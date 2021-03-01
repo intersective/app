@@ -7,7 +7,6 @@ import { PreferenceRoutingModule } from './preference-routing.module';
 import { OptionsComponent } from './options/options.component';
 import { PreferenceModalComponent } from './preference-modal/preference-modal.component';
 import { PreferenceService } from '@services/preference.service';
-
 @NgModule({
   declarations: [
     PreferenceMobileComponent,
