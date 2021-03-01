@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { UtilsService } from '@services/utils.service';
 import { ThrowStmt } from '@angular/compiler';
+import { utils } from 'protractor';
 
 @Component({
   selector: 'app-preference',
@@ -19,7 +20,7 @@ export class PreferenceComponent implements OnInit, OnDestroy {
 
   constructor(
     private preferenceService: PreferenceService,
-    private util: UtilsService,
+    public utils: UtilsService,
     private activatedRoute: ActivatedRoute,
     private router: Router
   ) {}
@@ -36,7 +37,12 @@ export class PreferenceComponent implements OnInit, OnDestroy {
     }
   }
 
-  goTo(direction) {
-    return this.router.navigate(direction);
+  goToPreferenceUpdate(event, key: string) {
+    if (this.utils.isMobile()) {
+      return this.router.navigate(['preferences', key]);
+    }
+    this.checkTheView.emit();
+     
   }
+  
 }
