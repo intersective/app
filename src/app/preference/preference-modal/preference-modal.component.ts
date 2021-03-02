@@ -32,8 +32,6 @@ export class PreferenceModalComponent implements  OnInit {
   back() {}
 
   showUpdateModal(event) {
-    console.log('I am triggered');
     this.updateModalTemplate = true;
-    console.log('this.updateModalTemplate',this.updateModalTemplate);
   }
 }
