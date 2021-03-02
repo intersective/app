@@ -1,5 +1,5 @@
- <ion-content color="light" class="pop-up-content test" text-center>
-  <ng-container>
+<ion-content color="light" class="pop-up-content" text-center>
+  <ng-container *ngIf="!updateModalTemplate; else update">
     <ion-toolbar class="pn-title-toolbar">
       <ion-icon name="close"
         (click)="close()"
@@ -11,22 +11,12 @@
       ></ion-icon>
       <ion-title class="ion-text-center pm-title">Notifications</ion-title>
     </ion-toolbar>
-  </ng-container>
-   
-  <app-preference (checkTheView)="showUpdateModal($event)"></app-preference> 
   
-  <ng-container  *ngIf="updateModalTemplate"> 
-     <ion-header mode="ios">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="back()">
-            <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <!-- <ion-title class="ion-text-center">{{ currentPreference.name }}</ion-title> -->
-      </ion-toolbar>
-    </ion-header>
- 
-  <app-preference-update></app-preference-update>
-  </ng-container>
-</ion-content> 
+    <app-preference (checkTheView)="showUpdateModal($event)"></app-preference> 
+  </ng-container>  
+
+  <ng-template #update>   
+    <app-preference-update></app-preference-update>
+  </ng-template> 
+
+</ion-content>
