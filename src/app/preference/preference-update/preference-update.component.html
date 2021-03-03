@@ -1,13 +1,13 @@
-<ion-header mode="ios">
-  <ion-toolbar>
+ <ion-header mode="ios">
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start">
-      <ion-button (click)="back()">
+      <ion-button *ngIf="utils.isMobile()" (click)="back()">
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">{{ currentPreference.name }}</ion-title>
+    <ion-title class="ion-text-center" [ngClass]="{'subtitle-2': !utils.isMobile()}">{{ currentPreference.name }}</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> 
 
 <ion-content color="light" text-center>
   <ion-list>
