@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { PreferenceService } from './preference.service';
+import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { PreferenceComponent } from './preference.component';

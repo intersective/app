@@ -15,7 +15,7 @@ const routes: Routes = [
     },
     {
       path: ':key',
-      component: PreferenceUpdateComponent
+      component: PreferencesContainerComponent
 
     }
     ]
