@@ -116,7 +116,7 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
-            "alpha": {
+            "alpha-native": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -169,6 +169,9 @@
             },
             "stage": {
               "browserTarget": "app:build:stage"
+            },
+            "alpha-native": {
+              "browserTarget": "app:build:alpha-native"
             },
             "dev": {
               "browserTarget": "app:build:dev"
