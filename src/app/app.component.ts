@@ -159,7 +159,7 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(async () => {
-      if (environment.production) {
+      if (environment.production && !Capacitor.isNative) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }

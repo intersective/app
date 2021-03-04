@@ -78,10 +78,14 @@ export class TabsComponent extends RouterEnter {
       // enforced inside tabComponent to guarantee successful retrieval of uuid
       if (!user.uuid) {
         this.authService.getUUID().subscribe(uuid => {
-          this.nativeStorage.setObject('me', { uuid });
-          this.pushNotificationService.subscribeToInterests(uuid).then(res => {
-            console.log('interests::', res);
-          });
+          if (uuid) {
+            this.nativeStorage.setObject('me', { uuid });
+            this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+              console.log('interests::', res);
+            });
+          } else {
+            console.error('Failed UUID retrieval::', uuid);
+          }
         });
       }
     });

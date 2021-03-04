@@ -93,7 +93,7 @@ export class RequestService {
 
   private getEndpointUrl(endpoint): string {
     let endpointUrl = this.prefixUrl + endpoint;
-    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+    if (endpoint.includes('https://') || endpoint.includes('http://') || endpoint.includes('capacitor://')) {
       endpointUrl = endpoint;
     }
 
