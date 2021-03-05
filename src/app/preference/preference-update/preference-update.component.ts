@@ -3,6 +3,7 @@ import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-preference-update',
@@ -29,6 +30,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private utils: UtilsService,
+    private modalController: ModalController
   ) {
     preferenceService.getPreference();
     const key = activatedRoute.snapshot.params.key;
@@ -121,5 +123,8 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     this.pushPreferenceUpdate().then(() => {
       this.router.navigate(['/preferences']);
     });
+  }
+  close() {
+    this.modalController.dismiss();
   }
 }

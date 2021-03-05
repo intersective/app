@@ -1,10 +1,10 @@
 <ion-split-pane *ngIf="!utils.isMobile()" contentId="update-preference" when="xs">
-  <app-preference
+  <app-preference-list
     #preferenceList
     style="display: flex"
     [preferenceKey]="key"
     (navigate)="goto($event)"
-  ></app-preference>
+  ></app-preference-list>
   <ion-content color="light" id="update-preference">
     <app-preference-update
       #preferenceDetail
@@ -15,5 +15,5 @@
 </ion-split-pane>
 
 <ion-content *ngIf="utils.isMobile()">
-  <app-preference #preferenceList></app-preference>
+  <app-preference-list #preferenceList></app-preference-list>
 </ion-content>

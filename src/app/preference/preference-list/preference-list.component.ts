@@ -3,22 +3,29 @@ import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { UtilsService } from '@services/utils.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { PreferenceUpdateComponent } from '../preference-update/preference-update.component';
 
 @Component({
-  selector: 'app-preference',
-  templateUrl: './preference.component.html',
-  styleUrls: ['./preference.component.scss']
+  selector: 'app-preference-list',
+  templateUrl: './preference-list.component.html',
+  styleUrls: ['./preference-list.component.scss']
 })
-export class PreferenceComponent implements OnDestroy, OnInit {
+export class PreferenceListComponent implements OnDestroy, OnInit {
+
   preferences$ = this.preferenceService.preference$;
+
   preferenceSubject$: Subscription;
+
   prefAPI: any;
   @Output() navigate = new EventEmitter();
+
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -34,6 +41,8 @@ export class PreferenceComponent implements OnDestroy, OnInit {
   }
 
   goTo(direction) {
+    if( this.utils.isMobile ){
+    }
     return this.router.navigate(direction);
   }
 }

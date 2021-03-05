@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PreferencesContainerComponent } from './preferences-container/preferences-container.component';
+import { PreferenceComponent } from './preference.component';
 import { PreferenceRoutingComponent } from './preference-routing.component';
 import { PreferenceUpdateComponent } from './preference-update/preference-update.component';
 
@@ -11,13 +11,8 @@ const routes: Routes = [
     children: [
     {
       path: '',
-      component: PreferencesContainerComponent
+      component: PreferenceComponent
     },
-    {
-      path: ':key',
-      component: PreferencesContainerComponent
-
-    }
     ]
   }
 ];

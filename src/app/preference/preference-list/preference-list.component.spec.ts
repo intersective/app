@@ -4,15 +4,15 @@ import { of } from 'rxjs';
 import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { PreferenceComponent } from './preference.component';
+import { PreferenceListComponent } from './preference-list.component';
 
-describe('PreferenceComponent', () => {
-  let component: PreferenceComponent;
-  let fixture: ComponentFixture<PreferenceComponent>;
+describe('PreferenceListComponent', () => {
+  let component: PreferenceListComponent;
+  let fixture: ComponentFixture<PreferenceListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreferenceComponent ],
+      declarations: [ PreferenceListComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
@@ -39,7 +39,7 @@ describe('PreferenceComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PreferenceComponent);
+    fixture = TestBed.createComponent(PreferenceListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
