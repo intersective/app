@@ -45,8 +45,7 @@ export class AppComponent implements OnInit {
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
     private pushNotificationService: PushNotificationService,
-    @Inject(DOCUMENT) private readonly document: Document
-    // private splashScreen: SplashScreen,
+    @Inject(DOCUMENT) private readonly document: Document,
     // private statusBar: StatusBar
   ) {
     this.customHeader = null;
@@ -159,26 +158,28 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(async () => {
-      if (environment.production) {
+      if (environment.production && !Capacitor.isNative) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }
+
+      if (Capacitor.isNative) {
+        SplashScreen.hide();
+        this.pushNotificationService.subscribeToInterests(environment.pusher.beamsDefaultInterest);
+        App.addListener('appStateChange', (state: AppState) => {
+          const pnPermission = this.storage.get('pushnotifications');
+          if (!pnPermission) {
+            this.pushNotificationService.requestPermission();
+          }
+          // state.isActive contains the active state
+          console.log('App state changed. Is active?', state.isActive);
+        });
+      }
+
       // initialise Pusher
       await this.pusherService.initialise();
+
     });
-
-
-    if (Capacitor.isNative) {
-      this.pushNotificationService.subscribeToInterests(environment.pusher.beamsDefaultInterest);
-      App.addListener('appStateChange', (state: AppState) => {
-        const pnPermission = this.storage.get('pushnotifications');
-        if (!pnPermission) {
-          this.pushNotificationService.requestPermission();
-        }
-        // state.isActive contains the active state
-        console.log('App state changed. Is active?', state.isActive);
-      });
-    }
   }
 
   /**

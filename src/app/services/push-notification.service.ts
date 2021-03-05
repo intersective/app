@@ -161,7 +161,7 @@ export class PushNotificationService {
     if (typeof interests === 'string') {
       return this.subscribeToInterest(interests);
     }
-    return this.pusherBeams.setDeviceInterests(interests);
+    return this.pusherBeams.setDeviceInterests({ interests });
   }
 
   clearInterest(): Promise<{success: boolean}> {
