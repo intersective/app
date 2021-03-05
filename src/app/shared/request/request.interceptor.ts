@@ -78,6 +78,29 @@ export class RequestInterceptor implements HttpInterceptor {
     }));
   }
 
+  /**
+   * @name reformatNativeParams
+   * @description IonicNative http library only accept specific format of url parameter,
+   *              and which it's not readily accepting Angular HttpParams instance,
+   *              so we need to form a new Params object that match the required format.
+   * @param {HttpParams} params
+   * @return {[index: string]: string | string[]}
+   */
+  private reformatNativeParams(params: HttpParams) {
+    const keys = params.keys();
+    let result = {};
+    if (keys.length > 0) {
+      keys.forEach(key => {
+        let val = params.get(key);
+        if (typeof val !== 'string') {
+          val = JSON.stringify(val);
+        }
+        result[key] = val;
+      });
+    }
+    return result;
+  }
+
   private async handleNativeRequest(request: HttpRequest<any>): Promise<HttpResponse<any>> {
     const headerKeys = request.headers.keys();
     const headers = {};
@@ -92,6 +115,7 @@ export class RequestInterceptor implements HttpInterceptor {
       const method = <HttpMethod> request.method.toLowerCase();
 
       const nativeHttpResponse = await this.httpNative.sendRequest(request.url, {
+        params: this.reformatNativeParams(request.params),
         method: method,
         data: request.body,
         headers: headers,
