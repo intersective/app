@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -19,6 +19,7 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
 
   prefAPI: any;
   @Output() navigate = new EventEmitter();
+  @Input() currentPreference;
 
   constructor(
     private preferenceService: PreferenceService,

@@ -2,14 +2,15 @@
   <app-preference-list
     #preferenceList
     style="display: flex"
-    [preferenceKey]="key"
+    [currentPreference]="currentPreference()"
     (navigate)="goto($event)"
   ></app-preference-list>
   <ion-content color="light" id="update-preference">
     <app-preference-update
       #preferenceDetail
-      *ngIf="currentPreference"
-      [currentPreference]="currentPreference"
+      *ngIf="preferenceKey"
+      [inputId]="preferenceKey"
+      (navigate)="goto($event);preferenceList.onEnter()" 
     ></app-preference-update>
   </ion-content>
 </ion-split-pane>

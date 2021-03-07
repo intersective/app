@@ -9,17 +9,12 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   styleUrls: ['./preference.component.scss']
 })
 export class PreferenceComponent extends RouterEnter {
+  routeUrls = ['app/preference', 'preferences-detail'];
+
   @ViewChild('preferenceList') preferenceList ; 
   @ViewChild('preferenceDetail') preferenceDetail ; 
-
-  routeUrls = ['app/preference', 'preferences-detail'];
+  preferenceKey ='';
   
-  currentPreference = {
-    name: '',
-    description: '',
-    options: '',
-    remarks: '',
-  };
   constructor(
     public utils: UtilsService,
     public router: Router
@@ -27,8 +22,22 @@ export class PreferenceComponent extends RouterEnter {
     super(router);
    }
 
-  
-  goTo(preference) {
-    this.currentPreference = preference;
+  goto(event) {
+    if (event.categories)
+    
+        this.preferenceKey = event.categories.key;
+        setTimeout(() => {
+          this.preferenceDetail.onEnter();
+        });
+  }
+
+
+  currentPreference() {
+    if (this.preferenceKey) {
+      return {
+        preferenceKey: this.preferenceKey,
+      };
+    }
+    return null;
   }
 }
