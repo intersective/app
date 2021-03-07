@@ -12,7 +12,7 @@ export class PreferenceComponent extends RouterEnter {
   @ViewChild('preferenceList') preferenceList ; 
   @ViewChild('preferenceDetail') preferenceDetail ; 
 
-  routeUrl = 'app/preferences';
+  routeUrls = ['app/preference', 'preferences-detail'];
   
   currentPreference = {
     name: '',

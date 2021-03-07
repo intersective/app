@@ -9,10 +9,10 @@ const routes: Routes = [
     path: '',
     component: PreferenceRoutingComponent,
     children: [
-    {
-      path: '',
-      component: PreferenceComponent
-    },
+      {
+        path: '',
+        component: PreferenceComponent
+      }
     ]
   }
 ];

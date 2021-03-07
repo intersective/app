@@ -37,6 +37,15 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'preference',
+        children: [
+          {
+            path: '',
+            loadChildren: '../preference/preference.module#PreferenceModule'
+          }
+        ]
+      },
+      {
         path: 'reviews',
         children: [
           {

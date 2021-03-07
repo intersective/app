@@ -10,6 +10,8 @@ import { PreferenceService } from './preference.service';
 import { PreferenceComponent } from './preference.component';
 import { PreferenceRoutingComponent } from './preference-routing.component';
 import { PreferenceUpdateRoutingModule } from './preference-update/preference-update-routing.module';
+import { PreferenceUpdateModule } from './preference-update/preference-update.module';
+
 
 
 @NgModule({
@@ -25,7 +27,8 @@ import { PreferenceUpdateRoutingModule } from './preference-update/preference-up
     SharedModule,
     CommonModule,
     PreferenceRoutingModule,
-    PreferenceUpdateRoutingModule
+    PreferenceUpdateRoutingModule,
+    PreferenceUpdateModule
   ],
   providers: [
     PreferenceService,

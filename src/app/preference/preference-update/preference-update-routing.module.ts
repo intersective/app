@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { PreferenceUpdateComponent } from './preference-update.component';
 
 const PreferenceUpdateRoutes: Routes = [

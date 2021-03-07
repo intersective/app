@@ -35,7 +35,7 @@
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
       <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
-      <ion-item class="no-bg" (click)="router.navigate(['/preferences'])" lines="none">
+      <ion-item class="no-bg" (click)="gotoPreference()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="notifications"></ion-icon>
         Notifications
         <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
@@ -83,7 +83,7 @@
           <div class="ion-margin-top subtitle-1">
             <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
 
-            <ion-item class="no-bg" lines="none" (click)="router.navigate(['/preferences'])">
+            <ion-item class="no-bg" lines="none" (click)="gotoPreference()">
               <ion-icon class="ion-padding-end" color="primary" name="notifications"></ion-icon>
               Notifications
             </ion-item>
