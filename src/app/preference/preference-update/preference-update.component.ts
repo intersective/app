@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, EventEmitter, Input, Output  } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Input, Output, NgZone  } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RouterEnter } from '@services/router-enter.service';
 import { Subscription } from 'rxjs/Subscription';
 import { ModalController } from '@ionic/angular';
 
@@ -10,8 +11,8 @@ import { ModalController } from '@ionic/angular';
   templateUrl: './preference-update.component.html',
   styleUrls: ['./preference-update.component.scss']
 })
-export class PreferenceUpdateComponent implements OnInit, OnDestroy {
-  @Input() inputId: number;
+export class PreferenceUpdateComponent extends RouterEnter {
+  @Input() inputId: string;
   @Output() navigate = new EventEmitter();
   
   routeUrl = '/preference-update/';
@@ -21,7 +22,13 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   };
 
   preferenceSubject$: Subscription;
-  currentPreference;
+  currentPreference = {
+    name: '',
+      description: '',
+      options: '',
+      remarks: '',
+      key:''
+  };
   private key: string;
   private newUpdates: {
     [propName: string]: {
@@ -32,35 +39,46 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private utils: UtilsService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private ngZone: NgZone,
   ) {
-    preferenceService.getPreference();
-    const key = activatedRoute.snapshot.params.key;
-    this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
-      this.preferences = res;
-      if (this.preferences && key) {
-       this.currentPreference = this.filterPreferences(this.preferences, key);
-      }
-    });
+    super(router);
   }
 
   ngOnInit() {
-    this.currentPreference = {
-      name: '',
-      description: '',
-      options: '',
-      remarks: '',
-    };
+    this.preferenceService.getPreference();
+    let key = this.getKey();
+    console.log('key',key)
+    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(res => {
+      this.preferences = res;
+      console.log('preferences', this.preferences)
+      if (this.preferences && key) {
+       this.currentPreference = this.filterPreferences(this.preferences, key);
+       console.log('currentPreference',this.currentPreference)
+      }
+    });
   }
-
+  
   ngOnDestroy() {
     if (this.preferenceSubject$ && this.preferenceSubject$ instanceof Subscription) {
       this.preferenceSubject$.unsubscribe();
     }
   }
-
+  onEnter() {
+    this.currentPreference = {
+      name: '',
+        description: '',
+        options: '',
+        remarks: '',
+        key:''
+    };
+    if (this.inputId) {
+      this.key = this.inputId;
+    } 
+    
+  }
   /**
    * show medium choices for current preference key
    *
@@ -80,6 +98,14 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     }
 
     return result;
+  }
+
+  private getKey() {
+    if(this.utils.isMobile()) {
+      return this.activatedRoute.snapshot.params.key;
+    } else {
+      return this.inputId;
+    }
   }
 
   /**
@@ -118,6 +144,31 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     return;
   }
 
+   // force every navigation happen under radar of angular
+  //  private _navigate(direction): Promise<boolean> {
+  //   if (!direction) {
+  //     return;
+  //   }
+  //   if (this.utils.isMobile()) {
+  //     return this.ngZone.run(() => {
+  //       return this.router.navigate(direction);
+  //     });
+  //   } else {
+  //     // emit event to parent component(task component)
+  //     switch (direction[0]) {
+  //       case 'preference-update':
+  //         this.navigate.emit({
+  //           preferenceKey: direction[2]
+  //         });
+  //         break;
+  //       default:
+  //         return this.ngZone.run(() => {
+  //           return this.router.navigate(direction);
+  //         });
+  //     }
+  //   }
+  // }
+
   /**
    * @name back
    * @description manual back button to go back to a pre-structured routing
@@ -125,10 +176,9 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
    */
   back() {
     this.pushPreferenceUpdate().then(() => {
-      this.router.navigate(['/preferences']);
+      this.router.navigate(['/preference']);
     });
   }
-  close() {
-    this.modalController.dismiss();
-  }
+
 }
+

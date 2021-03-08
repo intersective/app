@@ -18,7 +18,7 @@
     <ion-list *ngFor="let cat of preferences.categories">
       <ion-list-header class="no-bg preference-cat-item">{{cat.name}}</ion-list-header>
 
-      <ion-item *ngFor="let pref of cat.preferences" (click)="goToPreference(['preference-update',pref.key])">
+      <ion-item *ngFor="let pref of cat.preferences" (click)="goToPreference(pref)">
         <ion-label>
           <h3 class="preference-header-item">{{pref.name}}</h3>
           <app-options [options]="pref.options"></app-options>

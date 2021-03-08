@@ -1,16 +1,19 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-buttons slot="start" >
-      <ion-button (click)="back()" *ngIf="utils.isMobile()">
-        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
+    <ion-buttons slot="start" *ngIf="utils.isMobile()">
+      <ion-button (click)="back()" id="btn-back">
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" (click)="back()" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
-    </ion-buttons><ion-title class="ion-text-center" [ngClass]="{
-      'subtitle-2': !utils.isMobile()
-    }">{{ currentPreference.name }}</ion-title>
-  </ion-toolbar>
-</ion-header> 
+    </ion-buttons>
 
-<ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+    <ion-title class="ion-text-center" [ngClass]="{
+      'subtitle-2': !utils.isMobile()
+    }">{{currentPreference.name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light" class="ion-text-center">
+
   <ion-list>
     <ion-item *ngIf="currentPreference.description" lines="none" color="light">
       <ion-label>

@@ -53,8 +53,8 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
-    path: 'preferences-detail',
-    loadChildren: './preference/preference.module#PreferenceModule',
+    path: 'preference-update',
+    loadChildren: './preference/preference-update/preference-update.module#PreferenceUpdateModule',
     canLoad: [AuthGuard],
   },
   {

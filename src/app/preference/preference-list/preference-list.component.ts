@@ -58,21 +58,21 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
     if (this.utils.isMobile()) {
       // redirect to update page for mobile
       return this.ngZone.run(() => {
-        return this.router.navigate(pref);
+        return this.router.navigate(['preference-update',pref.key]);
       });
     } else {
-      // emit event to parent component(preference component)
-      switch (pref[0]) {
-        case 'preferences-update':
-          this.navigate.emit({
-            preferenceKey: pref[1]
-          });
-          break;
-        default:
-          return this.ngZone.run(() => {
-            return this.router.navigate(pref);
-          });
-      }
+    //   switch (pref[0]) {
+    //     case 'preference-update':
+    //       this.navigate.emit({
+    //         preferenceKey: pref[1]
+    //       });
+    //       break;
+    //     default:
+    //       return this.ngZone.run(() => {
+    //         return this.router.navigate(pref);
+    //       });
+    //   }
+      this.navigate.emit(pref)
     }
   }
 }

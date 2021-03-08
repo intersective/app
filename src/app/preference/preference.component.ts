@@ -9,11 +9,11 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   styleUrls: ['./preference.component.scss']
 })
 export class PreferenceComponent extends RouterEnter {
-  routeUrls = ['app/preference', 'preferences-detail'];
+  routeUrl = 'app/preference';
 
   @ViewChild('preferenceList') preferenceList ; 
   @ViewChild('preferenceDetail') preferenceDetail ; 
-  preferenceKey ='';
+  preferenceKey :string;
   
   constructor(
     public utils: UtilsService,
@@ -21,11 +21,17 @@ export class PreferenceComponent extends RouterEnter {
   ) {
     super(router);
    }
-
-  goto(event) {
-    if (event.categories)
+   onEnter() {
     
-        this.preferenceKey = event.categories.key;
+    this.preferenceKey = null;
+    
+    // trigger onEnter after the element get generated
+    setTimeout(() => {
+      this.preferenceList.onEnter();
+    });
+  } 
+  goto(event) {
+    this.preferenceKey = event.preferenceKey;
         setTimeout(() => {
           this.preferenceDetail.onEnter();
         });
