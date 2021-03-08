@@ -11,6 +11,7 @@ import { PreferenceComponent } from './preference.component';
 import { PreferenceRoutingComponent } from './preference-routing.component';
 import { PreferenceUpdateRoutingModule } from './preference-update/preference-update-routing.module';
 import { PreferenceUpdateModule } from './preference-update/preference-update.module';
+import { PreferenceListModule } from './preference-list/preference-list.module';
 
 
 
@@ -28,7 +29,8 @@ import { PreferenceUpdateModule } from './preference-update/preference-update.mo
     CommonModule,
     PreferenceRoutingModule,
     PreferenceUpdateRoutingModule,
-    PreferenceUpdateModule
+    PreferenceUpdateModule,
+    PreferenceListModule
   ],
   providers: [
     PreferenceService,
