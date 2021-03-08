@@ -11,10 +11,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { RequestService } from '@shared/request/request.service';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of, BehaviorSubject, Subscription } from 'rxjs';
-import { tap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tabs',
@@ -47,7 +45,6 @@ export class TabsComponent extends RouterEnter {
     private sharedService: SharedService,
     private eventsService: EventListService,
     private newRelic: NewRelicService,
-    private requestService: RequestService,
     private nativeStorage: NativeStorageService,
     private authService: AuthService,
     private pushNotificationService: PushNotificationService,
@@ -77,15 +74,18 @@ export class TabsComponent extends RouterEnter {
       if (!this.utils.isEqual(this._me$.value, user)) {
         this._me$.next(user);
       }
-      this.hidingChatTab();
 
       // enforced inside tabComponent to guarantee successful retrieval of uuid
       if (!user.uuid) {
         this.authService.getUUID().subscribe(uuid => {
-          this.nativeStorage.setObject('me', { uuid });
-          this.pushNotificationService.subscribeToInterests(uuid).then(res => {
-            console.log('interests::', res);
-          });
+          if (uuid) {
+            this.nativeStorage.setObject('me', { uuid });
+            this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+              console.log('interests::', res);
+            });
+          } else {
+            console.error('Failed UUID retrieval::', uuid);
+          }
         });
       }
     });
@@ -196,18 +196,4 @@ export class TabsComponent extends RouterEnter {
     // if user looking at topic mark it stop reading before go back.
     this.sharedService.markTopicStopOnNavigating();
   }
-
-  /**
-   * @name hidingChatTab
-   * @description check if chat API respond HTTP200, otherwise
-   *              hide chat tab when HTTP500 (API server's fatal error)
-   *
-   * @return void
-   */
-  hidingChatTab(): void {
-    if (this.requestService.hideChatTab()) {
-      this._showChat$.next(false);
-    }
-  }
-
 }

@@ -33,3 +33,4 @@ android/local.properties
 .gradle/*/executionHistory/*.lock
 
 electron
+src/environments/environment.production-native.ts
