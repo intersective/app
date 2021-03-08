@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Input, Output  } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +11,10 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./preference-update.component.scss']
 })
 export class PreferenceUpdateComponent implements OnInit, OnDestroy {
+  @Input() inputId: number;
+  @Output() navigate = new EventEmitter();
+  
+  routeUrl = '/preference-update/';
   noHistoryStack = true;
   preferences: {
     categories: any;
