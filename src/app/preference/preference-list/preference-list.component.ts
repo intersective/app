@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output, EventEmitter, Input, NgZone } from '@angular/core';
 import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
@@ -26,7 +26,8 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private utils: UtilsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private ngZone: NgZone,
   ) {}
 
   ngOnInit() {
@@ -45,5 +46,33 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
     if( this.utils.isMobile ){
     }
     return this.router.navigate(direction);
+  }
+
+
+  onEnter() {
+    this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
+      this.preferenceService.getPreference();
+    });
+  }
+  async goToPreference(pref) {
+    if (this.utils.isMobile()) {
+      // redirect to update page for mobile
+      return this.ngZone.run(() => {
+        return this.router.navigate(pref);
+      });
+    } else {
+      // emit event to parent component(preference component)
+      switch (pref[0]) {
+        case 'preferences-update':
+          this.navigate.emit({
+            preferenceKey: pref[1]
+          });
+          break;
+        default:
+          return this.ngZone.run(() => {
+            return this.router.navigate(pref);
+          });
+      }
+    }
   }
 }
