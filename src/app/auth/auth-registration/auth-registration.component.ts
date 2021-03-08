@@ -40,6 +40,7 @@ export class AuthRegistrationComponent implements OnInit {
   showPassword = false;
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
+  submitting: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,7 +87,7 @@ export class AuthRegistrationComponent implements OnInit {
     const getConfig = this.newRelic.createTracer('retrieve configurations');
 
     // access query params
-    this.route.queryParamMap.subscribe(queryParams => {
+    this.route.queryParamMap.subscribe(async queryParams => {
       this.user.email = this.route.snapshot.paramMap.get('email');
       this.user.key = this.route.snapshot.paramMap.get('key');
       if (this.user.email && this.user.key) {
@@ -131,22 +132,22 @@ export class AuthRegistrationComponent implements OnInit {
                       }
                     }
                   },
-                  err => {
+                  async err => {
                     getConfig();
                     this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
-                    this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+                    await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
                   }
                 );
               }
             },
-            error => {
+            async error => {
               verifyRegistration();
               this.newRelic.noticeError('verification failed', JSON.stringify(error));
-              this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+              await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
             }
           );
       } else {
-        this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+        await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
       }
     });
   }
@@ -164,13 +165,15 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   register() {
+    this.submitting = true;
     if (this.validateRegistration()) {
       const nrRegisterTracer = this.newRelic.createTracer('registering');
       this.newRelic.actionText('Validated registration');
       if (this.unRegisteredDirectLink) {
         this._setupPassword();
       }
-      this.authService
+
+      return this.authService
         .saveRegistration({
           password: this.confirmPassword,
           user_id: this.user.id,
@@ -180,31 +183,36 @@ export class AuthRegistrationComponent implements OnInit {
           response => {
             nrRegisterTracer();
             const nrAutoLoginTracer = this.newRelic.createTracer('auto login');
-            this.authService
+            return this.authService
               .login({
                 email: this.user.email,
                 password: this.confirmPassword
               })
               .subscribe(
                 async res => {
+                  const loggedIn = await res;
                   nrAutoLoginTracer();
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.switcherService.switchProgramAndNavigate(res.programs);
-                  this.showPopupMessages('shortMessage', 'Registration success!', route);
+                  const route = await this.switcherService.switchProgramAndNavigate(loggedIn.programs);
+                  await this.showPopupMessages('shortMessage', 'Registration success!', route);
+                  this.submitting = false;
+                  return;
                 },
-                err => {
+                async err => {
                   nrAutoLoginTracer();
                   this.newRelic.noticeError('auto login failed', JSON.stringify(err));
-                  this.showPopupMessages('shortMessage', 'Registration not complete!');
+                  await this.showPopupMessages('shortMessage', 'Registration not complete!');
+                  this.submitting = false;
+                  return;
                 }
               );
           },
-          error => {
+          async error => {
             this.newRelic.noticeError('registration failed', JSON.stringify(error));
 
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
-                return this.notificationService.alert({
+                await this.notificationService.alert({
                   message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
                     Please try again. <br>
                     You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
@@ -215,19 +223,25 @@ export class AuthRegistrationComponent implements OnInit {
                     }
                   ],
                 });
+                this.submitting = false;
+                return;
               }
             }
-            this.showPopupMessages('shortMessage', 'Registration not complete!');
+            await this.showPopupMessages('shortMessage', 'Registration not complete!');
+            this.submitting = false;
+            return;
           }
         );
     }
+    this.submitting = false;
+    return;
   }
 
   removeErrorMessages() {
     this.errors = [];
   }
 
-  validateRegistration() {
+  validateRegistration(): boolean {
     let isValid = true;
     this.errors = [];
     if (this.unRegisteredDirectLink) {
@@ -263,14 +277,12 @@ export class AuthRegistrationComponent implements OnInit {
       }
     } else {
       for (const conrtoller in this.registerationForm.controls) {
-        if (this.registerationForm.controls[conrtoller].errors) {
+        const thisErrors = this.registerationForm.controls[conrtoller].errors;
+
+        if (thisErrors) {
           isValid = false;
-          for (const key in this.registerationForm.controls[conrtoller].errors) {
-            if (
-              this.registerationForm.controls[conrtoller].errors.hasOwnProperty(
-                key
-              )
-            ) {
+          for (const key in thisErrors) {
+            if (thisErrors.hasOwnProperty(key)) {
               switch (key) {
                 case 'required':
                   this.errors.push('Please fill in your password');
@@ -283,7 +295,6 @@ export class AuthRegistrationComponent implements OnInit {
                 default:
                   this.errors.push(this.registerationForm.controls.errors[key]);
               }
-              return;
             }
           }
         }
@@ -292,15 +303,14 @@ export class AuthRegistrationComponent implements OnInit {
     }
   }
 
-  private showPopupMessages(type: string, message: string, redirect?: any) {
-    this.notificationService
-      .popUp(
-        type,
-        {
-          message: message
-        },
-        redirect ? redirect : false
-      );
+  private showPopupMessages(type: string, message: string, redirect?: any): Promise<void> {
+    return this.notificationService.popUp(
+      type,
+      {
+        message: message
+      },
+      redirect ? redirect : false
+    );
   }
 
   private _setupPassword() {

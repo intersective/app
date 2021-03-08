@@ -40,8 +40,11 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error">{{error}}</p>
         </ion-text>
-        <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER
-        </ion-button>
+
+        <ng-container *ngIf="!submitting; else loading">
+          <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER
+          </ion-button>
+        </ng-container>
       </form>
     </ng-container>
 
@@ -92,3 +95,10 @@
     </ng-container>
   </div>
 </ion-content>
+
+
+<ng-template #loading>
+  <ion-button shape="round" expand="full" disabled color="primary">
+    <ion-spinner></ion-spinner>
+  </ion-button>
+</ng-template>
