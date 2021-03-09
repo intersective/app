@@ -17,6 +17,9 @@ import { of } from 'rxjs';
 describe('AuthRegistrationComponent', () => {
   let component: AuthRegistrationComponent;
   let fixture: ComponentFixture<AuthRegistrationComponent>;
+  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
+  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -59,7 +62,10 @@ describe('AuthRegistrationComponent', () => {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'popUp'])
         },
-        NewRelicService,
+        {
+          provide: NewRelicService,
+          useValue: jasmine.createSpyObj('NewRelicService', ['setPageViewName', 'createTracer'])
+        },
         {
           provide: SwitcherService,
           useValue: jasmine.createSpyObj('SwitcherService', ['switchProgramAndNavigate'])
@@ -71,6 +77,10 @@ describe('AuthRegistrationComponent', () => {
       ],
     })
     .compileComponents();
+
+    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
+    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   }));
 
   beforeEach(() => {
@@ -82,5 +92,19 @@ describe('AuthRegistrationComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should setup base settings', () => {
+    const domain = 'UNIT_TEST_SAMPLE';
+    component.domain = domain;
+    component.validateQueryParams = jasmine.createSpy('validateQueryParams');
+    component.ngOnInit();
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('registration');
+      expect(component.validateQueryParams).toHaveBeenCalled();
+      expect(component.domain).toEqual(domain);
+      expect(storageSpy.get).toHaveBeenCalledWith('unRegisteredDirectLink');
+    });
   });
 });
