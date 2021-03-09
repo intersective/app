@@ -11,7 +11,7 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, IonicModule } from '@ionic/angular';
 import { of } from 'rxjs';
 
 describe('AuthRegistrationComponent', () => {
@@ -20,7 +20,7 @@ describe('AuthRegistrationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule, ReactiveFormsModule, HttpClientTestingModule ],
+      imports: [ FormsModule, ReactiveFormsModule, HttpClientTestingModule, IonicModule],
       declarations: [ AuthRegistrationComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -67,7 +67,7 @@ describe('AuthRegistrationComponent', () => {
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', ['create'])
-        }
+        },
       ],
     })
     .compileComponents();
@@ -76,6 +76,7 @@ describe('AuthRegistrationComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuthRegistrationComponent);
     component = fixture.componentInstance;
+    component.initForm();
     fixture.detectChanges();
   });
 
