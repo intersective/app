@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@services/utils.service';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormControl } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AuthService } from '../auth.service';
 import { AuthRegistrationComponent } from './auth-registration.component';
@@ -18,8 +20,9 @@ describe('AuthRegistrationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
+      imports: [ FormsModule, ReactiveFormsModule, HttpClientTestingModule ],
       declarations: [ AuthRegistrationComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
           provide: UtilsService,
@@ -48,7 +51,10 @@ describe('AuthRegistrationComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['saveRegistration', 'login', 'verifyRegistration', 'checkDomain'])
         },
-        BrowserStorageService,
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'])
+        },
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'popUp'])
