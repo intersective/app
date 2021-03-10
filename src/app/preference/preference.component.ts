@@ -22,7 +22,6 @@ export class PreferenceComponent extends RouterEnter {
     super(router);
    }
    onEnter() {
-    
     this.preferenceKey = null;
     
     // trigger onEnter after the element get generated
@@ -32,9 +31,9 @@ export class PreferenceComponent extends RouterEnter {
   } 
   goto(event) {
     this.preferenceKey = event.preferenceKey;
-        setTimeout(() => {
-          this.preferenceDetail.onEnter();
-        });
+        // setTimeout(() => {
+        //   this.preferenceDetail.onEnter();
+        // });
   }
 
 
