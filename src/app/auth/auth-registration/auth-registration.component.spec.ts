@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@services/utils.service';
-import { ReactiveFormsModule, FormsModule, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AuthService } from '../auth.service';
@@ -106,5 +106,18 @@ describe('AuthRegistrationComponent', () => {
       expect(component.domain).toEqual(domain);
       expect(storageSpy.get).toHaveBeenCalledWith('unRegisteredDirectLink');
     });
+  });
+
+  it('should initForm() prepare registrationForm object', () => {
+    component.initForm();
+    expect(component.registrationForm).toEqual(new FormGroup({
+      email: new FormControl('', [Validators.email]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)
+      ]),
+      confirmPassword: new FormControl('', [Validators.required])
+    }));
+    // this.registrationForm = ;
   });
 });

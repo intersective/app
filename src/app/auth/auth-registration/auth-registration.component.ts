@@ -26,7 +26,7 @@ export class AuthRegistrationComponent implements OnInit {
   password: string;
   confirmPassword: string;
   isAgreed = false;
-  registerationForm: FormGroup;
+  registrationForm: FormGroup;
   hide_password = false;
   user: any = {
     email: null,
@@ -69,7 +69,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   initForm() {
-    this.registerationForm = new FormGroup({
+    this.registrationForm = new FormGroup({
       email: new FormControl('', [Validators.email]),
       password: new FormControl('', [
         Validators.required,
@@ -261,9 +261,9 @@ export class AuthRegistrationComponent implements OnInit {
       } else {
         return isValid;
       }
-    } else if (this.registerationForm.valid) {
-      const pass = this.registerationForm.controls.password.value;
-      const confirmPass = this.registerationForm.controls.confirmPassword.value;
+    } else if (this.registrationForm.valid) {
+      const pass = this.registrationForm.controls.password.value;
+      const confirmPass = this.registrationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
         this.errors.push('Your passwords don\'t match.');
         isValid = false;
@@ -276,8 +276,8 @@ export class AuthRegistrationComponent implements OnInit {
         return isValid;
       }
     } else {
-      for (const conrtoller in this.registerationForm.controls) {
-        const thisErrors = this.registerationForm.controls[conrtoller].errors;
+      for (const conrtoller in this.registrationForm.controls) {
+        const thisErrors = this.registrationForm.controls[conrtoller].errors;
 
         if (thisErrors) {
           isValid = false;
@@ -293,7 +293,7 @@ export class AuthRegistrationComponent implements OnInit {
                   );
                   break;
                 default:
-                  this.errors.push(this.registerationForm.controls.errors[key]);
+                  this.errors.push(this.registrationForm.controls.errors[key]);
               }
             }
           }
