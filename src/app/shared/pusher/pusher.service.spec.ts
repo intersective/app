@@ -81,7 +81,6 @@ xdescribe('PusherService', async () => {
   // let pusherLibSpy: any;
 
   beforeEach(() => {
-    // spyOn(Window, 'Pusher');
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -241,12 +241,19 @@ export class AuthRegistrationComponent implements OnInit {
     this.errors = [];
   }
 
+  /**
+   * validate registration link & form
+   *
+   * @return {boolean} true = valid & false = invalid
+   */
   validateRegistration(): boolean {
     let isValid = true;
     this.errors = [];
+    const tncMsg = 'You need to agree with terms and Conditions.';
+
     if (this.unRegisteredDirectLink) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
@@ -255,7 +262,7 @@ export class AuthRegistrationComponent implements OnInit {
     }
     if (this.hide_password) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
@@ -269,7 +276,7 @@ export class AuthRegistrationComponent implements OnInit {
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
@@ -322,7 +329,7 @@ export class AuthRegistrationComponent implements OnInit {
     this.confirmPassword = this.user.password;
   }
 
-  async termsAndConditionsPopup() {
+  async termsAndConditionsPopup(): Promise<HTMLIonModalElement> {
     const modal = await this.modalController.create({
       component: TermsConditionsPreviewComponent,
       swipeToClose: false,
@@ -334,6 +341,7 @@ export class AuthRegistrationComponent implements OnInit {
         this.isAgreed = modalData.data.isAgreed;
       }
     });
+    return modal;
   }
 
 }
