@@ -12,7 +12,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ModalController, IonicModule } from '@ionic/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('AuthRegistrationComponent', () => {
   let component: AuthRegistrationComponent;
@@ -21,6 +21,8 @@ describe('AuthRegistrationComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let authSpy: jasmine.SpyObj<AuthService>;
+  let routeSpy: jasmine.SpyObj<ActivatedRoute>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -37,10 +39,8 @@ describe('AuthRegistrationComponent', () => {
           useValue: {
             snapshot: {
               paramMap: convertToParamMap({
-                id: 1,
-                activityId: 2,
-                contextId: 3,
-                submissionId: 4
+                email: 'user@test.com',
+                key: 'random-key'
               }),
               data: {
                 action: 'assessment',
@@ -56,7 +56,14 @@ describe('AuthRegistrationComponent', () => {
           useValue: jasmine.createSpyObj('AuthService', {
             'saveRegistration': of(true),
             'login': of(true),
-            'verifyRegistration': of(true),
+            'verifyRegistration': of({
+              data: {
+                User: {
+                  contact_number: '0123456789',
+                  id: 1
+                }
+              }
+            }),
             'checkDomain': of(true),
           })
         },
@@ -73,7 +80,8 @@ describe('AuthRegistrationComponent', () => {
           useValue: jasmine.createSpyObj('NewRelicService', {
             'setPageViewName': () => true,
             'createTracer': () => () => true,
-            'actionText': () => true
+            'actionText': () => true,
+            'noticeError': () => true,
           })
         },
         {
@@ -98,10 +106,12 @@ describe('AuthRegistrationComponent', () => {
     })
     .compileComponents();
 
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    routeSpy = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
   }));
 
   beforeEach(() => {
@@ -240,6 +250,46 @@ describe('AuthRegistrationComponent', () => {
       const valid = component.validateRegistration();
       expect(valid).toBeTruthy();
     });
+  });
+
+  describe('validateQueryParams()', () => {
+    it('should extract email and key from URL', fakeAsync(() => {
+      component.validateQueryParams();
+      flush();
+      expect(authSpy.verifyRegistration).toHaveBeenCalled();
+      expect(authSpy.checkDomain).toHaveBeenCalled();
+    }));
+
+    it('should fail if email or key missing from URL', fakeAsync(() => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy('get').and.returnValue(null);
+      component['showPopupMessages'] = jasmine.createSpy('showPopupMessages');
+      component.validateQueryParams();
+      flush();
+
+      expect(component['showPopupMessages']).toHaveBeenCalledWith('shortMessage', 'Registration link invalid!', [ 'login' ]);
+    }));
+
+    it('should fail if verifyRegistration API request fail', fakeAsync(() => {
+      const sampleError = 'SAMPLE_ERROR';
+      authSpy.verifyRegistration.and.returnValue(throwError(sampleError));
+      component['showPopupMessages'] = jasmine.createSpy('showPopupMessages');
+      component.validateQueryParams();
+      flush();
+
+      expect(component['showPopupMessages']).toHaveBeenCalledWith('shortMessage', 'Registration link invalid!', [ 'login' ]);
+      expect(newRelicSpy.noticeError).toHaveBeenCalledWith('verification failed', JSON.stringify(sampleError));
+    }));
+
+    it('should fail if verifyRegistration API request fail', fakeAsync(() => {
+      const sampleError = 'SAMPLE_ERROR';
+      authSpy.checkDomain.and.returnValue(throwError(sampleError));
+      component['showPopupMessages'] = jasmine.createSpy('showPopupMessages');
+      component.validateQueryParams();
+      flush();
+
+      expect(component['showPopupMessages']).toHaveBeenCalledWith('shortMessage', 'Registration link invalid!', [ 'login' ]);
+      expect(newRelicSpy.noticeError).toHaveBeenCalledWith('Get configurations failed', JSON.stringify(sampleError));
+    }));
   });
 
   /*describe('termsAndConditionsPopup()', () => {

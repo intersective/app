@@ -80,72 +80,66 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   validateQueryParams() {
-    let redirect = [];
-    redirect = ['login'];
+    let redirect = ['login'];
 
     const verifyRegistration = this.newRelic.createTracer('verify registration');
     const getConfig = this.newRelic.createTracer('retrieve configurations');
 
     // access query params
-    this.route.queryParamMap.subscribe(async queryParams => {
+    this.route.queryParamMap.subscribe(async () => {
       this.user.email = this.route.snapshot.paramMap.get('email');
       this.user.key = this.route.snapshot.paramMap.get('key');
+
       if (this.user.email && this.user.key) {
         // check is Url valid or not.
         this.authService.verifyRegistration({
-            email: this.user.email,
-            key: this.user.key
-          }).subscribe(
-            response => {
-              verifyRegistration();
+          email: this.user.email,
+          key: this.user.key
+        }).subscribe(response => {
+          verifyRegistration();
 
-              if (response) {
-                const user = response.data.User;
-                // Setting user data after registration verified.
-                this.user.contact = (user || {}).contact_number || null;
-                this.user.id = user.id;
+          if (response) {
+            const user = response.data.User;
+            // Setting user data after registration verified.
+            this.user.contact = (user || {}).contact_number || null;
+            this.user.id = user.id;
 
-                // Update storage data
-                this.storage.setUser({
-                  contactNumber: this.user.contact,
-                  email: this.user.email
-                });
+            // Update storage data
+            this.storage.setUser({
+              contactNumber: this.user.contact,
+              email: this.user.email
+            });
 
-                // get app configaration
-                this.authService.checkDomain({
-                  domain: this.domain
-                }).subscribe(
-                  res => {
-                    getConfig();
+            // get app configaration
+            this.authService.checkDomain({
+              domain: this.domain
+            }).subscribe(res => {
+              getConfig();
 
-                    let data = (res.data || {}).data;
-                    data = this.utils.find(data, function(datum) {
-                      return (
-                        datum.config && datum.config.auth_via_contact_number
-                      );
-                    });
-                    if (data && data.config) {
-                      if (data.config.auth_via_contact_number === true) {
-                        this.hide_password = true;
-                        this.user.password = this.autoGeneratePassword();
-                        this.confirmPassword = this.user.password;
-                      }
-                    }
-                  },
-                  async err => {
-                    getConfig();
-                    this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
-                    await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
-                  }
+              let data = (res.data || {}).data;
+              data = this.utils.find(data, function(datum) {
+                return (
+                  datum.config && datum.config.auth_via_contact_number
                 );
+              });
+              if (data && data.config) {
+                if (data.config.auth_via_contact_number === true) {
+                  this.hide_password = true;
+                  this.user.password = this.autoGeneratePassword();
+                  this.confirmPassword = this.user.password;
+                }
               }
-            },
-            async error => {
-              verifyRegistration();
-              this.newRelic.noticeError('verification failed', JSON.stringify(error));
+            }, async err => {
+              getConfig();
+              this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
               await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
-            }
-          );
+            });
+          }
+        }, async error => {
+          verifyRegistration();
+          this.newRelic.noticeError('verification failed', JSON.stringify(error));
+          await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+        });
       } else {
         await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
       }
