@@ -11,7 +11,7 @@ describe('UtilsService', () => {
   const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
   let service: UtilsService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       providers: [
         Apollo,
@@ -80,7 +80,6 @@ describe('UtilsService', () => {
     it('should execute open link with Window.open()', () => {
       const url = 'test.com';
 
-      spyOn(window, 'open');
       service.openUrl(url);
 
       expect(window.open).toHaveBeenCalledWith(url, '_self');

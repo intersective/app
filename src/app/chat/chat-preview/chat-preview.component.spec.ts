@@ -47,7 +47,6 @@ xdescribe('ChatPreviewComponent', () => {
   });
 
   it('should has toolbar to control modal content', () => {
-    spyOn(window, 'open');
     spyOn(modalSpy, 'dismiss');
 
     component.file = { url: TEST_URL };
@@ -55,7 +54,6 @@ xdescribe('ChatPreviewComponent', () => {
 
   describe('download()', () => {
     it('should open and download from a URL', () => {
-      spyOn(window, 'open');
       component.file = {
         url: TEST_URL
       };
