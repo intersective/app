@@ -40,7 +40,7 @@ export class AuthRegistrationComponent implements OnInit {
   showPassword = false;
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
-  submitting: boolean = false;
+  submitting = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -80,7 +80,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   validateQueryParams() {
-    let redirect = ['login'];
+    const redirect = ['login'];
 
     const verifyRegistration = this.newRelic.createTracer('verify registration');
     const getConfig = this.newRelic.createTracer('retrieve configurations');
@@ -129,13 +129,13 @@ export class AuthRegistrationComponent implements OnInit {
                   this.confirmPassword = this.user.password;
                 }
               }
-            }, async err => {
+            },           async err => {
               getConfig();
               this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
               await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
             });
           }
-        }, async error => {
+        },           async error => {
           verifyRegistration();
           this.newRelic.noticeError('verification failed', JSON.stringify(error));
           await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
@@ -277,24 +277,27 @@ export class AuthRegistrationComponent implements OnInit {
         return isValid;
       }
     } else {
-      for (const conrtoller in this.registrationForm.controls) {
-        const thisErrors = this.registrationForm.controls[conrtoller].errors;
+      for (const controller in this.registrationForm.controls) {
+        if (this.registrationForm.controls.hasOwnProperty(controller)) {
 
-        if (thisErrors) {
-          isValid = false;
-          for (const key in thisErrors) {
-            if (thisErrors.hasOwnProperty(key)) {
-              switch (key) {
-                case 'required':
-                  this.errors.push('Please fill in your password');
-                  break;
-                case 'minlength':
-                  this.errors.push(
-                    'Your password needs to be more than 8 characters.'
-                  );
-                  break;
-                default:
-                  this.errors.push(this.registrationForm.controls.errors[key]);
+          const thisErrors = this.registrationForm.controls[controller].errors;
+
+          if (thisErrors) {
+            isValid = false;
+            for (const key in thisErrors) {
+              if (thisErrors.hasOwnProperty(key)) {
+                switch (key) {
+                  case 'required':
+                    this.errors.push('Please fill in your password');
+                    break;
+                  case 'minlength':
+                    this.errors.push(
+                      'Your password needs to be more than 8 characters.'
+                    );
+                    break;
+                  default:
+                    this.errors.push(this.registrationForm.controls.errors[key]);
+                }
               }
             }
           }

@@ -88,7 +88,7 @@ export class RequestInterceptor implements HttpInterceptor {
    */
   private reformatNativeParams(params: HttpParams) {
     const keys = params.keys();
-    let result = {};
+    const result = {};
     if (keys.length > 0) {
       keys.forEach(key => {
         let val = params.get(key);

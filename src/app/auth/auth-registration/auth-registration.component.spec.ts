@@ -155,11 +155,11 @@ describe('AuthRegistrationComponent', () => {
 
 
     expect(email.invalid).toBeFalsy();
-    email.setValue("any-email");
-    expect(email.value).toEqual("any-email");
+    email.setValue('any-email');
+    expect(email.value).toEqual('any-email');
     expect(email.invalid).toBeTruthy();
 
-    email.setValue("test@email.com");
+    email.setValue('test@email.com');
     expect(email.invalid).toBeFalsy();
   });
 
