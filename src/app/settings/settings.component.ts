@@ -201,8 +201,8 @@ export class SettingsComponent extends RouterEnter {
     return this.authService.logout();
   }
   gotoPreference () {
-    return this.router.navigate(['app','preference']);
-  };
+    return this.router.navigate(['app', 'preference']);
+  }
 
   async uploadProfileImage(file, type = null) {
     if (file.success) {

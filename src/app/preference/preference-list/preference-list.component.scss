@@ -2,10 +2,8 @@
     background: var(--ion-color-light) !important;
     font-weight: 500;
 }
-.preference-header-item {
+.preference-header-name {
     font-weight: 900;
-    font-size: 16px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
 }

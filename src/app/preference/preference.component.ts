@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { PreferenceService } from './preference.service';
 
 @Component({
   selector: 'app-preferences',
@@ -11,29 +12,32 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 export class PreferenceComponent extends RouterEnter {
   routeUrl = 'app/preference';
 
-  @ViewChild('preferenceList') preferenceList ; 
-  @ViewChild('preferenceDetail') preferenceDetail ; 
-  preferenceKey :string;
-  
+  @ViewChild('preferenceList') preferenceList ;
+  @ViewChild('preferenceDetail') preferenceDetail ;
+  preferenceKey: string;
   constructor(
     public utils: UtilsService,
-    public router: Router
+    public router: Router,
+    private preferenceService: PreferenceService
   ) {
     super(router);
    }
-   onEnter() {
+  onEnter() {
     this.preferenceKey = null;
-    
     // trigger onEnter after the element get generated
     setTimeout(() => {
       this.preferenceList.onEnter();
     });
-  } 
+  }
   goto(event) {
-    this.preferenceKey = event.preferenceKey;
-        // setTimeout(() => {
-        //   this.preferenceDetail.onEnter();
-        // });
+    if (event.key) {
+      this.preferenceKey = event.key;
+    } else {
+      this.preferenceKey = event;
+    }
+    setTimeout(() => {
+          this.preferenceDetail.onEnter();
+        });
   }
 
 
@@ -45,4 +49,5 @@ export class PreferenceComponent extends RouterEnter {
     }
     return null;
   }
+
 }

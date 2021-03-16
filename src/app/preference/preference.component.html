@@ -8,10 +8,16 @@
   <ion-content color="light" id="update-preference">
     <app-preference-update
       #preferenceDetail
-      *ngIf="preferenceKey"
+      *ngIf="preferenceKey; else NopreferenceTmpl"
       [inputId]="preferenceKey"
       (navigate)="goto($event);preferenceList.onEnter()" 
-    ></app-preference-update>
+    >
+  </app-preference-update>
+    <ng-template #NopreferenceTmpl>
+      <ion-card class="practera-card list-empty-message no-preference">
+        <p>Please select a preference to continue.</p>
+      </ion-card>
+    </ng-template>
   </ion-content>
 </ion-split-pane>
 

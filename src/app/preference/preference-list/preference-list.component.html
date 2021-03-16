@@ -5,7 +5,7 @@
         <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">Notifications</ion-title>
+    <ion-title class="ion-text-center ion-padding">Notifications</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content color="light" class="ion-text-center" [ngClass]="{
@@ -20,7 +20,7 @@
 
       <ion-item *ngFor="let pref of cat.preferences" (click)="goToPreference(pref)">
         <ion-label>
-          <h3 class="preference-header-item">{{pref.name}}</h3>
+          <h3 class="preference-header-item preference-header-name">{{pref.name}}</h3>
           <app-options [options]="pref.options"></app-options>
         </ion-label>
         <ion-icon name="chevron-forward-outline" color="medium" slot="end"></ion-icon>

@@ -11,7 +11,7 @@ import { PreferenceUpdateComponent } from '../preference-update/preference-updat
   templateUrl: './preference-list.component.html',
   styleUrls: ['./preference-list.component.scss']
 })
-export class PreferenceListComponent implements OnDestroy, OnInit {
+export class PreferenceListComponent implements OnDestroy {
 
   preferences$ = this.preferenceService.preference$;
 
@@ -20,6 +20,7 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
   prefAPI: any;
   @Output() navigate = new EventEmitter();
   @Input() currentPreference;
+  // @Output() preferenceReady = new EventEmitter();
 
   constructor(
     private preferenceService: PreferenceService,
@@ -30,11 +31,6 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
     private ngZone: NgZone,
   ) {}
 
-  ngOnInit() {
-    this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
-      this.preferenceService.getPreference();
-    });
-  }
 
   ngOnDestroy() {
     if (this.preferenceSubject$ instanceof Subscription) {
@@ -43,7 +39,7 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
   }
 
   goTo(direction) {
-    if( this.utils.isMobile ){
+    if ( this.utils.isMobile ) {
     }
     return this.router.navigate(direction);
   }
@@ -58,21 +54,10 @@ export class PreferenceListComponent implements OnDestroy, OnInit {
     if (this.utils.isMobile()) {
       // redirect to update page for mobile
       return this.ngZone.run(() => {
-        return this.router.navigate(['preference-update',pref.key]);
+        return this.router.navigate(['preference-update', pref.key]);
       });
     } else {
-    //   switch (pref[0]) {
-    //     case 'preference-update':
-    //       this.navigate.emit({
-    //         preferenceKey: pref[1]
-    //       });
-    //       break;
-    //     default:
-    //       return this.ngZone.run(() => {
-    //         return this.router.navigate(pref);
-    //       });
-    //   }
-      this.navigate.emit(pref)
+      this.navigate.emit(pref);
     }
   }
 }
