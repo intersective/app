@@ -1,5 +1,6 @@
 export const environment = {
-  production: true,
+  production: '<CUSTOMPLAIN_PRDMODEFLAG>',
+  skipGlobalLogin: '<CUSTOMPLAIN_SKIPGLOBALLOGINFLAG>',
   appkey: '<CUSTOM_APPKEY>',
   pusher: {
     key: '<CUSTOM_PUSHERKEY>',
@@ -8,6 +9,9 @@ export const environment = {
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
+  chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
+  globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
+  stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {
     key: '<CUSTOM_FILESTACK_KEY>',

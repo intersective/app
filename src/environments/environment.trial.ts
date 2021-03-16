@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  skipGlobalLogin: false,
   appkey: 'b11e7c189b',
   pusher: {
     key: '255f010d210933ca7675',
@@ -8,6 +9,7 @@ export const environment = {
   env: 'live',
   APIEndpoint: 'https://trial.practera.com/',
   graphQL: '',
+  chatGraphQL: '',
   intercomAppId: '',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',

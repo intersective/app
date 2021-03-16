@@ -52,7 +52,8 @@
       </ion-item>
       <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
         <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-        Logout
+        <p *ngIf="hasMultipleStacks">Logout or Switch Environment</p>
+        <p *ngIf="!hasMultipleStacks">Logout</p>
       </ion-item>
 
     </div>
@@ -97,7 +98,8 @@
             </ion-item>
             <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none">
               <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-              Logout
+              <p *ngIf="hasMultipleStacks">Logout or Switch Environment</p>
+              <p *ngIf="!hasMultipleStacks">Logout</p>
             </ion-item>
 
           </div>

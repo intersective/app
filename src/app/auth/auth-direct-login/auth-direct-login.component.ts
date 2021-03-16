@@ -40,18 +40,15 @@ export class AuthDirectLoginComponent implements OnInit {
     setTimeout(async () => {
       try {
         const directLogin = await this.authService.directLogin({ authToken });
-        directLogin.subscribe(async res => {
-          await res;
-          await this.switcherService.getMyInfo().toPromise();
-          nrDirectLoginTracer();
-          return this._redirect();
-        });
+        const res = await directLogin.toPromise();
+        await res;
+        await this.switcherService.getMyInfo().toPromise();
+        nrDirectLoginTracer();
+        return this._redirect();
       } catch (err) {
         this._error(err);
       }
-        // tslint:disable-next-line:align
-      }, 50
-    );
+    });
   }
 
   // force every navigation happen under radar of angular

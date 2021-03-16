@@ -87,9 +87,16 @@ export class AuthService {
     await this.nativeStorage.clear();
   }
 
-  private _login(body: HttpParams) {
+  private _login(body: HttpParams, serviceHeader?: string) {
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      service: serviceHeader
+     };
+    if (!serviceHeader) {
+      delete headers.service;
+    }
     return this.request.post(api.login, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers
     }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
@@ -125,6 +132,19 @@ export class AuthService {
     } catch (err) {
       return err;
     }
+  }
+
+  /**
+   * @name globalLogin
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { apikey } in string
+   */
+  globalLogin({ apikey, service }): Observable<any> {
+    const body = new HttpParams()
+      .set('apikey', apikey);
+    this.logout({}, false);
+    return this._login(body, service);
   }
 
   private async _handleLoginResponse(response): Promise<any> {

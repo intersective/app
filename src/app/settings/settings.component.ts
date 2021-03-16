@@ -35,6 +35,7 @@ export class SettingsComponent extends RouterEnter {
     image: '',
     name: ''
   };
+  hasMultipleStacks = false;
   currentProgramName = '';
   currentProgramImage = '';
 
@@ -104,6 +105,11 @@ export class SettingsComponent extends RouterEnter {
     // also get program name
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+
+    this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
+    if (this.storage.get('hasMultipleStacks')) {
+      this.hasMultipleStacks = this.storage.get('hasMultipleStacks');
+    }
   }
 
   /**
@@ -198,7 +204,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   logout() {
-    return this.authService.logout();
+    return this.authService.logout({}, true);
   }
 
   async uploadProfileImage(file, type = null) {

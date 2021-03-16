@@ -38,6 +38,9 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import gql from 'graphql-tag';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -92,12 +95,14 @@ describe('RequestService', () => {
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
   let nativeStorageSpy: NativeStorageService;
+  let httpLink: HttpLink;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         Apollo,
+        HttpLink,
         RequestService,
         DevModeService,
         {
@@ -128,6 +133,7 @@ describe('RequestService', () => {
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
     nativeStorageSpy = TestBed.inject(NativeStorageService);
+    httpLink = TestBed.inject(HttpLink);
   });
 
   it('should be created', () => {
