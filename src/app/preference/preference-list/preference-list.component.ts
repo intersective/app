@@ -20,7 +20,6 @@ export class PreferenceListComponent implements OnDestroy {
   prefAPI: any;
   @Output() navigate = new EventEmitter();
   @Input() currentPreference;
-  // @Output() preferenceReady = new EventEmitter();
 
   constructor(
     private preferenceService: PreferenceService,

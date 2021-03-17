@@ -101,7 +101,11 @@ export class PreferenceUpdateComponent extends RouterEnter {
 
     return result;
   }
-
+  /**
+   * @name getKey
+   * @description finding the preferenceKey based on the view workflow
+   *
+   */
   private getKey() {
     if (this.utils.isMobile()) {
       return this.activatedRoute.snapshot.params.key;
@@ -145,6 +149,10 @@ export class PreferenceUpdateComponent extends RouterEnter {
     }
     return;
   }
+  /* @name back
+  * @description manual back button to go back to a pre-structured routing
+  *              (back to "/preference")
+  */
   back() {
     this.pushPreferenceUpdate().then(() => {
       return this.ngZone.run(() => {
