@@ -1,37 +1,53 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { UtilsService } from '@services/utils.service';
+import { RouterEnter } from '@services/router-enter.service';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { PreferenceService } from './preference.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
 
 @Component({
-  selector: 'app-preference',
+  selector: 'app-preferences',
   templateUrl: './preference.component.html',
   styleUrls: ['./preference.component.scss']
 })
-export class PreferenceComponent implements OnDestroy, OnInit {
-  preferences$ = this.preferenceService.preference$;
-  preferenceSubject$: Subscription;
-  prefAPI: any;
+export class PreferenceComponent extends RouterEnter {
+  routeUrl = 'app/preference';
 
+  @ViewChild('preferenceList') preferenceList ;
+  @ViewChild('preferenceDetail') preferenceDetail ;
+  preferenceKey: string;
   constructor(
-    private preferenceService: PreferenceService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
-      this.preferenceService.getPreference();
+    public utils: UtilsService,
+    public router: Router,
+    private preferenceService: PreferenceService
+  ) {
+    super(router);
+   }
+  onEnter() {
+    this.preferenceKey = null;
+    // trigger onEnter after the element get generated
+    setTimeout(() => {
+      this.preferenceList.onEnter();
     });
   }
-
-  ngOnDestroy() {
-    if (this.preferenceSubject$ instanceof Subscription) {
-      this.preferenceSubject$.unsubscribe();
+  goto(event) {
+    if (event.key) {
+      this.preferenceKey = event.key;
+    } else {
+      this.preferenceKey = event;
     }
+    setTimeout(() => {
+          this.preferenceDetail.onEnter();
+        });
   }
 
-  goTo(direction) {
-    return this.router.navigate(direction);
+
+  currentPreference() {
+    if (this.preferenceKey) {
+      return {
+        preferenceKey: this.preferenceKey,
+      };
+    }
+    return null;
   }
+
 }

@@ -1,19 +1,23 @@
-<ion-header mode="ios">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="back()">
-        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title class="ion-text-center">{{ currentPreference.name }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+ <ion-header mode="ios">
+    <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+      <ion-buttons slot="start" *ngIf="utils.isMobile()">
+        <ion-button (click)="back()" id="btn-back">
+          <ion-icon class="icon-backward ion-margin-start" name="arrow-back" (click)="back()" color="primary" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
 
-<ion-content color="light" text-center>
-  <ion-list>
+      <ion-label>
+        <h2 class="bold ion-text-center ion-padding preference-header-item">{{currentPreference.name}}</h2>
+      </ion-label> 
+      
+    </ion-toolbar>
+  </ion-header>
+  <ion-content  color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
+    
+    <ion-list>
     <ion-item *ngIf="currentPreference.description" lines="none" color="light">
       <ion-label>
-        <h2 class="bold subtitle-1">{{ currentPreference.description }}</h2>
+        <h2 class="bold subtitle-1 preference-header-item">{{ currentPreference.description }}</h2>
       </ion-label>
     </ion-item>
 
@@ -34,6 +38,13 @@
         <p class="gray-2 subtitle-1 preference-option item-content">{{ currentPreference.remarks }}</p>
       </ion-label>
     </ion-item>
-  </ion-list>
-
+    </ion-list>
+      
 </ion-content>
+
+
+
+
+
+
+
