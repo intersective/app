@@ -146,10 +146,11 @@ export class PreferenceUpdateComponent extends RouterEnter {
       if (!this.utils.isEmpty(this.newUpdates)) {
         await this.preferenceService.update(this.newUpdates).toPromise();
       }
+      return;
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      return;
     }
-    return;
   }
 
   /* @name back
