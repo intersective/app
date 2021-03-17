@@ -34,3 +34,4 @@ android/local.properties
 
 electron
 src/environments/environment.production-native.ts
+src/environments/environment.p2.ts
