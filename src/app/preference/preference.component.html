@@ -10,7 +10,11 @@
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content fullscreen>
+  <div class="ion-text-center ion-margin-top" *ngIf ="loadingPreference">
+    <ion-spinner></ion-spinner>
+  </div>
   <ng-container *ngIf="(preferences$ | async ) as preferences; else noPreferenceAvailable">
     <ion-list *ngFor="let cat of preferences.categories">
       <ion-list-header class="no-bg preference-cat-item">{{cat.name}}</ion-list-header>
@@ -24,10 +28,9 @@
       </ion-item>
     </ion-list>
   </ng-container>
-
-  <ng-template #noPreferenceAvailable>
-    <div class="ion-text-center ion-margin-bottom">
-      <p>No preferences setting available.</p>
-    </div>
-  </ng-template>
+<ng-template #noPreferenceAvailable>
+  <div class="ion-text-center ion-margin-bottom">
+    <p>No preferences setting available.</p>
+  </div>
+</ng-template>
 </ion-content>
