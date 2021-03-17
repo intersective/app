@@ -7,6 +7,7 @@ import {
   Output,
   NgZone,
 } from '@angular/core';
+import { IonToggle } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -119,12 +120,13 @@ export class PreferenceUpdateComponent extends RouterEnter {
    * @description prepare new data changes for PUT request to preference API (with @func back())
    * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
    */
-  updatePreference(changes: { medium: string; checked: boolean }) {
-    const { medium, checked } = changes;
+  updatePreference(changes: { medium: string; event: boolean | IonToggle; }) {
+    const { medium, event } = changes;
     if (!this.newUpdates) {
       this.newUpdates = {};
     }
 
+    const checked = (event instanceof IonToggle) ? event.checked : event;
     if (!this.newUpdates[this.currentPreference.key]) {
       this.newUpdates[this.currentPreference.key] = {
         [medium]: checked,
