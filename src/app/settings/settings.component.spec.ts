@@ -172,14 +172,12 @@ describe('SettingsComponent', () => {
   });
 
   it('should allow access to T&C file', () => {
-    spyOn(window, 'open');
     component.openLink();
     expect(component.termsUrl).toEqual('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf');
     expect(window.open).toHaveBeenCalledWith(component.termsUrl, '_system');
   });
 
   it('should initiate support email event', () => {
-    spyOn(window, 'open');
     component.mailTo();
     expect(component.helpline).toEqual('help@practera.com');
     expect(window.open).toHaveBeenCalledWith(`mailto:${component.helpline}?subject=${component.currentProgramName}`, '_self');

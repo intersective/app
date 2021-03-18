@@ -28,8 +28,16 @@ export class NotificationService {
     public utils: UtilsService,
   ) {}
 
-  dismiss() {
-    return this.modalController.dismiss();
+  /**
+   * dismiss overlaid modal (on the very top)
+   * @return {Promise<boolean>} true: removed, false: fail to remove
+   */
+  async dismiss(): Promise<boolean> {
+    const hasOverlay = await this.modalController.getTop(); // return undefined if no overlay found
+    if (hasOverlay) {
+      return this.modalController.dismiss();
+    }
+    return;
   }
 
   /**

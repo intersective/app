@@ -17,11 +17,13 @@ export class PopUpComponent {
     public modalController: ModalController
   ) {}
 
-  confirmed() {
-    this.modalController.dismiss();
+  async confirmed(): Promise<boolean> {
+    await this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (this.redirect) {
-      this.router.navigate(this.redirect);
+      return this.router.navigate(this.redirect);
     }
+
+    return;
   }
 }

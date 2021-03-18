@@ -38,8 +38,6 @@ describe('PreviewComponent', () => {
     component = fixture.componentInstance;
     modalSpy = TestBed.inject(ModalController);
     domSanitizerSpy = TestBed.inject(DomSanitizer);
-
-    // fixture.detectChanges();
   });
 
   it('should created', () => {
@@ -47,7 +45,6 @@ describe('PreviewComponent', () => {
   });
 
   it('should has toolbar to control modal content', () => {
-    spyOn(window, 'open');
     spyOn(modalSpy, 'dismiss');
 
     component.file = { url: TEST_URL };
@@ -67,7 +64,6 @@ describe('PreviewComponent', () => {
 
   describe('download()', () => {
     it('should open and download from a URL', () => {
-      spyOn(window, 'open');
       component.file = {
         url: TEST_URL
       };

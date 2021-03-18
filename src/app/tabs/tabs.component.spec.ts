@@ -95,7 +95,7 @@ describe('TabsComponent', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['hideChatTab'])
+          useValue: jasmine.createSpyObj('RequestService', ['get'])
         },
         {
           provide: PushNotificationService,
@@ -139,7 +139,6 @@ describe('TabsComponent', () => {
     reviewsSpy.getReviews.and.returnValue(of(['', '']));
     eventsSpy.getEvents.and.returnValue(of([{id: 1}]));
     tabsSpy.getNoOfChats.and.returnValue(of(4));
-    requestSpy.hideChatTab.and.returnValue(of(false));
     tabsSpy.getNoOfTodoItems.and.returnValue(Promise.resolve(of(5)));
     component.routeUrl = '/test';
   });
@@ -209,11 +208,9 @@ describe('TabsComponent', () => {
         hasEvents: true,
       });
       utils.broadcastEvent('chat:new-message', '');
-      requestSpy.hideChatTab.and.returnValue(false);
       fixture.detectChanges();
       flush();
       fixture.whenStable().then(() => {
-        requestSpy.hideChatTab.and.returnValue(true);
         expect(component.noOfTodoItems).toBe(5);
         expect(component['_noOfChats$'].value).toBe(4);
         expect(component['_showChat$'].value).toBe(true);
@@ -222,8 +219,7 @@ describe('TabsComponent', () => {
       });
     }));
 
-    it('should hide chat if requestService.hideChatTab is true', () => {
-      requestSpy.hideChatTab.and.returnValue(true);
+    it('should hide chat if _showChat$ is false', () => {
       fixture.detectChanges();
       expect(component['_showChat$'].value).toBe(false);
     });
@@ -231,7 +227,6 @@ describe('TabsComponent', () => {
     it('should get correct data without team id', () => {
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));
-      requestSpy.hideChatTab.and.returnValue(of(''));
       fixture.detectChanges();
       expect(component['_noOfChats$'].value).toBe(0);
       expect(component['_showChat$'].value).toBe(false);
