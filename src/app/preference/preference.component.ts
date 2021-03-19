@@ -11,9 +11,10 @@ import { PreferenceService } from './preference.service';
 })
 export class PreferenceComponent extends RouterEnter {
   routeUrl = 'app/preference';
+  loadingPreference = true;
 
-  @ViewChild('preferenceList') preferenceList ;
-  @ViewChild('preferenceDetail') preferenceDetail ;
+  @ViewChild('preferenceList') preferenceList;
+  @ViewChild('preferenceDetail') preferenceDetail;
   preferenceKey: string;
   constructor(
     public utils: UtilsService,
@@ -21,14 +22,17 @@ export class PreferenceComponent extends RouterEnter {
     private preferenceService: PreferenceService
   ) {
     super(router);
-   }
+  }
+
   onEnter() {
     this.preferenceKey = null;
+    this.loadingPreference = true;
     // trigger onEnter after the element get generated
     setTimeout(() => {
       this.preferenceList.onEnter();
     });
   }
+
   goto(event) {
     if (event.key) {
       this.preferenceKey = event.key;
@@ -36,10 +40,9 @@ export class PreferenceComponent extends RouterEnter {
       this.preferenceKey = event;
     }
     setTimeout(() => {
-          this.preferenceDetail.onEnter();
-        });
+      this.preferenceDetail.onEnter();
+    });
   }
-
 
   currentPreference() {
     if (this.preferenceKey) {

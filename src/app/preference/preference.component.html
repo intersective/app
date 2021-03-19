@@ -10,7 +10,7 @@
       #preferenceDetail
       *ngIf="preferenceKey; else NopreferenceTmpl"
       [inputId]="preferenceKey"
-      (navigate)="goto($event);preferenceList.onEnter()" 
+      (navigate)="goto($event);preferenceList.onEnter()"
     >
   </app-preference-update>
     <ng-template #NopreferenceTmpl>
