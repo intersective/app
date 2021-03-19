@@ -11,8 +11,7 @@
       *ngIf="preferenceKey; else NopreferenceTmpl"
       [inputId]="preferenceKey"
       (navigate)="goto($event);preferenceList.onEnter()"
-    >
-  </app-preference-update>
+    ></app-preference-update>
     <ng-template #NopreferenceTmpl>
       <ion-card class="practera-card list-empty-message no-preference">
         <p>Please select a preference to continue.</p>

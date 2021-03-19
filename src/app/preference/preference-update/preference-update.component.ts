@@ -31,13 +31,7 @@ export class PreferenceUpdateComponent extends RouterEnter {
   };
 
   preferenceSubject$: Subscription;
-  currentPreference = {
-    name: '',
-    description: '',
-    options: [],
-    remarks: '',
-    key: '',
-  };
+  currentPreference = this.resetCurrentPreference();
   private key: string;
   private newUpdates: {
     [propName: string]: {
@@ -54,16 +48,21 @@ export class PreferenceUpdateComponent extends RouterEnter {
     private ngZone: NgZone
   ) {
     super(router);
+    this.currentPreference = this.resetCurrentPreference();
   }
 
-  onEnter() {
-    this.currentPreference = {
+  resetCurrentPreference() {
+    return {
       name: '',
       description: '',
       options: [],
       remarks: '',
       key: '',
     };
+  }
+
+  onEnter() {
+    this.currentPreference = this.resetCurrentPreference();
     if (this.inputId) {
       this.key = this.inputId;
     }
