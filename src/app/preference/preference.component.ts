@@ -11,7 +11,6 @@ import { PreferenceService } from './preference.service';
 })
 export class PreferenceComponent extends RouterEnter {
   routeUrl = 'app/preference';
-  loadingPreference = true;
 
   @ViewChild('preferenceList') preferenceList;
   @ViewChild('preferenceDetail') preferenceDetail;
@@ -26,7 +25,6 @@ export class PreferenceComponent extends RouterEnter {
 
   onEnter() {
     this.preferenceKey = null;
-    this.loadingPreference = true;
     // trigger onEnter after the element get generated
     setTimeout(() => {
       this.preferenceList.onEnter();
