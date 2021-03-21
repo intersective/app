@@ -14,6 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterEnter } from '@services/router-enter.service';
 import { Subscription } from 'rxjs/Subscription';
 import { ModalController } from '@ionic/angular';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-preference-update',
@@ -31,13 +32,7 @@ export class PreferenceUpdateComponent extends RouterEnter {
   };
 
   preferenceSubject$: Subscription;
-  currentPreference = {
-    name: '',
-    description: '',
-    options: [],
-    remarks: '',
-    key: '',
-  };
+  currentPreference = this.resetCurrentPreference();
   private key: string;
   private newUpdates: {
     [propName: string]: {
@@ -51,19 +46,25 @@ export class PreferenceUpdateComponent extends RouterEnter {
     public router: Router,
     private utils: UtilsService,
     private modalController: ModalController,
+    private notificationService: NotificationService,
     private ngZone: NgZone
   ) {
     super(router);
+    this.currentPreference = this.resetCurrentPreference();
   }
 
-  onEnter() {
-    this.currentPreference = {
+  resetCurrentPreference() {
+    return {
       name: '',
       description: '',
       options: [],
       remarks: '',
       key: '',
     };
+  }
+
+  onEnter() {
+    this.currentPreference = this.resetCurrentPreference();
     if (this.inputId) {
       this.key = this.inputId;
     }
@@ -120,19 +121,35 @@ export class PreferenceUpdateComponent extends RouterEnter {
    * @description prepare new data changes for PUT request to preference API (with @func back())
    * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
    */
-  updatePreference(changes: { medium: string; event: boolean | IonToggle; }) {
-    const { medium, event } = changes;
-    if (!this.newUpdates) {
-      this.newUpdates = {};
-    }
+  async updatePreference(changes: { medium: string; event: boolean | IonToggle; }): Promise<any> {
+    try {
 
-    const checked = (event instanceof IonToggle) ? event.checked : event;
-    if (!this.newUpdates[this.currentPreference.key]) {
-      this.newUpdates[this.currentPreference.key] = {
-        [medium]: checked,
-      };
-    } else {
-      this.newUpdates[this.currentPreference.key][medium] = checked;
+      const { medium, event } = changes;
+      if (!this.newUpdates) {
+        this.newUpdates = {};
+      }
+
+      const checked = (event instanceof IonToggle) ? event.checked : event;
+      if (!this.newUpdates[this.currentPreference.key]) {
+        this.newUpdates[this.currentPreference.key] = {
+          [medium]: checked,
+        };
+      } else {
+        this.newUpdates[this.currentPreference.key][medium] = checked;
+      }
+
+      await this.pushPreferenceUpdate();
+      return;
+    } catch (err) {
+      return this.notificationService.alert({
+        message: 'Fail to update preferences, please try again.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+          }
+        ]
+      });
     }
   }
 
@@ -148,8 +165,7 @@ export class PreferenceUpdateComponent extends RouterEnter {
       }
       return;
     } catch (err) {
-      console.error(err);
-      return;
+      throw new Error(err);
     }
   }
 

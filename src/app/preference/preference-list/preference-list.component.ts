@@ -30,7 +30,6 @@ export class PreferenceListComponent implements OnDestroy {
     private ngZone: NgZone,
   ) {}
 
-
   ngOnDestroy() {
     if (this.preferenceSubject$ instanceof Subscription) {
       this.preferenceSubject$.unsubscribe();
@@ -38,17 +37,15 @@ export class PreferenceListComponent implements OnDestroy {
   }
 
   goTo(direction) {
-    if ( this.utils.isMobile ) {
-    }
     return this.router.navigate(direction);
   }
-
 
   onEnter() {
     this.preferenceSubject$ = this.activatedRoute.data.subscribe(() => {
       this.preferenceService.getPreference();
     });
   }
+
   async goToPreference(pref) {
     if (this.utils.isMobile()) {
       // redirect to update page for mobile
