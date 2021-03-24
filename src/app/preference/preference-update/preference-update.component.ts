@@ -13,7 +13,6 @@ import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterEnter } from '@services/router-enter.service';
 import { Subscription } from 'rxjs/Subscription';
-import { ModalController } from '@ionic/angular';
 import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
@@ -45,7 +44,6 @@ export class PreferenceUpdateComponent extends RouterEnter {
     private activatedRoute: ActivatedRoute,
     public router: Router,
     public utils: UtilsService,
-    private modalController: ModalController,
     private notificationService: NotificationService,
     private ngZone: NgZone
   ) {

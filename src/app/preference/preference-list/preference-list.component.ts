@@ -3,7 +3,6 @@ import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { UtilsService } from '@services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
 import { PreferenceUpdateComponent } from '../preference-update/preference-update.component';
 
 @Component({
@@ -26,7 +25,6 @@ export class PreferenceListComponent implements OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     public utils: UtilsService,
-    private notificationService: NotificationService,
     private ngZone: NgZone,
   ) {}
 

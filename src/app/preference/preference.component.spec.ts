@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PreferenceComponent } from './preference.component';
+import { UtilsService } from '@services/utils.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('PreferenceComponent', () => {
   let component: PreferenceComponent;
@@ -8,7 +10,19 @@ describe('PreferenceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PreferenceComponent ]
+      declarations: [ PreferenceComponent ],
+      providers: [
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', ['isMobile'])
+        },
+        {
+          provide: Router,
+          useValue: {
+            navigate: () => true
+          }
+        },
+      ]
     })
     .compileComponents();
   }));

@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 
 import { UtilsService } from '@services/utils.service';
 import { PreferenceUpdateComponent } from './preference-update.component';
+import { NotificationService } from '@shared/notification/notification.service';
 
 const bestKey = {
   'description': 'When I receive chat messages',
@@ -138,6 +139,10 @@ describe('PreferenceUpdateComponent', () => {
           useValue: jasmine.createSpyObj('UtilsService', {
             isEmpty: false
           })
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
         }
       ]
     })

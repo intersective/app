@@ -4,7 +4,10 @@ import { of } from 'rxjs';
 import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { UtilsService } from '@services/utils.service';
 import { PreferenceListComponent } from './preference-list.component';
+import { NotificationService } from '@shared/notification/notification.service';
+
 
 describe('PreferenceListComponent', () => {
   let component: PreferenceListComponent;
@@ -32,6 +35,10 @@ describe('PreferenceListComponent', () => {
           useValue: {
             navigate: () => true
           }
+        },
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', ['isMobile'])
         },
       ]
     })

@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { PreferenceService } from './preference.service';
 
 @Component({
   selector: 'app-preferences',
@@ -18,7 +17,6 @@ export class PreferenceComponent extends RouterEnter {
   constructor(
     public utils: UtilsService,
     public router: Router,
-    private preferenceService: PreferenceService
   ) {
     super(router);
   }
