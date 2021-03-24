@@ -25,7 +25,7 @@ export class PreferenceListComponent implements OnDestroy {
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private utils: UtilsService,
+    public utils: UtilsService,
     private notificationService: NotificationService,
     private ngZone: NgZone,
   ) {}

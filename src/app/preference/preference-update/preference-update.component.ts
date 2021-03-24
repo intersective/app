@@ -44,7 +44,7 @@ export class PreferenceUpdateComponent extends RouterEnter {
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    private utils: UtilsService,
+    public utils: UtilsService,
     private modalController: ModalController,
     private notificationService: NotificationService,
     private ngZone: NgZone
