@@ -5,8 +5,10 @@ import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
+import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceUpdateComponent } from './preference-update.component';
+import { NotificationService } from '@shared/notification/notification.service';
 
 const bestKey = {
   'description': 'When I receive chat messages',
@@ -129,15 +131,18 @@ describe('PreferenceUpdateComponent', () => {
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', {
-            navigate: true
-          })
+          useClass: MockRouter
         },
         {
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', {
-            isEmpty: false
+            isEmpty: false,
+            isMobile: false
           })
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
         }
       ]
     })
@@ -162,8 +167,9 @@ describe('PreferenceUpdateComponent', () => {
     expect(component.currentPreference).toEqual({
       name: '',
       description: '',
-      options: '',
+      options: [],
       remarks: '',
+      key: '',
     });
   });
 
@@ -181,14 +187,14 @@ describe('PreferenceUpdateComponent', () => {
       component.currentPreference = component.filterPreferences(SAMPLE_PREFERENCE, preferenceKey);
       expect(component.currentPreference).toEqual(bestKey);
 
-      component.updatePreference({ medium: 'sms', checked: true });
+      component.updatePreference({ medium: 'sms', event: true });
       expect(component['newUpdates']).toEqual(jasmine.objectContaining({
         [preferenceKey]: {
           'sms': true
         }
       }));
 
-      component.updatePreference({ medium: 'email', checked: true });
+      component.updatePreference({ medium: 'email', event: true });
       expect(component['newUpdates']).toEqual(jasmine.objectContaining({
         [preferenceKey]: {
           'sms': true,
@@ -204,7 +210,7 @@ describe('PreferenceUpdateComponent', () => {
 
       flushMicrotasks();
       expect(preferenceSpy.update).toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/preferences']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app/preference']);
     }));
 
     it('should not update preference if newUpdates empty', fakeAsync(() => {
@@ -213,7 +219,7 @@ describe('PreferenceUpdateComponent', () => {
 
       flushMicrotasks();
       expect(preferenceSpy.update).not.toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/preferences']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app/preference']);
     }));
   });
 });
