@@ -5,6 +5,7 @@ import { PreferenceService } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
+import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceUpdateComponent } from './preference-update.component';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -130,14 +131,13 @@ describe('PreferenceUpdateComponent', () => {
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', {
-            navigate: true
-          })
+          useClass: MockRouter
         },
         {
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', {
-            isEmpty: false
+            isEmpty: false,
+            isMobile: false
           })
         },
         {
@@ -210,7 +210,7 @@ describe('PreferenceUpdateComponent', () => {
 
       flushMicrotasks();
       expect(preferenceSpy.update).toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/preferences']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app/preference']);
     }));
 
     it('should not update preference if newUpdates empty', fakeAsync(() => {
@@ -219,7 +219,7 @@ describe('PreferenceUpdateComponent', () => {
 
       flushMicrotasks();
       expect(preferenceSpy.update).not.toHaveBeenCalled();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/preferences']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['app/preference']);
     }));
   });
 });
