@@ -54,9 +54,8 @@ export class AuthDirectLoginComponent implements OnInit {
       } catch (err) {
         this._error(err);
       }
-        // tslint:disable-next-line:align
-      }, 50
-    );\
+      // tslint:disable-next-line:align
+    }, 50);
   }
 
   // force every navigation happen under radar of angular

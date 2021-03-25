@@ -171,7 +171,7 @@ describe('AuthService', () => {
     service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+    expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('me', {apikey: '123456'});
   });
 
   describe('when testing isAuthenticated()', () => {
