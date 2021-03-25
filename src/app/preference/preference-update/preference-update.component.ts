@@ -1,22 +1,38 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  EventEmitter,
+  Input,
+  Output,
+  NgZone,
+} from '@angular/core';
+import { IonToggle } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RouterEnter } from '@services/router-enter.service';
 import { Subscription } from 'rxjs/Subscription';
+import { ModalController } from '@ionic/angular';
+import { NotificationService } from '@shared/notification/notification.service';
 
 @Component({
   selector: 'app-preference-update',
   templateUrl: './preference-update.component.html',
-  styleUrls: ['./preference-update.component.scss']
+  styleUrls: ['./preference-update.component.scss'],
 })
-export class PreferenceUpdateComponent implements OnInit, OnDestroy {
+export class PreferenceUpdateComponent extends RouterEnter {
+  @Input() inputId: string;
+  @Output() navigate = new EventEmitter();
+
+  routeUrl = '/preference-update/';
   noHistoryStack = true;
   preferences: {
     categories: any;
   };
 
   preferenceSubject$: Subscription;
-  currentPreference;
+  currentPreference = this.resetCurrentPreference();
   private key: string;
   private newUpdates: {
     [propName: string]: {
@@ -27,34 +43,46 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   constructor(
     private preferenceService: PreferenceService,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private utils: UtilsService,
+    private modalController: ModalController,
+    private notificationService: NotificationService,
+    private ngZone: NgZone
   ) {
-    preferenceService.getPreference();
-    const key = activatedRoute.snapshot.params.key;
-    this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
-      this.preferences = res;
-      if (this.preferences && key) {
-       this.currentPreference = this.filterPreferences(this.preferences, key);
-      }
-    });
+    super(router);
+    this.currentPreference = this.resetCurrentPreference();
   }
 
-  ngOnInit() {
-    this.currentPreference = {
+  resetCurrentPreference() {
+    return {
       name: '',
       description: '',
-      options: '',
+      options: [],
       remarks: '',
+      key: '',
     };
   }
 
-  ngOnDestroy() {
-    if (this.preferenceSubject$ && this.preferenceSubject$ instanceof Subscription) {
-      this.preferenceSubject$.unsubscribe();
+  onEnter() {
+    this.currentPreference = this.resetCurrentPreference();
+    if (this.inputId) {
+      this.key = this.inputId;
     }
-  }
+    this.preferenceService.getPreference();
+    const key = this.getKey();
+    this.preferenceSubject$ = this.preferenceService.preference$.subscribe(
+      (res) => {
+        this.preferences = res;
+        if (this.preferences && key) {
+          this.currentPreference = this.filterPreferences(
+            this.preferences,
+            key
+          );
 
+        }
+      }
+    );
+  }
   /**
    * show medium choices for current preference key
    *
@@ -65,8 +93,8 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   filterPreferences(preferences: { categories?: Category[] }, key: string) {
     let result;
     if (preferences && preferences.categories) {
-      preferences.categories.find(cat => {
-        result = cat.preferences.find(pref => {
+      preferences.categories.find((cat) => {
+        result = cat.preferences.find((pref) => {
           return pref.key === key;
         });
         return result;
@@ -75,24 +103,53 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
 
     return result;
   }
+ /**
+   * @name getKey
+   * @description finding the preferenceKey based on the view workflow
+   *
+   */
+  private getKey() {
+    if (this.utils.isMobile()) {
+      return this.activatedRoute.snapshot.params.key;
+    } else {
+      return this.inputId;
+    }
+  }
 
   /**
    * @name updatePreference
    * @description prepare new data changes for PUT request to preference API (with @func back())
    * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
    */
-  updatePreference(changes: { medium: string; checked: boolean; }) {
-    const { medium, checked } = changes;
-    if (!this.newUpdates) {
-      this.newUpdates = {};
-    }
+  async updatePreference(changes: { medium: string; event: boolean | IonToggle; }): Promise<any> {
+    try {
 
-    if (!this.newUpdates[this.currentPreference.key]) {
-      this.newUpdates[this.currentPreference.key] = {
-        [medium]: checked
-      };
-    } else {
-      this.newUpdates[this.currentPreference.key][medium] = checked;
+      const { medium, event } = changes;
+      if (!this.newUpdates) {
+        this.newUpdates = {};
+      }
+
+      const checked = (event instanceof IonToggle) ? event.checked : event;
+      if (!this.newUpdates[this.currentPreference.key]) {
+        this.newUpdates[this.currentPreference.key] = {
+          [medium]: checked,
+        };
+      } else {
+        this.newUpdates[this.currentPreference.key][medium] = checked;
+      }
+
+      await this.pushPreferenceUpdate();
+      return;
+    } catch (err) {
+      return this.notificationService.alert({
+        message: 'Fail to update preferences, please try again.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+          }
+        ]
+      });
     }
   }
 
@@ -106,20 +163,21 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       if (!this.utils.isEmpty(this.newUpdates)) {
         await this.preferenceService.update(this.newUpdates).toPromise();
       }
+      return;
     } catch (err) {
-      console.log(err);
+      throw new Error(err);
     }
-    return;
   }
 
-  /**
-   * @name back
-   * @description manual back button to go back to a pre-structured routing
-   *              (back to "/preference")
-   */
+  /* @name back
+  * @description manual back button to go back to a pre-structured routing
+  *              (back to "/preference")
+  */
   back() {
     this.pushPreferenceUpdate().then(() => {
-      this.router.navigate(['/preferences']);
+      return this.ngZone.run(() => {
+        return this.router.navigate(['app/preference']);
+      });
     });
   }
 }
