@@ -114,6 +114,9 @@ export class SwitcherService {
       }`,
       {
         ids: projectIds
+      },
+      {
+        noCache: true
       }
     )
     .pipe(map(res => {
