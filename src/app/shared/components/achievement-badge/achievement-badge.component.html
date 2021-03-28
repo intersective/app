@@ -1,5 +1,5 @@
 <div class="achievement-badge">
-  <div class="badge" (click)="showAchievementDetails()">
+  <div class="badge" (click)="showAchievementDetails()" tabindex="0">
     <img [src]="achievement.image ? achievement.image : '/assets/achievement.svg'"
       [ngClass]="{'black-white-image': !achievement.isEarned}">
     <ion-icon *ngIf="achievement.isEarned" name="checkmark-circle" color="primary"></ion-icon>
