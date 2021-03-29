@@ -18,17 +18,18 @@
                 tabindex="0"
                 aria-label="Milestone name">{{ milestone.name }}
               </ion-label>
-
-              <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
-                slot="end"
-                [name]="isCollapsed(milestone) ? 'chevron-down' : 'chevron-up'"
-                class="collapsible-icon"
-                tabindex="0"
-                aria-label="chevron"
-                alt="collapse or expand"
-                aria-hidden="true"
-                role="img"
-              ></ion-icon>
+              <button aria-expanded="true">
+                <ion-icon *ngIf="!milestone.isLocked && (milestone.Activity && milestone.Activity.length > 0)"
+                  slot="end"
+                  [name]="isCollapsed(milestone) ? 'chevron-down' : 'chevron-up'"
+                  class="collapsible-icon"
+                  tabindex="0"
+                  aria-label="collapse button"
+                  alt="collapse"
+                  aria-hidden="true"
+                  role="img"
+                ></ion-icon>
+                </button> 
             </ion-item>
 
             <ion-card-content
