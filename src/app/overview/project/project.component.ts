@@ -172,4 +172,4 @@ export class ProjectComponent implements OnInit {
   disableArrowKeys(event: KeyboardEvent): boolean {
     return ['Enter'].indexOf(event.code) !== -1;
   }
-}   
+}
