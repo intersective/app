@@ -169,17 +169,7 @@ export class ProjectComponent implements OnInit {
     this.router.navigate(['app', 'activity', id]);
     this.newRelic.addPageAction('Navigate activity', id);
   }
-
-  /**
-   * Accept only enter key to link activity cards to activity page
-   * @description accepted keys limited to:
-   *              - 'Enter'
-   * @param  {KeyboardEvent} event code (function keypress) & key (for non-numeric input)
-   * @return {boolean}             true: key accepted, false: key skipped
-   */
-   disableArrowKeys(event: KeyboardEvent): boolean {
-    if (['Enter'].indexOf(event.code) !== -1) {
-      return true;
-    }
+  disableArrowKeys(event: KeyboardEvent): boolean {
+    return ['Enter'].indexOf(event.code) !== -1;
   }
 }   
