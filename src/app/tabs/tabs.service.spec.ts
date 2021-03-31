@@ -17,7 +17,7 @@ describe('TabsService', () => {
         TabsService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
         },
         {
           provide: NativeStorageService,
@@ -88,7 +88,7 @@ describe('TabsService', () => {
   describe('when testing getNoOfChats()', () => {
     let response, expected = 0, error = false;
     afterEach(() => {
-      requestSpy.get.and.returnValue(of(response));
+      requestSpy.chatGraphQLQuery.and.returnValue(of(response));
       service.getNoOfChats().subscribe(res => expect(res).toEqual(expected));
       if (error) {
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
@@ -96,16 +96,23 @@ describe('TabsService', () => {
     });
     it('should throw error', () => {
        response = {
-         success: true,
-         data: {}
+         data: {
+           channels: {}
+         }
        };
        error = true;
     });
     it('should get correct data', () => {
       response = {
-         success: true,
          data: {
-           unread_message_count: 2
+          channels: [
+            {
+              unreadMessageCount: 1
+            },
+            {
+              unreadMessageCount: 1
+            }
+          ]
          }
        };
       error = false;

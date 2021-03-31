@@ -120,18 +120,18 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.alpha-native.ts"
+                  "with": "src/environments/environment.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": false
             },
             "production-native": {
               "fileReplacements": [
@@ -171,6 +171,9 @@
               "browserTarget": "app:build:stage"
             },
             "alpha-native": {
+              "browserTarget": "app:build:alpha-native"
+            },
+            "p2": {
               "browserTarget": "app:build:alpha-native"
             },
             "dev": {

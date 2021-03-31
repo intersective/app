@@ -35,6 +35,11 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
+
+    /**
+     * NewRelic: Trace an uninstrumented asynchronous API
+     * @link https://docs.newrelic.com/docs/browser/new-relic-browser/browser-agent-spa-api/createtracer-browser-spa-api/#asynch-api-tracer
+     */
     const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
     // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
     setTimeout(async () => {
@@ -49,9 +54,8 @@ export class AuthDirectLoginComponent implements OnInit {
       } catch (err) {
         this._error(err);
       }
-        // tslint:disable-next-line:align
-      }, 50
-    );
+      // tslint:disable-next-line:align
+    }, 50);
   }
 
   // force every navigation happen under radar of angular

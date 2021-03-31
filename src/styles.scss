@@ -223,7 +223,7 @@ ion-skeleton-text {
     --box-shadow: none;
     margin-top: 20px;
     margin-bottom: 20px;
-    
+
     .pop-up-content {
       border-radius: 12px !important;
 
@@ -295,11 +295,11 @@ ion-skeleton-text {
       --max-height: 62%;
     }
     .modal-wrapper {
-      
+
       //--max-height: 54%;
       min-height: 200px;
     }
-    
+
   }
   &.mobile-view {
     .modal-wrapper {
@@ -523,4 +523,12 @@ use for custom header (*Study perth)
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+// Chat info page
+.chat-info-page{
+  --max-height: 100%;
+  --max-width: 100%;
+  --min-width: 100%;
+  --min-height: 100%;
 }
