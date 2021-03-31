@@ -120,7 +120,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.p2.ts"
+                  "with": "src/environments/environment.ts"
                 }
               ],
               "optimization": false,
