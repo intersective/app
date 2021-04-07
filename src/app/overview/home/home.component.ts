@@ -268,5 +268,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.router.navigate(['app', 'events', {event_id: event.id}]);
     }
   }
-
+  triggerClick(event: KeyboardEvent) {
+    return this.utils.clickableKeys(event);
+  }
 }
