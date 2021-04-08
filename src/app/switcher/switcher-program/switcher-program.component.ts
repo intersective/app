@@ -80,4 +80,8 @@ export class SwitcherProgramComponent extends RouterEnter {
     }
     return;
   }
+
+  triggerClick(event: KeyboardEvent) {
+    return this.utils.clickableKeys(event);
+  }
 }
