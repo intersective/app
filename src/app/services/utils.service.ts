@@ -386,7 +386,21 @@ export class UtilsService {
   clickableKeys(event: KeyboardEvent): boolean {
     if (['Enter', 'Space'].indexOf(event.code) !== -1) {
       return true;
-    } else
+    }
     return false;
   }
+
+  tabKeyIsPressed(event: KeyboardEvent): boolean {
+    if (['Tab'].indexOf(event.code) !== -1) {
+      return true;
+    }
+    return false;
+  }
+
+
+
+
+
+
+
 }
