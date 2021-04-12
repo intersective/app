@@ -515,3 +515,14 @@ use for custom header (*Study perth)
   --min-width: 100%;
   --min-height: 100%;
 }
+.accessible-btn {
+  width: 100%;
+  --background: transparent;
+  //color: rgb(8, 11, 11);
+  --box-shadow: 0 !important;
+  --background-focused-opacity: 0;
+  --color: initial;
+    display: block;
+    --color: var(--ion-item-color,var(--ion-text-color,#000));
+    font-family: var(--ion-font-family,inherit);
+}
