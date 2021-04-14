@@ -1,8 +1,8 @@
 <ion-item class="ion-activatable" [lines]="lines" [ngClass]="{
   'switcher-card-item': isSwitcherCard,
-  'active': active
-}"  aria-label="clickable item" role="link">
-  <ion-button class="accessible-btn">
+  'active': active,
+}"  aria-label="clickable item" >
+  <ion-button class="accessible-btn" aria-label="switcher card" role="button">
     <ion-text color="primary" [ngStyle]="{'color': backgroundColor}">
       <ion-ripple-effect></ion-ripple-effect>
     </ion-text>
