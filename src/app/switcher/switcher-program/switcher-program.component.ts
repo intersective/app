@@ -20,10 +20,9 @@ import { UtilsService } from '@services/utils.service';
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked{
+export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  
   constructor(
     public loadingController: LoadingController,
     public router: Router,
@@ -83,13 +82,5 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
       this.newRelic.noticeError('switch program failed', JSON.stringify(err));
     }
     return;
-  }
-
-  triggerClick(event: KeyboardEvent) {
-    return this.utils.clickableKeys(event);
-  }
-
-  isTabKey(event: KeyboardEvent) {
-    return this.utils.tabKeyIsPressed(event);
   }
 }

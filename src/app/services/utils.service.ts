@@ -382,25 +382,4 @@ export class UtilsService {
   redirectToUrl(url: string) {
     window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
   }
-
-  clickableKeys(event: KeyboardEvent): boolean {
-    if (['Enter', 'Space'].indexOf(event.code) !== -1) {
-      return true;
-    }
-    return false;
-  }
-
-  tabKeyIsPressed(event: KeyboardEvent): boolean {
-    if (['Tab'].indexOf(event.code) !== -1) {
-      return true;
-    }
-    return false;
-  }
-
-
-
-
-
-
-
 }
