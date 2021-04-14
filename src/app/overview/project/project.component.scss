@@ -104,6 +104,9 @@
       &.lock {
         padding-bottom: 16px;
       }
+      :focus {
+        --ion-color-contrast: transparent !important; 
+      }        
     }
     .milestone-description {
       color: var(--practera-label-color);
@@ -125,7 +128,7 @@
     &.highlighted {
       border: 1px solid var(--ion-color-primary);
       border-radius: 1em;
-    }
+    } 
   }
   :last-child {
     --inner-border-width: 0px !important;
@@ -196,5 +199,8 @@
 ion-spinner {
   display: block;
   margin: auto;
+}
+.chevron-btn {
+  background: transparent;
 }
 
