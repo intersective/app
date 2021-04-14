@@ -516,13 +516,10 @@ use for custom header (*Study perth)
   --min-height: 100%;
 }
 .accessible-btn {
-  width: 100%;
+  align-items: flex-start;
   --background: transparent;
-  //color: rgb(8, 11, 11);
+  text-transform: capitalize;
   --box-shadow: 0 !important;
   --background-focused-opacity: 0;
-  --color: initial;
-    display: block;
-    --color: var(--ion-item-color,var(--ion-text-color,#000));
-    font-family: var(--ion-font-family,inherit);
+  --color: var(--ion-item-color,var(--ion-text-color,#000));
 }
