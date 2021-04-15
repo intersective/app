@@ -82,6 +82,9 @@
     --padding-end: 0px;
     --inner-padding-start:0px;
     --inner-padding-end: 0px;
+    &.ion-color-light {
+      --ion-color-contrast: transparent !important;
+    }
   }
 
   .project-card {
@@ -103,9 +106,6 @@
 
       &.lock {
         padding-bottom: 16px;
-      }
-      :focus {
-        --ion-color-contrast: transparent !important; 
       }        
     }
     .milestone-description {
@@ -194,6 +194,7 @@
 
 .activity-card {
   width: 100%;
+  --background-focused-opacity: 0 !important;
 }
 
 ion-spinner {
@@ -203,4 +204,3 @@ ion-spinner {
 .chevron-btn {
   background: transparent;
 }
-
