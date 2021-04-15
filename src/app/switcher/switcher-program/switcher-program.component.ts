@@ -43,7 +43,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   }
 
   ngAfterContentChecked() {
-    document.getElementById('test-title').focus();
+    document.getElementById('page-title').focus();
   }
 
   private _getProgresses(programs) {
