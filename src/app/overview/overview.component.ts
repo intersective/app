@@ -1,4 +1,4 @@
-import { AfterContentChecked, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -10,7 +10,7 @@ import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss']
 })
-export class OverviewComponent implements OnInit, AfterContentChecked {
+export class OverviewComponent implements OnInit {
   isMobile: boolean;
   programName: string;
   initiator$ = this.route.params;
@@ -30,7 +30,5 @@ export class OverviewComponent implements OnInit, AfterContentChecked {
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
   }
-  ngAfterContentChecked () {
-    document.getElementById('program-name').focus();
-  }
+  
 }
