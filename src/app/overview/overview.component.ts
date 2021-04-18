@@ -30,5 +30,5 @@ export class OverviewComponent implements OnInit {
       this.fastFeedbackService.pullFastFeedback().subscribe();
     });
   }
-  
+
 }
