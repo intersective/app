@@ -9,7 +9,7 @@ import { Content } from '@angular/compiler/src/render3/r3_ast';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-export class AchievementPopUpComponent implements AfterContentChecked{
+export class AchievementPopUpComponent implements AfterContentChecked {
   type = '';
   achievement: Achievement;
 
@@ -19,16 +19,16 @@ export class AchievementPopUpComponent implements AfterContentChecked{
   ) {}
 
   ngAfterContentChecked() {
-    if(document.getElementById('achievement-name')) {
+    if (document.getElementById('achievement-name')) {
       document.getElementById('achievement-name').focus();
     }
-  };
-  
+  }
+
   confirmed() {
     this.modalController.dismiss();
   }
   confirmByEnter(event: KeyboardEvent) {
-    if((['Enter','Space']).indexOf(event.code) !== -1) {
+    if ((['Enter', 'Space']).indexOf(event.code) !== -1) {
       this.confirmed();
     }
   }
