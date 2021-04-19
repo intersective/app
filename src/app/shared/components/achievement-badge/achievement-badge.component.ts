@@ -27,6 +27,7 @@ export class AchievementBadgeComponent {
     public utils: UtilsService,
   ) {}
 
+
   /**
     * This is to pop up the achievement message box
     * @returns nothing
@@ -36,5 +37,10 @@ export class AchievementBadgeComponent {
     this.allBackgroundElements.forEach(element => {
       element.setAttribute('tabindex', '-1');
     });
+  }
+
+
+  triggerClick(event: KeyboardEvent) {
+    return this.utils.clickableKeys(event);
   }
 }
