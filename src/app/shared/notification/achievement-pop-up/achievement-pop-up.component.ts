@@ -9,7 +9,7 @@ import { Content } from '@angular/compiler/src/render3/r3_ast';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-export class AchievementPopUpComponent implements OnInit{
+export class AchievementPopUpComponent implements OnInit {
   type = '';
   achievement: Achievement;
 
