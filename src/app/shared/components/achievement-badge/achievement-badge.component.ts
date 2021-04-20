@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
-import { forEach } from 'lodash';
 
 /**
  * this is a achievement badge component
@@ -37,10 +36,5 @@ export class AchievementBadgeComponent {
     this.allBackgroundElements.forEach(element => {
       element.setAttribute('tabindex', '-1');
     });
-  }
-
-
-  triggerClick(event: KeyboardEvent) {
-    return this.utils.clickableKeys(event);
   }
 }
