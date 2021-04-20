@@ -1,8 +1,8 @@
+
 import { Component, AfterContentChecked } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
-import { Content } from '@angular/compiler/src/render3/r3_ast';
 
 @Component({
   selector: 'app-achievement-pop-up',
@@ -11,6 +11,7 @@ import { Content } from '@angular/compiler/src/render3/r3_ast';
 })
 
 export class AchievementPopUpComponent implements AfterContentChecked {
+
   type = '';
   achievement: Achievement;
 
@@ -24,6 +25,7 @@ export class AchievementPopUpComponent implements AfterContentChecked {
       document.getElementById('achievement-name').focus();
     }
   }
+
 
   confirmed() {
     this.modalController.dismiss();
