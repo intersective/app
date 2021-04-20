@@ -33,9 +33,4 @@ export class AchievementBadgeComponent {
   showAchievementDetails() {
     this.notificationService.achievementPopUp('', this.achievement);
   }
-
-
-  triggerClick(event: KeyboardEvent) {
-    return this.utils.clickableKeys(event);
-  }
 }
