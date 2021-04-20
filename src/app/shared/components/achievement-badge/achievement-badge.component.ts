@@ -15,8 +15,7 @@ export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
-  allBackgroundElements = document.querySelectorAll('.backgroundElement, [tabindex="0"]');
-
+  
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object
@@ -33,9 +32,6 @@ export class AchievementBadgeComponent {
     */
   showAchievementDetails() {
     this.notificationService.achievementPopUp('', this.achievement);
-    this.allBackgroundElements.forEach(element => {
-      element.setAttribute('tabindex', '-1');
-    });
   }
 
 }
