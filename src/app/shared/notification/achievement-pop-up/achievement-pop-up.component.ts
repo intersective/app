@@ -17,9 +17,8 @@ export class AchievementPopUpComponent implements OnInit {
     public modalController: ModalController,
     public utils: UtilsService
   ) {}
-  ngOnInit() {
-    document.getElementById('achievement-name').focus();
-  }
+  ngOnInit() {}
+
   confirmed() {
     this.modalController.dismiss();
   }
