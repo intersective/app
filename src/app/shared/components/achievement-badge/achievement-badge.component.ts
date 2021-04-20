@@ -38,7 +38,4 @@ export class AchievementBadgeComponent {
     });
   }
 
-  triggerClick(event: KeyboardEvent) {
-    return this.utils.clickableKeys(event);
-  }
 }
