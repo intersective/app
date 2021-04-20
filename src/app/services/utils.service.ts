@@ -387,5 +387,6 @@ export class UtilsService {
     if (['Enter', 'Space'].indexOf(event.code) !== -1) {
       return true;
     }
+    return ;
   }
 }
