@@ -25,11 +25,17 @@ export class AchievementBadgeComponent {
     public utils: UtilsService,
   ) {}
 
+
   /**
     * This is to pop up the achievement message box
     * @returns nothing
     */
   showAchievementDetails() {
     this.notificationService.achievementPopUp('', this.achievement);
+  }
+
+
+  triggerClick(event: KeyboardEvent) {
+    return this.utils.clickableKeys(event);
   }
 }
