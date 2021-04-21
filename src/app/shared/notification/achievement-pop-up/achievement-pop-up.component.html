@@ -14,7 +14,7 @@ aria-hidden="false"
     <div class="div-after-img" *ngIf="type === 'notification'">
       <p class="headline-6" aria-labelledby="Congratulations">Congratulations</p>
       <p class="body-1">You have earned a new badge</p>
-      <div class="description subtitle-1 gray-2" *ngIf="achievement.name">{{achievement.name}}</div>
+      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" id="achievement-name">{{achievement.name}}</div>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">
@@ -27,7 +27,7 @@ aria-hidden="false"
     </ion-text>
 
     <div class="div-after-img button-container">
-      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button">OK</ion-button>
+      <ion-button (click)="confirmed()" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmByEnter($event)>OK</ion-button>
     </div>
   </div>
 
