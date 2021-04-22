@@ -15,7 +15,6 @@ export class AchievementBadgeComponent {
 
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
-
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object
@@ -30,7 +29,9 @@ export class AchievementBadgeComponent {
     * @returns nothing
     */
   showAchievementDetails() {
-    this.notificationService.achievementPopUp('', this.achievement);
+    let lastFocusedElement = document.activeElement;
+    let buttonId = lastFocusedElement.id;
+    this.notificationService.achievementPopUp('', this.achievement, buttonId);
   }
 
 }

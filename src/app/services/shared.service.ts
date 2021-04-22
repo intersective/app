@@ -63,7 +63,7 @@ export class SharedService {
           description: event.meta.Achievement.description,
           points: event.meta.Achievement.points,
           image: event.meta.Achievement.badge
-        });
+        }, 'badgeButton');
       });
     }
   }

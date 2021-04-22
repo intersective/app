@@ -268,5 +268,4 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.router.navigate(['app', 'events', {event_id: event.id}]);
     }
   }
-
 }
