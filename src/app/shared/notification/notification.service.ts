@@ -109,11 +109,12 @@ export class NotificationService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-  async achievementPopUp(type: string, achievement: Achievement) {
+  async achievementPopUp(type: string, achievement: Achievement, lastFocusedElement: HTMLElement|undefined) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
-      achievement
+      achievement,
+      lastFocusedElement
     };
     if (type === 'notification') {
       this.achievementService.markAchievementAsSeen(achievement.id);

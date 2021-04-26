@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
+import { Button } from 'selenium-webdriver';
 
 export interface Profile {
   contact_number: string;
@@ -63,7 +64,7 @@ export class SharedService {
           description: event.meta.Achievement.description,
           points: event.meta.Achievement.points,
           image: event.meta.Achievement.badge
-        }, 'badgeButton');
+        }, undefined);
       });
     }
   }
