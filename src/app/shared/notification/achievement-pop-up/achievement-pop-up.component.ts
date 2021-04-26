@@ -8,7 +8,7 @@ import { UtilsService } from '@services/utils.service';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-export class AchievementPopUpComponent implements AfterContentChecked{
+export class AchievementPopUpComponent implements AfterContentChecked {
   type = '';
   achievement: Achievement;
   lastFocusedElement: HTMLElement|undefined;
@@ -21,8 +21,8 @@ export class AchievementPopUpComponent implements AfterContentChecked{
 
   confirmed() {
     this.modalController.dismiss();
-    console.log('this.lastFocusedElementId',this.lastFocusedElement);
-    if(this.lastFocusedElement) {
+    console.log('this.lastFocusedElementId', this.lastFocusedElement);
+    if (this.lastFocusedElement) {
       this.lastFocusedElement.focus();
     }
   }
