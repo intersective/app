@@ -34,23 +34,19 @@
 
     <div class="ion-margin-top support-mobile subtitle-1">
       <ion-label class="subtitle-2 gray-2">Support</ion-label>
-      <ion-button class="accessible-btn">
-        <ion-item class="no-bg" (click)="mailTo()" lines="none" tabindex="0" role="link" >
-          <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-          Email Help
-          <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-        </ion-item>
-    </ion-button>  
-      <ion-item class="no-bg" (click)="openLink()" lines="none" tabindex="0" role="link" >
+      <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
+        <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+        <ion-label class="subtitle-1"> Email Help </ion-label>
+      </ion-button>  
+      <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
         <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-        Terms of Use
-        <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-      </ion-item>
-    <ion-item id="item-logout" class="no-bg" (click)="logout()" lines="none" tabindex="0" role="button" >
+        <ion-label class="subtitle-1">Terms of Use</ion-label>
+      </ion-button>
+      <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
         <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
-        <p *ngIf="hasMultipleStacks">Logout or Switch Environment</p>
-        <p *ngIf="!hasMultipleStacks">Logout</p>
-      </ion-item>
+        <ion-label *ngIf="hasMultipleStacks" class="subtitle-1 ">Logout or Switch Environment</ion-label>
+        <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1 ">Logout</ion-label>
+      </ion-button> 
     </div>
   </ng-container>
 
@@ -78,16 +74,12 @@
           </div>
           <div class="ion-margin-top subtitle-1 support-wrapper" >
             <ion-button class="accessible-btn" role="button" aria-label="Email help button" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
-              <!-- <ion-item class="no-bg" lines="none" > -->
-                <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
-                <ion-label class="subtitle-1"> Email Help </ion-label>
-              <!-- </ion-item> -->
+              <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+              <ion-label class="subtitle-1"> Email Help </ion-label>
             </ion-button>
-            <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">  
-              <!-- <ion-item class="no-bg"  lines="none"> -->
-                <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
-                <ion-label class="subtitle-1">Terms of Use</ion-label>
-              <!-- </ion-item> -->
+            <ion-button class="accessible-btn" role="button" aria-label="Term of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
+              <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
+              <ion-label class="subtitle-1">Terms of Use</ion-label>
             </ion-button>
             <ion-button class="accessible-btn" role="button" aria-label="logout" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
               <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
