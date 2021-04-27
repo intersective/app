@@ -90,23 +90,23 @@ export class SettingsComponent extends RouterEnter {
   }
 
   openLink(event) {
-    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
-      this.newRelic.actionText('Open T&C link');
-      window.open(this.termsUrl, '_system');
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
     }
-    return;
+    this.newRelic.actionText('Open T&C link');
+    window.open(this.termsUrl, '_system');
   }
 
   switchProgram(event) {
-    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
-      if (this.returnLtiUrl) {
-        this.newRelic.actionText('browse to LTI return link');
-        this.utils.redirectToUrl(this.returnLtiUrl);
-      } else {
-        this.newRelic.actionText('browse to program switcher');
-        this.router.navigate(['switcher', 'switcher-program']);
-      }
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
+    }
+    if (this.returnLtiUrl) {
+      this.newRelic.actionText('browse to LTI return link');
+      this.utils.redirectToUrl(this.returnLtiUrl);
+    } else {
+      this.newRelic.actionText('browse to program switcher');
+      this.router.navigate(['switcher', 'switcher-program']);
     }
   }
 
@@ -116,18 +116,18 @@ export class SettingsComponent extends RouterEnter {
 
   // send email to Help request
   mailTo(event) {
-    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
-      this.newRelic.actionText('mail to helpline');
-      const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
-      window.open(mailto, '_self');
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
     }
-    return;
+    this.newRelic.actionText('mail to helpline');
+    const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
+    window.open(mailto, '_self');
 }
   logout(event) {
-    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
-      return this.authService.logout({}, true);
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
     }
-    return;
+    return this.authService.logout({}, true);
   }
 
   async uploadProfileImage(file, type = null) {
