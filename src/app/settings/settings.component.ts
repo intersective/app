@@ -90,7 +90,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   openLink(event) {
-    if (event instanceof KeyboardEvent && (event.key == 'Enter' || event.key == ' ')) {
+    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
       this.newRelic.actionText('Open T&C link');
       window.open(this.termsUrl, '_system');
     }
@@ -98,7 +98,7 @@ export class SettingsComponent extends RouterEnter {
   }
 
   switchProgram(event) {
-    if (event instanceof KeyboardEvent && (event.key == 'Enter' || event.key == ' ')) {
+    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
       if (this.returnLtiUrl) {
         this.newRelic.actionText('browse to LTI return link');
         this.utils.redirectToUrl(this.returnLtiUrl);
@@ -116,16 +116,15 @@ export class SettingsComponent extends RouterEnter {
 
   // send email to Help request
   mailTo(event) {
-    if (event instanceof KeyboardEvent && (event.key == 'Enter' || event.key == ' ')) {
+    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
       this.newRelic.actionText('mail to helpline');
       const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
       window.open(mailto, '_self');
     }
     return;
 }
-  
   logout(event) {
-    if (event instanceof KeyboardEvent && (event.key == 'Enter' || event.key == ' ')) {
+    if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === ' ')) {
       return this.authService.logout({}, true);
     }
     return;
