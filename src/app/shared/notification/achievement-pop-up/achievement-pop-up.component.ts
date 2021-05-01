@@ -11,7 +11,7 @@ import { UtilsService } from '@services/utils.service';
 export class AchievementPopUpComponent implements AfterContentChecked {
   type = '';
   achievement: Achievement;
-  
+
   constructor(
     public modalController: ModalController,
     public utils: UtilsService
