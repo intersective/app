@@ -11,9 +11,7 @@ import { UtilsService } from '@services/utils.service';
 export class AchievementPopUpComponent implements AfterContentChecked {
   type = '';
   achievement: Achievement;
-  lastFocusedElement: HTMLElement|undefined;
-
-
+  
   constructor(
     public modalController: ModalController,
     public utils: UtilsService
@@ -21,10 +19,6 @@ export class AchievementPopUpComponent implements AfterContentChecked {
 
   confirmed() {
     this.modalController.dismiss();
-    console.log('this.lastFocusedElementId', this.lastFocusedElement);
-    if (this.lastFocusedElement) {
-      this.lastFocusedElement.focus();
-    }
   }
   ngAfterContentChecked() {
     if (document.getElementById('achievement-name')) {

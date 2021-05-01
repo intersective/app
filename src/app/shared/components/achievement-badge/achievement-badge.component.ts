@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AchievementsService, Achievement } from '@app/achievements/achievements.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
@@ -16,8 +16,6 @@ export class AchievementBadgeComponent {
   @Input() achievement: Achievement;
   @Input() showName: Boolean = false;
 
-  @ViewChild('badgeButton') badgeButton: ElementRef<HTMLElement>;
-
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object
@@ -32,7 +30,7 @@ export class AchievementBadgeComponent {
     * @returns nothing
     */
   showAchievementDetails() {
-    this.notificationService.achievementPopUp('', this.achievement, this.badgeButton.nativeElement);
+    this.notificationService.achievementPopUp('', this.achievement);
   }
 
 }
