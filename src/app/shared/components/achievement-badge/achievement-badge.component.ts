@@ -17,7 +17,7 @@ export class AchievementBadgeComponent {
   @Input() showName: Boolean = false;
 
   @ViewChild('badgeButton') badgeButton: ElementRef<HTMLElement>;
-  
+
   /**
     * @param {NotificationService} notificationService  the notification object
     * @param {UtilsService} utils  the utils object

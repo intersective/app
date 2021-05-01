@@ -108,7 +108,7 @@ export class HomeService {
           description: todoItem.meta.description,
           points: todoItem.meta.points,
           image: todoItem.meta.badge
-        },                                  undefined);
+        },                                 undefined);
       }
 
       if (todoItem.identifier.includes('EventReminder-')) {
