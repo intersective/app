@@ -27,12 +27,10 @@ export class AchievementPopUpComponent implements AfterContentChecked {
   }
 
 
-  confirmed() {
-    this.modalController.dismiss();
-  }
-  confirmByEnter(event: KeyboardEvent) {
-    if ((['Enter', 'Space']).indexOf(event.code) !== -1) {
-      this.confirmed();
+  confirmed(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
     }
+    this.modalController.dismiss();
   }
 }
