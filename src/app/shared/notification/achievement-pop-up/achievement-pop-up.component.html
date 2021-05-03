@@ -1,12 +1,12 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" text-center 
-role="dialog"
-aria-modal="true"
-aria-hidden="false"
->
+<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}" 
+  text-center
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="false">
 
   <div class="image-content">
     <div class="image">
-        <img alt="{{achievement.name}}" [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'" tabindex="0" id="achievement-image">
+        <img alt="{{achievement.name}}" [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'" id="achievement-image" tabindex="0">
     </div>
   </div>
 
@@ -14,7 +14,7 @@ aria-hidden="false"
     <div class="div-after-img" *ngIf="type === 'notification'">
       <p class="headline-6" aria-labelledby="Congratulations">Congratulations</p>
       <p class="body-1">You have earned a new badge</p>
-      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" >{{achievement.name}}</div>
+      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0">{{achievement.name}}</div>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">

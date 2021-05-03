@@ -1,4 +1,3 @@
-
 import { Component, AfterContentChecked } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@app/achievements/achievements.service';
@@ -9,9 +8,7 @@ import { UtilsService } from '@services/utils.service';
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']
 })
-
 export class AchievementPopUpComponent implements AfterContentChecked {
-
   type = '';
   achievement: Achievement;
 
