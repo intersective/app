@@ -21,12 +21,8 @@ export class AchievementPopUpComponent implements AfterContentChecked {
   ) {}
 
   ngAfterContentChecked() {
-    if (document.getElementById('achievement-name')) {
-      document.getElementById('achievement-name').focus();
-    }
+    document.getElementById('achievement-image').focus();
   }
-
-
   confirmed(event) {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;

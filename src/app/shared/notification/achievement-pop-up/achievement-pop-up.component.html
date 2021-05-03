@@ -6,7 +6,7 @@ aria-hidden="false"
 
   <div class="image-content">
     <div class="image">
-        <img alt="{{achievement.name}}" [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'">
+        <img alt="{{achievement.name}}" [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'" tabindex="0" id="achievement-image">
     </div>
   </div>
 
@@ -14,11 +14,11 @@ aria-hidden="false"
     <div class="div-after-img" *ngIf="type === 'notification'">
       <p class="headline-6" aria-labelledby="Congratulations">Congratulations</p>
       <p class="body-1">You have earned a new badge</p>
-      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" id="achievement-name">{{achievement.name}}</div>
+      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" >{{achievement.name}}</div>
     </div>
 
     <div class="div-after-img" *ngIf="type !== 'notification'">
-      <p class="headline-6" *ngIf="achievement.name" tabindex="0" id="achievement-name">{{achievement.name}}</p>
+      <p class="headline-6" *ngIf="achievement.name" tabindex="0" aria-label="achievement-name">{{achievement.name}}</p>
       <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
     </div>
 
@@ -27,7 +27,7 @@ aria-hidden="false"
     </ion-text>
 
     <div class="div-after-img button-container">
-      <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmed($event)>OK</ion-button>
+      <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm" role="button" (keydown)=confirmed($event) aria-label="confirm button">OK</ion-button>
     </div>
   </div>
 
