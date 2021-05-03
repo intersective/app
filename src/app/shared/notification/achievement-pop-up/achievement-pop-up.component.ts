@@ -17,17 +17,13 @@ export class AchievementPopUpComponent implements AfterContentChecked {
     public utils: UtilsService
   ) {}
 
-  confirmed() {
-    this.modalController.dismiss();
-  }
   ngAfterContentChecked() {
-    if (document.getElementById('achievement-name')) {
-      document.getElementById('achievement-name').focus();
-    }
+    document.getElementById('achievement-image').focus();
   }
-  confirmByEnter(event: KeyboardEvent) {
-    if ((['Enter', 'Space']).indexOf(event.code) !== -1) {
-      this.confirmed();
+  confirmed(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
     }
+    this.modalController.dismiss();
   }
 }
