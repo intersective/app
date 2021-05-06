@@ -535,4 +535,12 @@ use for custom header (*Study perth)
 }
 .accessibile-ChatItem {
   width: auto !important;
+  .access-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    margin-inline-end: 16px;
+  }
+  .chat-item-label {
+    text-overflow: ellipsis;
+  }
 }
