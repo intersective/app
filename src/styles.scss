@@ -541,6 +541,6 @@ use for custom header (*Study perth)
     margin-inline-end: 16px;
   }
   .chat-item-label {
-    text-overflow: ellipsis;
+    text-overflow: inherit;
   }
 }
