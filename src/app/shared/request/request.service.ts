@@ -1,17 +1,13 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, from } from 'rxjs';
-import { catchError, tap, concatMap, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
-import { urlFormatter } from 'helper';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -85,7 +81,7 @@ export class RequestService {
    * @param options
    * @returns {any}
    */
-  setParams(options) {
+  setParams(options = {}) {
     let params: any;
     if (!this.utils.isEmpty(options)) {
       params = new HttpParams();
@@ -96,15 +92,27 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
-    let endpointUrl = this.prefixUrl + endpoint;
-    if (isLoginAPI) {
-      endpointUrl = this.loginApiUrl + endpoint;
+  /**
+   * generate standardised URL format
+   *
+   * @param   {string}   endpoint  partial or full URL should be
+   *                                included in the final URL
+   * @param   {boolean}  options   isFull: means the provided URL should be
+   *                                accepted as a whole as a complete URL
+   * @return  {string}             return URL in string
+   */
+  private getEndpointUrl(endpoint, options?: { isFull: boolean }): string {
+    let finalURL = '';
+    if (options && options.isFull === true) {
+      finalURL = endpoint;
+    } else {
+      finalURL = this.prefixUrl + endpoint;
     }
+
     if (endpoint.includes('https://') || endpoint.includes('http://')) {
-      endpointUrl = endpoint;
+      finalURL = endpoint;
     }
-    return urlFormatter(endpointUrl);
+    return this.utils.urlFormatter(finalURL);
   }
 
   /**
@@ -139,7 +147,27 @@ export class RequestService {
       );
   }
 
-  post(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
+  private _httpPost(endpoint, data, headers?): Observable<any> {
+    return this.http.post<any>(endpoint, data, headers)
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  loginApiPost(body: any): Observable<any> {
+    // get login API endpoint if need to call login API.
+    const apiEndpoint = this.getEndpointUrl(this.loginApiUrl + 'login', {
+      isFull: true
+    });
+
+    return this._httpPost(apiEndpoint, body);
+  }
+
+  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -151,23 +179,11 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = this.getEndpointUrl(endPoint);
-    // get login API endpoint if need to call login API.
-    if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
-    }
-
-    return this.http.post<any>(apiEndpoint, data, {
+    const apiEndpoint = this.getEndpointUrl(endPoint);
+    return this._httpPost(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    });
   }
 
   /**

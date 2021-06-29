@@ -23,9 +23,6 @@ const api = {
   forgotPassword: 'api/auths.json?action=forgot_password',
   verifyResetPassword: 'api/auths.json?action=verify_reset_password',
   resetPassword: 'api/auths.json?action=reset_password',
-  loginAPI: {
-    login: 'login'
-  }
 };
 
 interface VerifyParams {
@@ -93,7 +90,7 @@ export class AuthService {
    */
   private _loginAPILogin(body: LoginRequParams): Observable<any> {
     body.from = 'App';
-    return this.request.post(api.loginAPI.login, body, {}, true);
+    return this.request.loginApiPost(body);
   }
 
   /**

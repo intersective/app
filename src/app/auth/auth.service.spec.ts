@@ -25,7 +25,13 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'delete',
+            'post',
+            'get',
+            'graphQLQuery',
+            'loginApiPost',
+          ])
         },
         {
           provide: Router,
@@ -146,15 +152,17 @@ describe('AuthService', () => {
   ];
 
   it('when testing login(), it should pass the correct data to API', () => {
-    requestSpy.post.and.returnValue(of({
+    requestSpy.loginApiPost.and.returnValue(of({
       apikey: '123456',
       stacks: mockStacks
     }));
     service.login({ username: 'test@test.com', password: '123' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1].username).toEqual('test@test.com');
-    expect(requestSpy.post.calls.first().args[1].password).toEqual('123');
-    expect(requestSpy.post.calls.first().args[1].from).toEqual('App');
+    expect(requestSpy.loginApiPost.calls.count()).toBe(1);
+
+    const { username, password, from } = requestSpy.loginApiPost.calls.first().args[0];
+    expect(username).toEqual('test@test.com');
+    expect(password).toEqual('123');
+    expect(from).toEqual('App');
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
