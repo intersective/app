@@ -373,7 +373,7 @@ export class AuthService {
    * @return  {Observable<StackConfig>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<StackConfig> {
-    return this.request.get(LOGIN_API.stackInfo, { uuid }).pipe(map(res => {
+    return this.request.get(`${LOGIN_API.stackInfo}\\${uuid}`).pipe(map(res => {
       if (res && res.data) {
         return res.data;
       }

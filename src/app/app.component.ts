@@ -50,6 +50,21 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.configVerification();
+
+    let searchParams = null;
+    let queryString = '';
+    if (window.location.search) {
+      queryString = window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    }
+    searchParams = new URLSearchParams(queryString);
+
+    const stackUuid = searchParams.get('stack_uuid');
+    if (stackUuid) {
+      this.retrieveStackConfig(stackUuid);
+    }
+
     this.sharedService.onPageLoad();
 
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
@@ -89,14 +104,6 @@ export class AppComponent implements OnInit {
       }
     );
 
-    let searchParams = null;
-    let queryString = '';
-    if (window.location.search) {
-      queryString =  window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
-    }
-    searchParams = new URLSearchParams(queryString);
 
     if (searchParams.has('apikey')) {
       const queries = this.utils.urlQueryToObject(queryString);
@@ -137,10 +144,6 @@ export class AppComponent implements OnInit {
       }
     }
 
-    const stackUuid = searchParams.get('stack_uuid');
-    if (stackUuid) {
-      this.retrieveStackConfig(stackUuid);
-    }
   }
 
   initializeApp() {
