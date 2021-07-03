@@ -17,7 +17,6 @@ import { PushNotificationService } from '@services/push-notification.service';
  */
 const api = {
   getConfig: 'api/v2/plan/experience/list',
-  linkedin: 'api/auth_linkedin.json',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
@@ -166,7 +165,13 @@ export class AuthService {
         timeline => {
           // make sure 'Program.config.theme_color' exist
           if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-            timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+            if (!this.utils.has(timeline.Program, 'config')) {
+              timeline.Program.config = {
+                theme_color: 'var(--ion-color-primary)'
+              };
+            } else {
+              timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+            }
           }
           return {
             enrolment: timeline.Enrolment,

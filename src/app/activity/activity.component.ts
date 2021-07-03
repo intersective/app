@@ -144,9 +144,9 @@ export class ActivityComponent {
 
   async back() {
     const referrer: Referrer = await this.nativeStorage.getObject('referrer');
-    if (this.utils.has(referrer, 'activityTaskUrl')) {
-      this.newRelic.actionText('browse to Activity Task return link');
-      this.utils.redirectToUrl(referrer.activityTaskUrl);
+    if (this.utils.has(referrer, 'activityTaskUrl') || (this.utils.has(referrer, 'url') && referrer.route === 'activity-task')) {
+      this.newRelic.actionText('Navigating to external return URL from Activity');
+      this.utils.redirectToUrl(referrer.activityTaskUrl || referrer.url);
       return ;
     }
     this._navigate([ 'app', 'home' ]);

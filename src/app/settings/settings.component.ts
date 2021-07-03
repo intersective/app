@@ -28,7 +28,9 @@ export class SettingsComponent extends RouterEnter {
   isNativeApp = Capacitor.isNative;
 
   multiProgramsChecker$: Observable<any>;
-  routeUrl = '/app/settings';
+  // routeUrl = '/app/settings'; - @TODO: test this line
+  routeUrl = '/settings';
+  mode: string;
   profile = {
     contactNumber: '',
     email: '',
@@ -55,8 +57,7 @@ export class SettingsComponent extends RouterEnter {
 
   constructor (
     public router: Router,
-    private activatedRoute: ActivatedRoute,
-    private routes: ActivatedRoute,
+    readonly route: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
@@ -70,7 +71,7 @@ export class SettingsComponent extends RouterEnter {
   ) {
     super(router);
     // forced "revisit" of this component whenever become reactivated
-    activatedRoute.data.subscribe(fragment => {
+    route.data.subscribe(fragment => {
       this.checkPermission();
     });
     this.multiProgramsChecker$ = fromPromise(this.isInMultiplePrograms()).pipe(
@@ -82,7 +83,7 @@ export class SettingsComponent extends RouterEnter {
   onEnter() {
     this.newRelic.setPageViewName('Setting');
 
-    this.routes.data.subscribe(data => {
+    this.route.data.subscribe(data => {
       const {
         email,
         contactNumber,
@@ -100,6 +101,7 @@ export class SettingsComponent extends RouterEnter {
       this.currentProgramName = programName;
       this.returnLtiUrl = LtiReturnUrl;
     });
+    this.mode = this.route.snapshot.data.mode;
 
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
@@ -145,12 +147,18 @@ export class SettingsComponent extends RouterEnter {
     return '';
   }
 
-  openLink() {
+  openLink(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('Open T&C link');
     window.open(this.termsUrl, '_system');
   }
 
-  switchProgram() {
+  switchProgram(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     if (this.returnLtiUrl) {
       this.newRelic.actionText('browse to LTI return link');
       this.utils.redirectToUrl(this.returnLtiUrl);
@@ -166,7 +174,10 @@ export class SettingsComponent extends RouterEnter {
   }
 
   // send email to Help request
-  mailTo() {
+  mailTo(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
@@ -203,7 +214,10 @@ export class SettingsComponent extends RouterEnter {
     console.log(unlinked);
   }
 
-  logout() {
+  logout(event) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     return this.authService.logout({}, true);
   }
 

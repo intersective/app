@@ -262,6 +262,8 @@ describe('ActivityComponent', () => {
     it('should navigate to the external url', fakeAsync(() => {
       nativeStorageSpy.getObject.and.returnValue({
         activityTaskUrl: 'abc',
+        route: 'activity-task',
+        url: 'abc',
       });
       const redirectToUrlSpy = spyOn(utils, 'redirectToUrl');
       component.back();

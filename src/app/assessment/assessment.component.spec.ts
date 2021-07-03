@@ -382,6 +382,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should get correct in progress review', () => {
+      tmpAssessment.type = 'moderated';
       tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
       tmpSubmission.status = 'pending review';
       tmpReview = mockReview;

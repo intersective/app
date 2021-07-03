@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
 import { Apollo } from 'apollo-angular';
@@ -400,5 +400,15 @@ export class UtilsService {
    */
   isEqual(current, comparedTarget) {
     return this.lodash.isEqual(current, comparedTarget);
+  }
+
+  /**
+   * generate secure and totally randomised number
+   * @return {number} single random number
+   */
+  randomNumber(): number {
+    const { crypto } = window;
+    const slugs = crypto.getRandomValues(new Uint32Array(1));
+    return slugs[0];
   }
 }

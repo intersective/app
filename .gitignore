@@ -2,6 +2,7 @@
 .sourcemaps/
 .sass-cache/
 .tmp/
+.sonarlint
 
 assets/newrelic.js
 coverage/
@@ -35,3 +36,4 @@ android/local.properties
 electron
 src/environments/environment.production-native.ts
 src/environments/environment.p2.ts
+src/environments/environment.ts.*

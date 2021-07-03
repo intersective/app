@@ -15,7 +15,8 @@ describe('StorageService', function() {
             'getItem',
             'setItem',
             'removeItem',
-            'clear'
+            'clear',
+            'getReferrer',
           ])
         },
       ]
@@ -70,6 +71,22 @@ describe('StorageService', function() {
     });
   });
 
+  describe('getReferrer()', function() {
+    it('should get referrer information', () => {
+      service.getReferrer();
+      expect(storage.getItem).toHaveBeenCalledWith('referrer');
+    });
+  });
+
+  describe('setReferrer()', function() {
+    it('should set referrer information', () => {
+      service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
+
+      service.setReferrer({ route: 'activity-task', url: 'tester' });
+      expect(storage.setItem).toHaveBeenCalledWith('referrer', '{"route":"activity-task","url":"tester"}');
+    });
+  });
+
   describe('getConfig()', function() {
     it('should retrieve cached config', () => {
       service.getConfig();
@@ -111,6 +128,17 @@ describe('StorageService', function() {
     it('should remove cache with key "bookedEventActivityIds"', () => {
       service.initBookedEventActivityIds();
       expect(storage.removeItem).toHaveBeenCalledWith('bookedEventActivityIds');
+    });
+  });
+
+  describe('singlePageAccess', () => {
+    it('should be false if null or none cached', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(null);
+      expect(service.singlePageAccess).toBeFalsy();
+    });
+    it('should be true if true cached under singlePageAccess', () => {
+      storage.getItem = jasmine.createSpy('getItem').and.returnValue(true);
+      expect(service.singlePageAccess).toBeTruthy();
     });
   });
 });

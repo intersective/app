@@ -146,7 +146,7 @@ export class SwitcherService {
 
     const experienceConfig = experience ? experience.config : {};
     const user = {
-      enrolment,
+      // enrolment,
       themeColor,
       programId: program.id,
       programName: program.name,
@@ -158,7 +158,10 @@ export class SwitcherService {
       timelineId: timeline.id,
       contactNumber: enrolment.contact_number,
       activityCardImage: cardBackgroundImage,
-      activityCompleteMessage: (experienceConfig || {}).activity_complete_message || null,
+      // activityCompleteMessage: (experienceConfig || {}).activity_complete_message || null,
+      enrolment: programObj.enrolment,
+      activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,
+      chatEnabled: this.utils.has(programObj, 'experience.config.chat_enable') ? programObj.experience.config.chat_enable : true,
       teamId: null,
       hasEvents: false,
       hasReviews: false

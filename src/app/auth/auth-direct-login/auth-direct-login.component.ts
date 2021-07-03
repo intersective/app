@@ -12,15 +12,14 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 @Component({
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
-  // styles: ['']
 })
 export class AuthDirectLoginComponent implements OnInit {
   constructor(
+    readonly utils: UtilsService,
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
     private notificationService: NotificationService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
     private nativeStorage: NativeStorageService,
@@ -39,10 +38,14 @@ export class AuthDirectLoginComponent implements OnInit {
     // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
     setTimeout(async () => {
       try {
-        const directLogin = await this.authService.directLogin({ authToken });
-        const res = await directLogin.toPromise();
-        await res;
-        await this.switcherService.getMyInfo().toPromise();
+        if (this.storage.get('authToken') !== authToken) {
+          const directLogin = await this.authService.directLogin({ authToken });
+          const res = await directLogin.toPromise();
+          await res;
+          await this.switcherService.getMyInfo().toPromise();
+          // save the auth token to compare with future use
+          this.storage.set('authToken', authToken);
+        }
         nrDirectLoginTracer();
         return this._redirect();
       } catch (err) {
@@ -61,27 +64,39 @@ export class AuthDirectLoginComponent implements OnInit {
 
   /**
    * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
+   *
+   * @param {boolean}   redirectLater
+   * @returns {Promise<boolean | void>}
    */
   private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
     const redirect = this.route.snapshot.paramMap.get('redirect');
-    const timelineId = +this.route.snapshot.paramMap.get('tl');
     const activityId = +this.route.snapshot.paramMap.get('act');
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
     const assessmentId = +this.route.snapshot.paramMap.get('asmt');
     const submissionId = +this.route.snapshot.paramMap.get('sm');
     const topicId = +this.route.snapshot.paramMap.get('top');
+    const timelineId = +this.route.snapshot.paramMap.get('tl');
+
     // clear the cached data
     this.utils.clearCache();
+
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
       return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
     }
+
+    // purpose of return_url
+    // - when user switch program, he/she will be redirect to this url
     if (this.route.snapshot.paramMap.has('return_url')) {
       await this.nativeStorage.setObject('me', {
+      // this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
-    // switch parogram if user already registered
+
+    const restrictedAccess = this.singlePageRestriction();
+
+    // switch program directly if user already registered
     if (!redirectLater) {
       const programs = await this.nativeStorage.getObject('programs');
       const program = this.utils.find(Object.values(programs), value => {
@@ -94,7 +109,7 @@ export class AuthDirectLoginComponent implements OnInit {
       // switch to the program
       await (await this.switcherService.switchProgram(program)).toPromise();
     }
-
+    let referrerUrl = '';
     switch (redirect) {
       case 'home':
         return this._saveOrRedirect(['app', 'home'], redirectLater);
@@ -109,11 +124,13 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        const referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
+        referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
           // save the referrer url so that we can redirect user later
           this.nativeStorage.setObject('referrer', {
-            activityTaskUrl: referrerUrl
+            activityTaskUrl: referrerUrl,
+            route: 'activity-task',
+            url: referrerUrl,
           });
         }
         return this._saveOrRedirect(['activity-task', activityId], redirectLater);
@@ -121,7 +138,17 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+
+        referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            route: 'assessment',
+            url: referrerUrl
+          });
+        }
+
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
@@ -130,7 +157,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !topicId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || restrictedAccess) {
           return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
         } else {
           return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
@@ -141,15 +168,24 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!contextId || !assessmentId || !submissionId) {
           return this._saveOrRedirect(['app', 'home'], redirectLater);
         }
+        referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
+        if (referrerUrl) {
+          // save the referrer url so that we can redirect user later
+          this.storage.setReferrer({
+            route: 'assessment',
+            url: referrerUrl
+          });
+        }
         return this._saveOrRedirect(['assessment', 'review', contextId, assessmentId, submissionId], redirectLater);
       case 'chat':
         return this._saveOrRedirect(['app', 'chat'], redirectLater);
       case 'settings':
         return this._saveOrRedirect(['app', 'settings'], redirectLater);
+      case 'settings-embed':
+        return this._saveOrRedirect(['settings-embed'], redirectLater);
       default:
-      return this._saveOrRedirect(['app', 'home'], redirectLater);
+        return this._saveOrRedirect(['app', 'home'], redirectLater);
     }
-    return this._saveOrRedirect(['app', 'home'], redirectLater);
   }
 
   private _saveOrRedirect(route: Array<String | number | object>, save = false) {
@@ -188,4 +224,15 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  singlePageRestriction(): boolean {
+    // one_page_only: display app limited to one single screen and no other view access are allowed
+    const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');
+
+    // extract single page restriction flag from url
+    if (restrictedAccess) {
+      this.storage.singlePageAccess = (restrictedAccess === 'true') ? true : false;
+    }
+
+    return this.storage.singlePageAccess;
+  }
 }

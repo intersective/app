@@ -36,10 +36,11 @@ export class TabsComponent extends RouterEnter {
   showReview$ = this._showReview$.asObservable();
 
   constructor(
+    readonly utils: UtilsService,
+    readonly storage: BrowserStorageService,
     public router: Router,
     private routes: ActivatedRoute,
     private tabsService: TabsService,
-    public utils: UtilsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
     private sharedService: SharedService,
@@ -52,22 +53,25 @@ export class TabsComponent extends RouterEnter {
     super(router);
     this.newRelic.setPageViewName('tab');
 
-    this.utils.getEvent('notification').subscribe(event => {
-      this.noOfTodoItems++;
-    });
-    this.utils.getEvent('event-reminder').subscribe(event => {
-      this.noOfTodoItems++;
-    });
-    this.utils.getEvent('chat:new-message').subscribe(event => {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this._noOfChats$.next(noOfChats);
+    if (this.restrictedAccess === false) {
+      this.utils.getEvent('notification').subscribe(event => {
+        this.noOfTodoItems++;
       });
-    });
-    this.utils.getEvent('chat-badge-update').subscribe(event => {
-      this.tabsService.getNoOfChats().subscribe(noOfChats => {
-        this._noOfChats$.next(noOfChats);
+      this.utils.getEvent('event-reminder').subscribe(event => {
+        this.noOfTodoItems++;
       });
-    });
+
+      this.utils.getEvent('chat:new-message').subscribe(event => {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this._noOfChats$.next(noOfChats);
+        });
+      });
+      this.utils.getEvent('chat-badge-update').subscribe(event => {
+        this.tabsService.getNoOfChats().subscribe(noOfChats => {
+          this._noOfChats$.next(noOfChats);
+        });
+      });
+    }
 
     this.routes.data.subscribe(data => {
       const { user } = data;
@@ -93,6 +97,10 @@ export class TabsComponent extends RouterEnter {
     this.me$.subscribe(user => this.updateShowList(user));
   }
 
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
+  }
+
   onEnter() {
     this._checkRoute();
     this._stopPlayingVideos();
@@ -108,7 +116,8 @@ export class TabsComponent extends RouterEnter {
     const {
       teamId,
       hasReviews,
-      hasEvents
+      hasEvents,
+      chatEnabled,
     } = user;
 
     // only get the number of chats if user is in team
@@ -119,7 +128,9 @@ export class TabsComponent extends RouterEnter {
     }
 
     // display the chat tab if the user is in team
-    if (teamId) {
+    if (!chatEnabled) {
+      this._showChat$.next(false);
+    } else if (teamId) {
       this._showChat$.next(true);
     } else {
       this._showChat$.next(false);

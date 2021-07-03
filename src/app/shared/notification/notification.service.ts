@@ -24,8 +24,8 @@ export class NotificationService {
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    public achievementService: AchievementsService,
-    public utils: UtilsService,
+    readonly achievementService: AchievementsService,
+    readonly utils: UtilsService,
   ) {}
 
   /**
@@ -118,7 +118,7 @@ export class NotificationService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-  async achievementPopUp(type: string, achievement: Achievement) {
+  async achievementPopUp(type: string, achievement: Achievement, options?) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
@@ -131,7 +131,13 @@ export class NotificationService {
       cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
+    },
+                                   () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+      if (options && options.activeElement && options.activeElement.focus) {
+        options.activeElement.focus();
+      }
     });
+
     return modal;
   }
 
@@ -166,7 +172,7 @@ export class NotificationService {
    * sample call for activity complete popup
    * NotificationService.activityCompletePopUp(3);
    */
-  async activityCompletePopUp(activityId: number, activityCompleted: boolean) {
+  async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';
     if (this.utils.isMobile()) {
       cssClass += ' mobile-view';

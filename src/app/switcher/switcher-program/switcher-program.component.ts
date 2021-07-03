@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterContentChecked } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Injectable, Inject } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
@@ -22,10 +22,9 @@ import { of } from 'rxjs/observable/of';
   styleUrls: ['switcher-program.component.scss']
 })
 
-export class SwitcherProgramComponent extends RouterEnter {
+export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-
   constructor(
     public loadingController: LoadingController,
     public router: Router,
@@ -48,6 +47,10 @@ export class SwitcherProgramComponent extends RouterEnter {
         });
       });
     });
+  }
+
+  ngAfterContentChecked() {
+    document.getElementById('page-title').focus();
   }
 
   private _getProgresses(programs) {
@@ -87,5 +90,4 @@ export class SwitcherProgramComponent extends RouterEnter {
     }
     return;
   }
-
 }

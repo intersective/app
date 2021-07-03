@@ -67,7 +67,7 @@ export class AssessmentComponent extends RouterEnter {
     status: '',
     modified: ''
   };
-
+  pageTitle = 'Assessment';
   // action == 'assessment' is for user to do assessment, including seeing the submission or seeing the feedback. This actually means the current user is the user who should "do" this assessment
   // action == 'reivew' is for user to do review for this assessment. This means the current user is the user who should "review" this assessment
   action: string;
@@ -90,11 +90,13 @@ export class AssessmentComponent extends RouterEnter {
   saving: boolean;
   continueBtnLoading: boolean;
 
+  elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    public utils: UtilsService,
+    readonly utils: UtilsService,
     private notificationService: NotificationService,
     public sharedService: SharedService,
     private nativeStorage: NativeStorageService,
@@ -105,6 +107,27 @@ export class AssessmentComponent extends RouterEnter {
     private pushNotificationService: PushNotificationService
   ) {
     super(router);
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
+  /**
+   * status of access restriction
+   *
+   * @return  {boolean}  cached singlePageAccess in localstorage
+   */
+  get restrictedAccess() {
+    return this.storage.singlePageAccess;
+  }
+
+  randomCode(type) {
+    if (!this.elIdentities[type]) {
+      this.elIdentities[type] = this.utils.randomNumber();
+    }
+
+    return this.elIdentities[type];
   }
 
   // force every navigation happen under radar of angular
@@ -274,6 +297,7 @@ export class AssessmentComponent extends RouterEnter {
     // - submission is empty or
     // - submission.status is 'in progress'
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+      this.pageTitle = 'Submit your work';
       this.doAssessment = true;
       this.doReview = false;
       if (this.submission && this.submission.status === 'in progress') {
@@ -283,11 +307,20 @@ export class AssessmentComponent extends RouterEnter {
       return;
     }
 
-    // this component become a page for doing review, if
-    // - the submission status is 'pending review' and
-    // - this.action is review
-    if (this.submission.status === 'pending review' && this.action === 'review') {
-      this.doReview = true;
+    this.pageTitle = 'View submission';
+
+    if (this.assessment.type === 'moderated') {
+      // this component become a page for doing review, if
+      // - the submission status is 'pending review' and
+      // - this.action is review
+      if (this.submission.status === 'pending review' && this.action === 'review') {
+        this.pageTitle = 'Provide feedback';
+        this.doReview = true;
+      }
+
+      if (this.submission.status === 'published') {
+        this.pageTitle = 'View feedback';
+      }
     }
 
     this.feedbackReviewed = this.submission.completed;
@@ -297,7 +330,7 @@ export class AssessmentComponent extends RouterEnter {
     this.review = review;
     if (!review && this.action === 'review' && !this.doReview) {
       return this.notificationService.alert({
-        message: 'There is no Assessment to review.',
+        message: 'There are no assessments to review.',
         buttons: [
           {
             text: 'OK',
@@ -357,6 +390,12 @@ export class AssessmentComponent extends RouterEnter {
    * Navigate back to the previous page
    */
   navigateBack(): Promise<boolean> {
+    const referrer = this.storage.getReferrer();
+    if (this.utils.has(referrer, 'url') && referrer.route === 'assessment') {
+      this.newRelic.actionText('Navigating to external return URL from Assessment');
+      this.utils.redirectToUrl(referrer.url);
+      return Promise.resolve(true);
+    }
     if (this.fromPage && this.fromPage === 'reviews') {
       return this._navigate(['app', 'reviews']);
     }

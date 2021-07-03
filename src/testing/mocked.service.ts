@@ -197,6 +197,8 @@ export class BrowserStorageServiceMock extends SpyObject {
   storage;
   setConfig;
   getCountry;
+  singlePageAccess;
+  setReferrer;
 
   constructor() {
     super(BrowserStorageService);
@@ -219,6 +221,8 @@ export class BrowserStorageServiceMock extends SpyObject {
     this.getConfig = this.spy('getConfig').and.returnValue({
       logo: '',
     });
+    this.singlePageAccess = this.spy('singlePageAccess');
+    this.setReferrer = this.spy('setReferrer').and.returnValue(true);
   }
 
   getProviders(): Array<any> {

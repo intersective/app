@@ -43,7 +43,12 @@ export class HomeComponent implements OnDestroy, OnInit {
     image: '',
     name: ''
   };
-  loadingAchievements = true;
+  loadingAchievements = true
+  user: {
+    name: string;
+    email: string;
+    apikey: string;
+  };
 
   constructor(
     private intercom: Intercom,
@@ -107,6 +112,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     );
 
     fromPromise(this.nativeStorage.getObject('me')).subscribe((user: User) => {
+      this.user.name = user.name;
+      this.user.email = user.email;
+      this.user.apikey = user.apikey;
       this.programInfo = {
         image: user.programImage,
         name: user.programName
@@ -133,9 +141,9 @@ export class HomeComponent implements OnDestroy, OnInit {
       if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
         this.intercom.boot({
           app_id: environment.intercomAppId,
-          name: user.name, // Full name
-          email: user.email, // Email address
-          user_id: user.id, // current_user_id
+          name: this.user.name, // Full name
+          email: this.user.email, // Email address
+          apikey: this.user.apikey, // apikey
           // Supports all optional configuration.
           widget: {
             'activator': '#intercom'
@@ -174,6 +182,19 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingAchievements = false;
       })
     );
+
+    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
+      this.intercom.boot({
+        app_id: environment.intercomAppId,
+        name: this.name, // Full name
+        email: this.email, // Email address
+        apikey: this.apikey, // user's apikey
+        // Supports all optional configuration.
+        widget: {
+          'activator': '#intercom'
+        }
+      });
+    }
   }
 
   goTo(destination) {
@@ -272,5 +293,10 @@ export class HomeComponent implements OnDestroy, OnInit {
       this.router.navigate(['app', 'events', {event_id: event.id}]);
     }
   }
+  triggerClick(event: KeyboardEvent) {
+    if (['Enter', 'Space'].indexOf(event.code) !== -1) {
 
+       this.router.navigate(['achievements']);
+    }
+  }
 }

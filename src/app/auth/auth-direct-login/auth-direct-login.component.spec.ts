@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
 import { AuthService } from '../auth.service';
-import { Observable, of, pipe } from 'rxjs';
+import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
@@ -13,6 +13,8 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+
 
 describe('AuthDirectLoginComponent', () => {
   let component: AuthDirectLoginComponent;
@@ -21,7 +23,6 @@ describe('AuthDirectLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
-  let apolloSpy: jasmine.SpyObj<Apollo>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
@@ -32,15 +33,18 @@ describe('AuthDirectLoginComponent', () => {
       declarations: [ AuthDirectLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        UtilsService,
         NewRelicService,
         {
-          provide: Apollo,
-          useValue: jasmine.createSpyObj('Apollo', ['getClient'])
+          provide: UtilsService,
+          useClass: TestUtils,
         },
         {
           provide: NativeStorageService,
           useClass: NativeStorageServiceMock
+        },
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
         },
         {
           provide: AuthService,
@@ -81,8 +85,7 @@ describe('AuthDirectLoginComponent', () => {
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    utils = TestBed.inject(UtilsService);
-    apolloSpy = TestBed.inject(Apollo) as jasmine.SpyObj<Apollo>;
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
@@ -93,13 +96,17 @@ describe('AuthDirectLoginComponent', () => {
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(of({}));
     nativeStorageSpy.getObject.and.returnValue([{timeline: {id: 1}}]);
-    apolloSpy.getClient.and.returnValue({clearStore: () => true});
+    // apolloSpy.getClient.and.returnValue({clearStore: () => true});
+    // storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
+    // storageSpy.getConfig.and.returnValue({logo: null});
   });
 
   describe('when testing ngOnInit()', () => {
     it('should pop up alert if auth token is not provided', fakeAsync(() => {
       const params = { authToken: null };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
+      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+
       tick(50);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
@@ -129,24 +136,52 @@ describe('AuthDirectLoginComponent', () => {
         act: 2,
         ctxt: 3,
         asmt: 4,
-        sm: 5
+        sm: 5,
+        top: 6,
       };
       let tmpParams;
+      let doAuthentication;
+      let setReferrerCalled = false;
       beforeEach(() => {
         tmpParams = JSON.parse(JSON.stringify(params));
+        doAuthentication = true;
+        setReferrerCalled = false;
       });
+
       afterEach(fakeAsync(() => {
+        storageSpy.getUser.and.returnValue({
+          timelineId: 2
+        });
+        utils.find = jasmine.createSpy('find').and.returnValue([]);
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
-        expect(serviceSpy.directLogin.calls.count()).toBe(1);
-        expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+
+        if (doAuthentication) {
+          expect(serviceSpy.directLogin.calls.count()).toBe(1);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+        } else {
+          expect(serviceSpy.directLogin.calls.count()).toBe(0);
+          expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
+        }
+
         if (switchProgram) {
           expect(switcherSpy.switchProgram.calls.count()).toBe(1);
         }
+        if (setReferrerCalled) {
+          expect(storageSpy.setReferrer.calls.count()).toBe(1);
+        }
+
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
+
+      it('skip authentication if auth token match', () => {
+        switchProgram = false;
+        redirect = ['switcher', 'switcher-program'];
+        storageSpy.get.and.returnValue('abc');
+        doAuthentication = false;
+      });
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
@@ -157,6 +192,9 @@ describe('AuthDirectLoginComponent', () => {
         nativeStorageSpy.getObject.and.returnValue([
           {timeline: {id: 2}}
         ]);
+        utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+
+        tmpParams.redirect = 'home';
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
         tick();
@@ -183,6 +221,12 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'activity_task';
         redirect = ['activity-task', tmpParams.act];
       });
+      it('activity-task page with referrer url', () => {
+        tmpParams.redirect = 'activity_task';
+        tmpParams.activity_task_referrer_url = 'https://referrer.practera.com';
+        redirect = ['activity-task', tmpParams.act];
+        setReferrerCalled = true;
+      });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity_task';
         tmpParams.act = null;
@@ -204,6 +248,9 @@ describe('AuthDirectLoginComponent', () => {
         redirect = ['app', 'home'];
       });
       it('assessment page', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+        storageSpy.singlePageAccess = false;
+
         tmpParams.redirect = 'assessment';
         redirect = [
           'app',
@@ -216,6 +263,98 @@ describe('AuthDirectLoginComponent', () => {
           }
         ];
         // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
+      });
+
+      it('assessment page (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+        ];
+      });
+
+      it('assessment page (onePageOnly restriction)', () => {
+        storageSpy.singlePageAccess = true; // singlePageRestriction
+
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'assessment',
+          'assessment',
+          tmpParams.act,
+          tmpParams.ctxt,
+          tmpParams.asmt,
+        ];
+      });
+
+      it('assessment page with referrer', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
+        storageSpy.singlePageAccess = false;
+        tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
+        tmpParams.redirect = 'assessment';
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'assessment',
+            task_id: tmpParams.asmt,
+            context_id: tmpParams.ctxt
+          }
+        ];
+        setReferrerCalled = true;
+      });
+
+      it('topic page', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.callFake(() => {
+          return false;
+        });
+        storageSpy.singlePageAccess = false; // singlePageRestriction
+
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'app',
+          'activity',
+          tmpParams.act,
+          {
+            task: 'topic',
+            task_id: tmpParams.top
+          }
+        ];
+      });
+
+      it('topic page (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.callFake(() => {
+          return true;
+        });
+
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'topic',
+          tmpParams.act,
+          tmpParams.top
+        ];
+      });
+
+      it('topic page (onePageOnly restriction)', () => {
+        storageSpy.get.and.returnValue(true); // singlePageRestriction
+
+        tmpParams.redirect = 'topic';
+        redirect = [
+          'topic',
+          tmpParams.act,
+          tmpParams.top
+        ];
+      });
+
+      it('home page if topic id miss', () => {
+        tmpParams.redirect = 'topic';
+        tmpParams.top = null;
+        redirect = ['app', 'home'];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';
@@ -240,6 +379,12 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'review';
         redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
       });
+      it('review page with referrer', () => {
+        tmpParams.redirect = 'review';
+        tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
+        redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
+        setReferrerCalled = true;
+      });
       it('chat page', () => {
         tmpParams.redirect = 'chat';
         redirect = ['app', 'chat'];
@@ -248,10 +393,31 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'settings';
         redirect = ['app', 'settings'];
       });
+      it('settings embed page', () => {
+        tmpParams.redirect = 'settings-embed';
+        redirect = ['settings-embed'];
+      });
       it('home page', () => {
         tmpParams.redirect = 'default';
         redirect = ['app', 'home'];
       });
+
+    });
+  });
+
+  describe('singlePageRestriction()', () => {
+    it('should cache "onePageOnly" as singlePageRestriction on localStorage', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('true');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(true);
+      expect(result).toEqual(true);
+    });
+
+    it('should not cache anything if no "onePageOnly" param provided in url', () => {
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.returnValue('anything else');
+      const result = component.singlePageRestriction();
+      expect(storageSpy.singlePageAccess).toEqual(false);
+      expect(result).toBeFalsy();
     });
   });
 });

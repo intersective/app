@@ -37,6 +37,10 @@ describe('TabsComponent', () => {
   let utils: UtilsService;
   let requestSpy: jasmine.SpyObj<RequestService>;
 
+  const preset = {
+    singlePageAccess: false,
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientModule ],
@@ -68,7 +72,8 @@ describe('TabsComponent', () => {
               name: 'Test User',
               email: 'user@test.com',
               id: 1
-            }))
+            })),
+            get: false,
           })
         },
         {
@@ -119,6 +124,9 @@ describe('TabsComponent', () => {
   }));
 
   beforeEach(() => {
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    storageSpy.singlePageAccess = preset.singlePageAccess;
+
     fixture = TestBed.createComponent(TabsComponent);
     component = fixture.componentInstance;
     tabsSpy = TestBed.inject(TabsService) as jasmine.SpyObj<TabsService>;
@@ -147,7 +155,9 @@ describe('TabsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when testing constructor()', () => {
+  describe('constructor() (without onePageOnly restriction)', () => {
+    preset.singlePageAccess = false;
+
     it('should get correct event data', () => {
       expect(component.noOfTodoItems).toBe(0);
       expect(component['_noOfChats$'].value).toBe(0);
@@ -197,6 +207,12 @@ describe('TabsComponent', () => {
     }));
 
     it('should get correct data', fakeAsync(() => {
+      storageSpy.get.and.returnValue(0);
+      storageSpy.getUser.and.returnValue({
+        chatEnabled: true,
+        teamId: 'SAMPLE_ID'
+      });
+
       tabsSpy.getNoOfChats.and.returnValue(of(4));
       tabsSpy.getNoOfTodoItems.and.returnValue(Promise.resolve(of(5)));
       nativeStorageSpy.getObject.and.returnValue(Promise.resolve(0));
@@ -208,6 +224,7 @@ describe('TabsComponent', () => {
         hasEvents: true,
       });
       utils.broadcastEvent('chat:new-message', '');
+
       fixture.detectChanges();
       flush();
       fixture.whenStable().then(() => {

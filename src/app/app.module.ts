@@ -28,7 +28,6 @@ import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
-import { IconComponent } from '@shared/components/icon/icon.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -37,7 +36,6 @@ import { IonicStorageModule } from '@ionic/storage';
     AppComponent,
     PageNotFoundComponent,
     UnlockingComponent,
-    IconComponent,
     DeviceInfoComponent,
   ],
   imports: [
