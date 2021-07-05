@@ -8,6 +8,7 @@ export const environment = {
   graphQL: '<CUSTOM_GRAPH_QL>',
   chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
   globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
+  loginAPI: '<CUSTOM_LGIN_API>',
   stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {
