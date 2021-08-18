@@ -1,10 +1,13 @@
+import {HttpLink} from 'apollo-angular/http';
+import {gql, Apollo} from 'apollo-angular';
+import {InMemoryCache, defaultDataIdFromObject} from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { HttpLink } from 'apollo-angular-link-http';
+
 import { BrowserStorageService } from '@services/storage.service';
-import gql from 'graphql-tag';
-import { Apollo } from 'apollo-angular';
+
+
 import { Observable } from 'rxjs';
-import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+
 
 @Injectable({
   providedIn: 'root'

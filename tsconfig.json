@@ -21,12 +21,25 @@
     ],
     "baseUrl": "src",
     "paths": {
-      "@app/*": ["app/*"],
-      "@services/*": ["app/services/*"],
-      "@components/*": ["app/shared/components/*"],
-      "@shared/*": ["app/shared/*"],
-      "@environments/*": ["environments/*"],
-      "@testing/*": ["testing/*"]
-    }
+      "@app/*": [
+        "app/*"
+      ],
+      "@services/*": [
+        "app/services/*"
+      ],
+      "@components/*": [
+        "app/shared/components/*"
+      ],
+      "@shared/*": [
+        "app/shared/*"
+      ],
+      "@environments/*": [
+        "environments/*"
+      ],
+      "@testing/*": [
+        "testing/*"
+      ]
+    },
+    "allowSyntheticDefaultImports": true
   }
 }
