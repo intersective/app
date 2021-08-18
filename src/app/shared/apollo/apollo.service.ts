@@ -50,11 +50,11 @@ export class ApolloService {
   }
 
   getClient() {
-    return this.apollo.getClient();
+    return this.apollo.client;
   }
 
   updateCache(taskName: string, { data }): void {
-    this.apollo.getClient().writeFragment({
+    this.apollo.client.writeFragment({
       id: taskName,
       fragment: gql`
         fragment task on Task {
@@ -115,7 +115,7 @@ export class ApolloService {
   }
 
   writeFragment({ id, fragment, data }) {
-    return this.apollo.getClient().writeFragment({
+    return this.apollo.client.writeFragment({
       id,
       data,
       fragment: gql`${fragment}`,
