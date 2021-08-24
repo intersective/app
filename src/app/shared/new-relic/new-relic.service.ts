@@ -25,8 +25,8 @@ export class NewRelicService {
   constructor(
     private storage: BrowserStorageService
   ) {
-    if (newrelic) {
-      this.newrelic = newrelic.interaction();
+    if (this.newrelic) {
+      this.newrelic = this.newrelic.interaction();
       this.newrelic.onEnd(function() {
         console.log('interaction ended');
       });
