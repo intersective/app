@@ -7,6 +7,13 @@ import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
+
+// Available flags to identify which origin of API call is from
+enum SERVICES {
+  practera= 'PRACTERA',
+  login= 'LOGIN',
+}
 
 /**
  * @name api
@@ -149,8 +156,18 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
+    this._logoutButRetainCachedStack();
     return this._loginFromCore(body);
+  }
+
+  /**
+   * Inherited Logout() but retain app stack cache, so global-app login still work
+   * @return  {void}
+   */
+  private _logoutButRetainCachedStack(): void {
+    const cachedStack = this.storage.stackConfig;
+    this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
   }
 
   /**
@@ -164,14 +181,21 @@ export class AuthService {
     const body = new HttpParams()
       .set('apikey', apikey);
     const cachedStack = this.storage.stackConfig;
+    const cachedLoginApiKey = this.storage.loginApiKey;
     this.logout({}, false);
-    this.storage.stackConfig = cachedStack;
+    if (cachedStack) {
+      this.storage.stackConfig = cachedStack;
+    }
+
+    if (cachedLoginApiKey) {
+      this.storage.loginApiKey = cachedLoginApiKey;
+    }
     return this._loginFromCore(body, service);
   }
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({apikey: norm.apikey});
+    this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
     return norm;
@@ -225,9 +249,17 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
+
+    const fromGlobalLogin = this.storage.get('fromGlobalLogin');
+
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+
+    // redirect user to global login if user came from it.
+    if (fromGlobalLogin) {
+      return this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
+    }
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
@@ -426,15 +458,27 @@ export class AuthService {
    *
    * @return  {Observable<Stack>[]} multiple stacks
    */
-  getStacks(): Observable<Stack[]> {
-    return this.request.get(
-      LOGIN_API.multipleStacks,
-      {
-        params: {
-          type: 'app'
-        }
+  getStacks(apikey?: string): Observable<Stack[]> {
+    const parameters = {
+      params: {
+        type: 'app'
       },
-      true).pipe(
+      headers: {}
+    };
+
+    if (apikey) {
+      parameters.headers = {
+        apikey
+      };
+    } else {
+      // if no apikey set, inform API server the origin of API call, so
+      // that server can process apikey according to the origin standard
+      parameters.headers = {
+        service: SERVICES.practera
+      };
+    }
+
+    return this.request.get(LOGIN_API.multipleStacks, parameters, true).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

@@ -32,12 +32,15 @@ export class AuthGlobalLoginComponent implements OnInit {
       return this._error();
     }
     try {
+      this.storage.loginApiKey = apikey;
       await this.authService.directLoginWithApikey({ apikey, service }).toPromise();
       await this.switcherService.getMyInfo().toPromise();
       this.newRelic.createTracer('Processing global login');
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
+      // save that user came from global login for use in log out
+      this.storage.set('fromGlobalLogin', true);
       return this.navigate(['switcher', 'switcher-program']);
     } catch (err) {
       this._error(err);
