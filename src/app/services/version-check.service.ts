@@ -34,7 +34,7 @@ export class VersionCheckService {
 
   trackVersion(frequency): Observable<any> {
     return interval(frequency).pipe(
-      switchMap(() => this.http.get(
+      () => this.http.get(
         `${window.location.origin}/version.json?t=${new Date().getTime()}`,
         {
           headers: {
@@ -43,7 +43,7 @@ export class VersionCheckService {
             'Expires': '0',
           },
         },
-      )),
+      ),
       retryWhen(errors => {
         // retry for 5 times if anything go wrong
         return errors.pipe(delay(1000), take(5));
