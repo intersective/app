@@ -37,21 +37,21 @@ export class NewRelicService {
     if (!environment.newrelic) {
       return null;
     }
-    return newrelic.setPageViewName(name);
+    return this.newrelic.setPageViewName(name);
   }
 
   addPageAction(name, customAttr?) {
     if (!environment.newrelic) {
       return null;
     }
-    return newrelic.addPageAction(name, customAttr);
+    return this.newrelic.addPageAction(name, customAttr);
   }
 
   setCustomAttribute(name, value) {
     if (!environment.newrelic) {
       return null;
     }
-    return newrelic.setCustomAttribute(name, value);
+    return this.newrelic.setCustomAttribute(name, value);
   }
 
   noticeError(error, customAttr?) {
@@ -65,14 +65,14 @@ export class NewRelicService {
     if (enrolment && enrolment.id) {
       this.setAttribute('enrolment ID', enrolment.id);
     }
-    return newrelic.noticeError(error);
+    return this.newrelic.noticeError(error);
   }
 
   createTracer(name, callback?) {
     if (!environment.newrelic) {
       return () => ({ });
     }
-    const newInteraction = newrelic.interaction();
+    const newInteraction = this.newrelic.interaction();
     return newInteraction.createTracer(name, callback);
   }
 
