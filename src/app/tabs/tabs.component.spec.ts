@@ -170,7 +170,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: false,
-        teamId: 'SAMPLE_ID'
+        teamId: 9999 // 'SAMPLE_ID'
       });
       chatSpy.getChatList.and.returnValue(of([]));
       fixture.detectChanges();
