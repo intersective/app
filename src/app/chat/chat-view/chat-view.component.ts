@@ -27,7 +27,9 @@ export class ChatViewComponent extends RouterEnter {
   onEnter() {
     this._initialise();
     setTimeout(() => {
-      this.chatList.onEnter();
+      if (this.chatList && this.chatList.onEnter) {
+        this.chatList.onEnter();
+      }
     });
   }
 
@@ -40,7 +42,9 @@ export class ChatViewComponent extends RouterEnter {
     this.loadInfo = false;
     this.chatChannel = event;
     setTimeout(() => {
-      this.chatRoom.onEnter();
+      if (this.chatRoom && this.chatRoom.onEnter) {
+        this.chatRoom.onEnter();
+      }
     });
   }
 

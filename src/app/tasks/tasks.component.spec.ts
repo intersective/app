@@ -45,6 +45,12 @@ describe('TasksComponent', () => {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'stackConfig'])
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', [
+            'markTopicStopOnNavigating'
+          ])
+        }
       ]
     })
     .compileComponents();

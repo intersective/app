@@ -35,7 +35,9 @@ export class TasksComponent extends RouterEnter {
     this.assessmentId = null;
     // trigger onEnter after the element get generated
     setTimeout(() => {
-      this.activity.onEnter();
+      if (this.activity && this.activity.onEnter) {
+        this.activity.onEnter();
+      }
     });
   }
 
@@ -130,7 +132,9 @@ export class TasksComponent extends RouterEnter {
         this.assessmentId = null;
         // trigger onEnter after the element get generated
         setTimeout(() => {
-          this.topic.onEnter();
+          if (this.topic && this.topic.onEnter) {
+            this.topic.onEnter();
+          }
         });
         break;
       case 'assessment':
@@ -140,7 +144,9 @@ export class TasksComponent extends RouterEnter {
         this.topicId = null;
         // trigger onEnter after the element get generated
         setTimeout(() => {
-          this.assessment.onEnter();
+          if (this.assessment && this.assessment.onEnter) {
+            this.assessment.onEnter();
+          }
         });
         break;
     }
