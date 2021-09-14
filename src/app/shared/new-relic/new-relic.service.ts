@@ -1,17 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
-// import { noticeError } from 'newrelic';
-// import * as newrelic from './../../../../assets/newrelic';
-// import 'newrelic';
-/*import {
-  interaction,
-  setErrorHandler,
-  setPageViewName,
-  addRelease,
-} from 'new-relic-browser';*/
+import { interaction, noticeError, setCustomAttribute, setPageViewName } from 'new-relic-browser';
+declare var newrelic: any;
 
-import * as NewRelic from 'new-relic-browser';
-// import * as NewRelic from 'newrelic';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -20,14 +11,15 @@ import { environment } from '@environments/environment';
 
 export class NewRelicService {
   private newrelic;
-  private interaction;
+  private interaction; // newrelic browser interaction
 
   constructor(
     private storage: BrowserStorageService
   ) {
-    if (this.newrelic) {
-      this.newrelic = this.newrelic.interaction();
-      this.newrelic.onEnd(function() {
+    if (!this.newrelic) {
+      this.newrelic = newrelic;
+      this.interaction = this.newrelic.interaction();
+      this.interaction.onEnd(function() {
         console.log('interaction ended');
       });
     }
@@ -58,13 +50,15 @@ export class NewRelicService {
     if (!environment.newrelic) {
       return null;
     }
+
     const { userHash, enrolment } = this.storage.getUser();
     if (userHash) {
-      this.setAttribute('user hash', userHash);
+      this.setCustomAttribute('user hash', userHash);
     }
     if (enrolment && enrolment.id) {
-      this.setAttribute('enrolment ID', enrolment.id);
+      this.setCustomAttribute('enrolment ID', enrolment.id);
     }
+
     return this.newrelic.noticeError(error);
   }
 
@@ -80,20 +74,20 @@ export class NewRelicService {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.getContext().save();
+    return this.interaction.getContext().save();
   }
 
   actionText(name) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.actionText(name).save();
+    return this.interaction.actionText(name).save();
   }
 
   setAttribute(name, value) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.setAttribute(name, value).save();
+    return this.interaction.setAttribute(name, value).save();
   }
 }
