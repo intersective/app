@@ -206,8 +206,9 @@ export class AuthRegistrationComponent implements OnInit {
                 concatMap((e, i) =>
                   // Executes a conditional Observable depending on the result of the first argument
                   iif(
-                    // only retrying once.
-                    () => i > 1,
+                    // only retrying 3 times.
+                    // why 3 times - it is not predictable how much time it takes to save user to global DB. so we try 3 times.
+                    () => i > 3,
                     // If the condition is true we throw the error (the last error)
                     throwError(e),
                     // Otherwise we pipe this back into our stream and delay the retry
