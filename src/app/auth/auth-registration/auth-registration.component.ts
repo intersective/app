@@ -206,7 +206,7 @@ export class AuthRegistrationComponent implements OnInit {
                 concatMap((e, i) =>
                   // Executes a conditional Observable depending on the result of the first argument
                   iif(
-                    // only retrying onece.
+                    // only retrying once.
                     () => i > 1,
                     // If the condition is true we throw the error (the last error)
                     throwError(e),
