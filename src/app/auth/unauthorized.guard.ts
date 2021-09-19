@@ -14,8 +14,8 @@ export class UnauthorizedGuard implements CanActivate {
     private utils: UtilsService
   ) {}
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const userIsAuthenticated = this.authService.isAuthenticated();
+  async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    const userIsAuthenticated = await this.authService.isAuthenticated();
     if (userIsAuthenticated !== true) {
       return true;
     }

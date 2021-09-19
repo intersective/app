@@ -1,25 +1,42 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TasksComponent } from './tasks.component';
 import { ActivityModule } from '../activity/activity.module';
 import { TopicModule } from '../topic/topic.module';
 import { AssessmentModule } from '../assessment/assessment.module';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { MockRouter } from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
-import { SharedService } from '@app/services/shared.service';
+import { MockRouter, NativeStorageServiceMock } from '@testing/mocked.service';
+import { TasksRoutingModule } from './tasks-routing.module';
+import { SharedModule } from '@shared/shared.module';
+import { NativeStorageService } from '@services/native-storage.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Apollo } from 'apollo-angular';
+import { SharedService } from '@services/shared.service';
+import { EmbedVideoService } from 'ngx-embed-video';
+import { TasksRoutingComponent } from './tasks-routing.component';
+
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
   let fixture: ComponentFixture<TasksComponent>;
   let routeSpy: ActivatedRoute;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ ActivityModule, TopicModule, AssessmentModule ],
-      declarations: [ TasksComponent ],
+      imports: [
+        SharedModule,
+        TopicModule,
+        TasksRoutingModule,
+        ActivityModule
+      ],
+      declarations: [ TasksComponent, TasksRoutingComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
           provide: SharedService,
@@ -29,6 +46,7 @@ describe('TasksComponent', () => {
           provide: UtilsService,
           useClass: TestUtils,
         },
+        EmbedVideoService, // required by TopicModule
         {
           provide: Router,
           useClass: MockRouter
@@ -42,8 +60,12 @@ describe('TasksComponent', () => {
           }
         },
         {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'stackConfig'])
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
+          provider: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['markTopicStopOnNavigating'])
         },
         {
           provide: SharedService,
@@ -60,13 +82,15 @@ describe('TasksComponent', () => {
     fixture = TestBed.createComponent(TasksComponent);
     component = fixture.componentInstance;
     routeSpy = TestBed.inject(ActivatedRoute);
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     // mock the activity object
     component.activity = { onEnter() {} };
     // mock the topic object
     component.topic = { onEnter() {} };
     // mock the assessment object
     component.assessment = { onEnter() {} };
+
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -91,6 +115,13 @@ describe('TasksComponent', () => {
     let expectedContextId;
     let params;
     beforeEach(() => {
+      // mock the activity object
+      component.activity = { onEnter() {} };
+      // mock the topic object
+      component.topic = { onEnter() {} };
+      // mock the assessment object
+      component.assessment = { onEnter() {} };
+
       // initialise the ids
       component.topicId = null;
       component.assessmentId = null;
@@ -124,33 +155,56 @@ describe('TasksComponent', () => {
         defaultCountryModel: 'AUS',
         lastLogin: 1619660600368
       };
+      nativeStorageSpy.getObject.and.returnValue({
+        teamId: null
+      });
     });
-    afterEach(() => {
+
+    afterEach(fakeAsync(() => {
+      flush();
+      fixture.detectChanges();
+
       // do the test
       if (params) {
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
       }
       component.goToFirstTask(tasks);
-      expect(component.topicId).toEqual(expectedTopicId);
-      expect(component.assessmentId).toEqual(expectedAssessmentId);
-      expect(component.contextId).toEqual(expectedContextId);
-    });
+      flush();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(component.topicId).toEqual(expectedTopicId);
+        expect(component.assessmentId).toEqual(expectedAssessmentId);
+        expect(component.contextId).toEqual(expectedContextId);
+      });
+    }));
+
     it('should not do anything if topicId exist already', () => {
       component.topicId = 1;
       expectedTopicId = 1;
     });
-    it('should not do anything if assessmentId exist already', () => {
+
+    it('should not do anything if assessmentId exist already', fakeAsync(() => {
+      flush();
+
       component.assessmentId = 1;
       expectedAssessmentId = 1;
-    });
-    it('should go to the topic if passed in as the parameter', () => {
-      params = {
+    }));
+
+    it('should go to the topic if "tasks" parameter has value', fakeAsync(() => {
+      const params1 = {
         id: 1,
         task: 'topic',
         task_id: 11
       };
+      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => {
+        return params1[key];
+      });
+
       expectedTopicId = 11;
-    });
+      flush();
+    }));
+
     it('should go to the assessment if passed in as the parameter', () => {
       params = {
         id: 1,
@@ -161,13 +215,16 @@ describe('TasksComponent', () => {
       expectedAssessmentId = 11;
       expectedContextId = 111;
     });
-    it('should go to the topic in the tasks if parameters passed in are not correct #1', () => {
+
+    it('should go to the topic in the tasks if parameters passed in are not correct #1', fakeAsync(() => {
+      flush();
       params = {
         id: 1,
         task: 'assessment'
       };
       expectedTopicId = 2;
-    });
+    }));
+
     it('should go to the topic in the tasks if parameters passed in are not correct #2', () => {
       params = {
         id: 1,
@@ -224,7 +281,7 @@ describe('TasksComponent', () => {
           status: ''
         }
       ];
-      storageSpy.getUser.and.returnValue({ teamId: null });
+      nativeStorageSpy.getObject.and.returnValue({ teamId: null });
       expectedAssessmentId = 2;
       expectedContextId = 22;
     });
@@ -255,7 +312,7 @@ describe('TasksComponent', () => {
           contextId: 44
         }
       ];
-      storageSpy.getUser.and.returnValue({ teamId: 1 });
+      nativeStorageSpy.getObject.and.returnValue({ teamId: 1 });
       expectedAssessmentId = 4;
       expectedContextId = 44;
     });

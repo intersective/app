@@ -62,6 +62,10 @@ describe('TopicComponent', () => {
           useClass: TestUtils,
         },
         {
+          provide: ActivityService,
+          useValue: activitySpy
+        },
+        {
           provide: TopicService,
           useValue: topicSpy
         },

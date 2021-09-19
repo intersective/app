@@ -15,7 +15,8 @@ describe('StorageService', () => {
             'getItem',
             'setItem',
             'removeItem',
-            'clear'
+            'clear',
+            'getReferrer',
           ])
         },
       ]

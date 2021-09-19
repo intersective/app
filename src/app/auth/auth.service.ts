@@ -14,6 +14,8 @@ enum SERVICES {
   practera= 'PRACTERA',
   login= 'LOGIN',
 }
+import { NativeStorageService } from '@services/native-storage.service';
+import { PushNotificationService } from '@services/push-notification.service';
 
 /**
  * @name api
@@ -85,13 +87,21 @@ export class AuthService {
   constructor(
     private request: RequestService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private utils: UtilsService,
     private router: Router,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private pushNotificationService: PushNotificationService
   ) {}
 
-  private _clearCache(): any {
+  private async _clearCache(): Promise<void> {
     // do clear user cache here
+    this.pusherService.unsubscribeChannels();
+    this.pusherService.disconnect();
+    this.storage.clear();
+
+    await this.pushNotificationService.clearInterest();
+    await this.nativeStorage.clear();
   }
 
   /**
@@ -153,7 +163,7 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { authToken } in string
    */
-  directLogin({ authToken }): Observable<any> {
+  async directLogin({ authToken }): Promise<Observable<Promise<any>>> {
     const body = new HttpParams()
       .set('auth_token', authToken);
     this._logoutButRetainCachedStack();
@@ -164,10 +174,14 @@ export class AuthService {
    * Inherited Logout() but retain app stack cache, so global-app login still work
    * @return  {void}
    */
-  private _logoutButRetainCachedStack(): void {
+  private async _logoutButRetainCachedStack(): Promise<void> {
     const cachedStack = this.storage.stackConfig;
-    this.logout({}, false);
-    this.storage.stackConfig = cachedStack;
+    try {
+      await this.logout({}, false);
+      this.storage.stackConfig = cachedStack;
+    } catch (err) {
+      return err;
+    }
   }
 
   /**
@@ -193,11 +207,12 @@ export class AuthService {
     return this._loginFromCore(body, service);
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private async _handleLoginResponse(response): Promise<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({ apikey: norm.apikey });
-    this.storage.set('programs', norm.programs);
-    this.storage.set('isLoggedIn', true);
+
+    await this.nativeStorage.setObject('me', { apikey: norm.apikey });
+    await this.nativeStorage.setObject('isLoggedIn', {isLoggedIn: true});
+    await this.nativeStorage.setObject('programs', norm.programs);
     return norm;
   }
 
@@ -234,8 +249,9 @@ export class AuthService {
     };
   }
 
-  isAuthenticated(): boolean {
-    return this.storage.get('isLoggedIn');
+  async isAuthenticated(): Promise<boolean> {
+    const status = await this.nativeStorage.getObject('isLoggedIn');
+    return status.isLoggedIn;
   }
 
   /**
@@ -243,18 +259,24 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  async logout(navigationParams = {}, redirect = true): Promise<any> {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
-    const config = this.storage.getConfig();
+    // const config = this.storage.getConfig();
+    const config = await this.nativeStorage.getObject('config');
 
     const fromGlobalLogin = this.storage.get('fromGlobalLogin');
 
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+
+
+    await this._clearCache();
+    // still store config info even logout
+    await this.nativeStorage.setObject('config', config);
 
     // redirect user to global login if user came from it.
     if (fromGlobalLogin) {
@@ -263,7 +285,9 @@ export class AuthService {
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
+    return;
   }
+
    /**
    * @name forgotPassword
    * @description make request to server to send out email with reset password url
@@ -324,40 +348,24 @@ export class AuthService {
   }
 
   /**
-   * check user linkedIn connection status
-   * @return {Boolean}
-   */
-  linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
-  }
-
-  // Activity ID is no longer used as a parameter,
-  // but needs to be there so just pass in a 1
-  connectToLinkedIn () {
-    const url = '/api/auth_linkedin.json?apikey=' + this.storage.getUser().apikey + '&appkey=' + this.storage.get('appkey') + '&timeline_id=' + this.storage.getUser().timelineId;
-
-    this.utils.openUrl(url);
-    return;
-  }
-
-  /**
    * @name contactNumberLogin
    * @description fast/quick login with contact number
    * @param  {string}}        data [description]
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(
-      {
+    return this.request.post({
         endPoint: API.login,
         data: {
           contact_number: data.contactNumber,
         }
-      }).pipe(map(response => {
+      }).pipe(map(async response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
-        this.storage.set('programs', response.data.timelines);
+
+        await this.nativeStorage.setObject('me', {apikey: response.data.apikey});
+        await this.nativeStorage.setObject('programs', response.data.timelines);
       }
 
       // @TODO: verify if safari browser localStorage store data above properly

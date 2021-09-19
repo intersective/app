@@ -1,0 +1,29 @@
+<ion-content color="light" class="pop-up-content" text-center>
+  <ion-toolbar class="pn-title-toolbar">
+    <ion-title class="ion-text-center pn-title">Push notification</ion-title>
+  </ion-toolbar>
+
+  <div class="image-content">
+    <div class="image">
+      <img alt="push notification permission" class="permission-icon" [src]="icon">
+    </div>
+  </div>
+
+  <div class="details-container ion-text-center">
+    <div class="div-after-img">
+      <app-description class="subtitle-1 pop-text" [content]="message" [isInPopup]="true"></app-description>
+    </div>
+
+    <ion-text color="medium" text-center>
+      Please allow Practera to send you notifications.
+    </ion-text>
+
+  </div>
+
+  <div class="div-after-img button-container">
+    <ion-item lines="none">
+      <ion-button (click)="dismissPermissionModal()" slot="start" fill="clear" expand="full">NOT NOW</ion-button>
+      <ion-button (click)="goToSystemSetting()" slot="end" fill="clear" expand="full">YES, SURE</ion-button>
+    </ion-item>
+  </div>
+</ion-content>

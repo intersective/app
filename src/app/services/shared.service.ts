@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RequestService } from '@shared/request/request.service';
 import { HttpClient } from '@angular/common/http';
@@ -32,6 +33,7 @@ export class SharedService {
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private notification: NotificationService,
     private request: RequestService,
     private http: HttpClient,
@@ -42,13 +44,14 @@ export class SharedService {
   ) {}
 
   // call this function on every page refresh and after switch program
-  onPageLoad(): void {
+  async onPageLoad() {
     this.getIpLocation();
+    const user = await this.nativeStorage.getObject('me');
     const {
       timelineId,
       colors,
       activityCardImage,
-    } = this.storage.getUser();
+    } = user;
 
     // only do these if a timeline is choosen
     if (!timelineId) {

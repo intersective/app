@@ -1,10 +1,12 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { Observable, forkJoin } from 'rxjs';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 @Component({
@@ -20,31 +22,36 @@ export class AuthDirectLoginComponent implements OnInit {
     private notificationService: NotificationService,
     private switcherService: SwitcherService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private ngZone: NgZone,
     private newRelic: NewRelicService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.newRelic.setPageViewName('direct-login');
     const authToken = this.route.snapshot.paramMap.get('authToken');
     if (!authToken) {
       return this._error();
     }
 
-    try {
-      // skip the authentication if the same auth token has been used before
-      if (this.storage.get('authToken') !== authToken) {
-        await this.authService.directLogin({ authToken }).toPromise();
-        await this.switcherService.getMyInfo().toPromise();
-        // save the auth token to compare with future use
-        this.storage.set('authToken', authToken);
+    const nrDirectLoginTracer = this.newRelic.createTracer('Processing direct login');
+    // move try catch inside to timeout, because if try catch is outside it not catch errors happen inside timeout.
+    setTimeout(async () => {
+      try {
+        if (this.storage.get('authToken') !== authToken) {
+          const directLogin = await this.authService.directLogin({ authToken });
+          const res = await directLogin.toPromise();
+          await res;
+          await this.switcherService.getMyInfo().toPromise();
+          // save the auth token to compare with future use
+          this.storage.set('authToken', authToken);
+        }
+        nrDirectLoginTracer();
+        return this._redirect();
+      } catch (err) {
+        this._error(err);
       }
-      this.newRelic.createTracer('Processing direct login');
-      return this._redirect();
-    } catch (err) {
-      console.error(err);
-      this._error(err);
-    }
+    });
   }
 
   // force every navigation happen under radar of angular
@@ -81,7 +88,8 @@ export class AuthDirectLoginComponent implements OnInit {
     // purpose of return_url
     // - when user switch program, he/she will be redirect to this url
     if (this.route.snapshot.paramMap.has('return_url')) {
-      this.storage.setUser({
+      await this.nativeStorage.setObject('me', {
+      // this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
@@ -90,7 +98,8 @@ export class AuthDirectLoginComponent implements OnInit {
 
     // switch program directly if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
+      const programs = await this.nativeStorage.getObject('programs');
+      const program = this.utils.find(Object.values(programs), value => {
         return value.timeline.id === timelineId;
       });
       if (this.utils.isEmpty(program)) {
@@ -98,7 +107,7 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['switcher', 'switcher-program']);
       }
       // switch to the program
-      await this.switcherService.switchProgram(program).toPromise();
+      await (await this.switcherService.switchProgram(program)).toPromise();
     }
     let referrerUrl = '';
     switch (redirect) {
@@ -118,9 +127,10 @@ export class AuthDirectLoginComponent implements OnInit {
         referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
           // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
+          this.nativeStorage.setObject('referrer', {
+            activityTaskUrl: referrerUrl,
             route: 'activity-task',
-            url: referrerUrl
+            url: referrerUrl,
           });
         }
         return this._saveOrRedirect(['activity-task', activityId], redirectLater);
@@ -188,15 +198,21 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(route);
   }
 
+  /**
+   * when param "res" is empty, just simply return with generic "expired" error
+   * @param  {any}       res
+   * @return {Promise<any>}
+   */
   private _error(res?): Promise<any> {
     this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
-    if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
+    if (!this.utils.isEmpty(res) && (res && res.status === 'forbidden') && [
       'User is not registered'
     ].includes(res.data.message)) {
       this._redirect(true);
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['registration', res.data.user.email, res.data.user.key]);
     }
+
     return this.notificationService.alert({
       message: 'Your link is invalid or expired.',
       buttons: [

@@ -3,12 +3,20 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { Capacitor } from '@capacitor/core';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { Subject } from 'rxjs/Subject';
+import { flatMap, filter } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
 
 @Component({
   selector: 'app-settings',
@@ -17,7 +25,10 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 
 export class SettingsComponent extends RouterEnter {
+  isNativeApp = Capacitor.isNative;
 
+  multiProgramsChecker$: Observable<any>;
+  // routeUrl = '/app/settings'; - @TODO: test this line
   routeUrl = '/settings';
   mode: string;
   profile = {
@@ -40,40 +51,85 @@ export class SettingsComponent extends RouterEnter {
   acceptFileTypes;
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+  interests: string[];
+  associated: any;
+  firstVisitPermission: any;
 
   constructor (
     public router: Router,
-    private readonly route: ActivatedRoute,
+    readonly route: ActivatedRoute,
     private authService: AuthService,
     private settingService: SettingService,
     public storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     public utils: UtilsService,
     private notificationService: NotificationService,
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
-
+    private pushNotificationService: PushNotificationService
   ) {
     super(router);
+    // forced "revisit" of this component whenever become reactivated
+    route.data.subscribe(fragment => {
+      this.checkPermission();
+    });
+    this.multiProgramsChecker$ = fromPromise(this.isInMultiplePrograms()).pipe(
+      res => of(res),
+      filter(res => res instanceof Object)
+    );
   }
 
   onEnter() {
-    this.newRelic.setPageViewName('Settings');
+    this.newRelic.setPageViewName('Setting');
+
+    this.route.data.subscribe(data => {
+      const {
+        email,
+        contactNumber,
+        image,
+        name,
+        programName,
+        LtiReturnUrl,
+      } = data.user;
+
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.currentProgramName = programName;
+      this.returnLtiUrl = LtiReturnUrl;
+    });
     this.mode = this.route.snapshot.data.mode;
-    // get contact number and email from local storage
-    this.profile.email = this.storage.getUser().email;
-    this.profile.contactNumber = this.storage.getUser().contactNumber;
-    this.profile.image = this.storage.getUser().image ? this.storage.getUser().image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = this.storage.getUser().name;
+
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     // also get program name
-    this.currentProgramName = this.storage.getUser().programName;
     this.currentProgramImage = this._getCurrentProgramImage();
     this.fastFeedbackService.pullFastFeedback().subscribe();
+
     this.returnLtiUrl = this.storage.getUser().LtiReturnUrl;
     if (this.storage.get('hasMultipleStacks')) {
       this.hasMultipleStacks = this.storage.get('hasMultipleStacks');
     }
+  }
+
+  /**
+   * check if current device has Push Notification permission allowed
+   * criterias:
+   *   - first visit of this page (nothing recording in localStorage)
+   *   - permission allowed
+   * @return {Promise<void>}
+   */
+  async checkPermission(): Promise<void> {
+    this.firstVisitPermission = await this.pushNotificationService.promptForPermission(
+      PermissionTypes.firstVisit,
+      this.router.routerState.snapshot
+    );
+    if (this.firstVisitPermission) {
+      await this.notificationService.pushNotificationPermissionPopUp('Would you like to be enable push notification?', '/assets/img/permissions off.svg');
+    }
+    return;
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -112,8 +168,9 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
-  isInMultiplePrograms() {
-    return this.storage.get('programs').length > 1;
+  async isInMultiplePrograms() {
+    const programs = await this.nativeStorage.getObject('programs');
+    return (programs || []).length > 1;
   }
 
   // send email to Help request
@@ -124,6 +181,37 @@ export class SettingsComponent extends RouterEnter {
     this.newRelic.actionText('mail to helpline');
     const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
     window.open(mailto, '_self');
+  }
+
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goToSetting = await this.utils.goToSystemSetting();
+    return goToSetting;
+  }
+
+  async getInterests() {
+    const { interests } = await this.pushNotificationService.getSubscribedInterests();
+    this.interests = interests;
+    console.log(interests);
+  }
+
+  async setInterests(interest: string[]) {
+    const subscribedInterests = await this.pushNotificationService.subscribeToInterests(interest);
+    return subscribedInterests;
+  }
+
+  async linkUser() {
+    const associated = await this.pushNotificationService.associateDeviceToUser(this.storage.getUser().email, this.storage.getUser().apikey);
+    console.log(associated);
+    this.associated = associated;
+  }
+
+  async stopLink() {
+    const unlinked = await this.pushNotificationService.stopAuth();
+    console.log(unlinked);
   }
 
   logout(event) {
@@ -181,5 +269,4 @@ export class SettingsComponent extends RouterEnter {
       });
     }
   }
-
 }

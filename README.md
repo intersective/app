@@ -1,4 +1,5 @@
 # Practera-app-v2
+This `native-develop` branch is development branch for Native App, the progress of this branch should be align with progress in [develop branch](https://github.com/intersective/app-v2/tree/develop/).
 
 ![Build Status](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
@@ -27,6 +28,13 @@ Run `npm run local` to start a development server on your local, and call 127.0.
 1. Change the version number on Slack `team-dev` channel
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
+
+#### Hybird App (Alpha Build)
+
+1. Prerequisite: 
+    1. Get `environment.alpha-native.ts` file placed under `src/environments` directory (ask from dev involved in the hybrid app project)
+    1. Capacitor cli - install globally on your system
+1. Run `npm run build-native` to update iOS and Android build with the latest code change from AppV2 (angular code).
 
 ### New Relics Setup
 

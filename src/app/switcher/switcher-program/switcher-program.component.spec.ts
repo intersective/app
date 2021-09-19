@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -24,6 +24,7 @@ describe('SwitcherProgramComponent', () => {
   let newrelicSpy: jasmine.SpyObj<NewRelicService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let routesSpy: jasmine.SpyObj<ActivatedRoute>;
   let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -64,6 +65,12 @@ describe('SwitcherProgramComponent', () => {
           useClass: MockRouter,
         },
         {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
+        },
+        {
           provide: SwitcherService,
           useClass: MockSwitcherService,
         },
@@ -93,6 +100,7 @@ describe('SwitcherProgramComponent', () => {
     newrelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    routesSpy = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
@@ -110,18 +118,16 @@ describe('SwitcherProgramComponent', () => {
   });
 
   describe('onEnter()', () => {
-    it('should instantiate with API program list', () => {
-      const programs = ProgramFixture;
-      programs.forEach((p, i) => {
-        programs[i].progress = (i + 1) / 10,
-        programs[i].todoItems = (i + 1);
-      });
-      switcherSpy.getPrograms.and.returnValue(of(programs));
-      component.onEnter();
+    const programs = ProgramFixture;
+    programs.forEach((p, i) => {
+      programs[i].progress = (i + 1) / 10,
+      programs[i].todoItems = (i + 1);
+    });
 
-      expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
-      expect(switcherSpy.getPrograms).toHaveBeenCalled();
-      expect(component.programs).toEqual(programs);
+    beforeEach(() => {
+      switcherSpy.getPrograms.and.returnValue(new Promise(resolve => {
+        return resolve(of(programs));
+      }));
     });
     it('should allert if no programs found', () => {
       const programs = [];
@@ -134,6 +140,7 @@ describe('SwitcherProgramComponent', () => {
 
       expect(notifySpy.alert).toHaveBeenCalled();
     });
+
     it('should throw error when no stack available', () => {
       const SAMPLE_ERROR = 'SAMPLE ERROR';
       switcherSpy.getPrograms.and.returnValue(throwError(SAMPLE_ERROR));
@@ -142,6 +149,18 @@ describe('SwitcherProgramComponent', () => {
       expect(component.isProgramsLoading).toBeFalsy();
       expect(component.programs).toEqual([]);
     });
+
+    it('should instantiate with API program list', fakeAsync(() => {
+      component.onEnter();
+      flush();
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(newrelicSpy.setPageViewName).toHaveBeenCalledWith('program switcher');
+        expect(switcherSpy.getPrograms).toHaveBeenCalled();
+        expect(component.programs).toEqual(programs);
+      });
+    }));
   });
 
   describe('switch()', () => {

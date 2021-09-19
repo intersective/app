@@ -1,6 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
@@ -21,6 +23,10 @@ describe('TabsService', () => {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
         },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        }
       ]
     });
     service = TestBed.inject(TabsService);
@@ -33,13 +39,16 @@ describe('TabsService', () => {
 
   describe('when testing getNoOfTodoItems()', () => {
     let response, expected = 0, error = false;
-    afterEach(() => {
+    afterEach(fakeAsync(() => {
       requestSpy.get.and.returnValue(of(response));
-      service.getNoOfTodoItems().subscribe(res => expect(res).toEqual(expected));
+      service.getNoOfTodoItems().then(getTodoItems => {
+        getTodoItems.subscribe(res => expect(res).toEqual(expected));
+      });
+      tick();
       if (error) {
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
       }
-    });
+    }));
     it('should throw error #1', () => {
        response = {
          success: true,

@@ -217,16 +217,14 @@ ion-skeleton-text {
     --max-width: 280px;
     --min-width: 280px;
     --min-height: 280px;
-    --max-height: 480px;
+    --max-height: 440px;
     --width: 280px;
     --border-radius: 12px;
     --background: transparent;
     --box-shadow: none;
     margin-top: 20px;
     margin-bottom: 20px;
-    .inner-scroll, .scroll-y, .overscroll {
-      --overflow: hidden;
-    }
+    
     .pop-up-content {
       border-radius: 12px !important;
 
@@ -292,6 +290,17 @@ ion-skeleton-text {
       --width: auto;
       min-height: 200px;
     }
+  }
+  &.push-notification-popup {
+    .ios {
+      --max-height: 62%;
+    }
+    .modal-wrapper {
+      
+      //--max-height: 54%;
+      min-height: 200px;
+    }
+    
   }
   &.mobile-view {
     .modal-wrapper {

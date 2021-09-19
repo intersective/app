@@ -11,6 +11,7 @@ import { TestUtils } from '@testing/utils';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
 import { NotificationService } from '@app/shared/notification/notification.service';
 
@@ -92,6 +93,10 @@ describe('ProjectComponent', () => {
             },
             queryParamMap: of(convertToParamMap({ activityId: 1 }))
           }
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['presentToast'])
         },
         {
           provide: Document,

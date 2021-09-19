@@ -46,5 +46,8 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": [
+    "e2e/src/specs.old/**/*spec.ts"
+  ]
 }

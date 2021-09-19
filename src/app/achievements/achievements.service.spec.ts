@@ -1,9 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, flush, fakeAsync } from '@angular/core/testing';
 import { AchievementsService } from './achievements.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
 
 describe('AchievementsService', () => {
@@ -29,6 +31,10 @@ describe('AchievementsService', () => {
               projectId: 1
             }
           })
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
       ]
     });
@@ -141,15 +147,18 @@ describe('AchievementsService', () => {
     expect(service.getIsPointsConfigured()).toBe(true);
   });
 
-  it(`should post the correct data when marking achievement as seen`, () => {
+  it(`should post the correct data when marking achievement as seen`, fakeAsync(() => {
+    const anyValue = TestUtils.randomNumber();
+
     requestSpy.post.and.returnValue(of({}));
     service.markAchievementAsSeen(11);
+    flush();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toEqual({
       project_id: 1,
       identifier: 'Achievement-11',
       is_done: true
     });
-  });
+  }));
 
 });

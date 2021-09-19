@@ -3,6 +3,46 @@ import { UtilsService } from '@services/utils.service';
 import * as _ from 'lodash';
 import { of, Subject } from 'rxjs';
 
+export class TestUtils {
+
+  static createRouterSpy() {
+    return {
+      navigate: jasmine.createSpy('navigate'),
+    };
+  }
+
+  /**
+   * return random absolute number
+   */
+  static randomNumber(max = 100) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
+  /**
+   * Get a date string
+   * @param day  number of dates after today. if < 0, is number of days before today
+   * @param minute number of minutes after the current minute. if < 0, is number of minutes before current minute
+   *
+   * e.g.
+   * getDateString(1, 0) returns tomorrow at the same time
+   * getDateString(-1, 0) returns yesterday at the same time
+   * getDateString(0, 1) returns today at one minute later
+   * @return {string} UTC date string
+   */
+  getDateString(day: number, minute: number): string {
+    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
+    return momentDate;
+  }
+
+  /**
+   * add '0' before the number if it is less than 10
+   * @param number the number for checking
+   */
+  numberFormatter(number: number) {
+    return number < 10 ? '0' + number : number;
+  }
+}
+
 export class SpyObject {
   constructor(type?: any) {
     if (type) {

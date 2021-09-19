@@ -1,7 +1,10 @@
 export const environment = {
   production: true,
   appkey: 'b11e7c189b',
-  pusherKey: '255f010d210933ca7675',
+  pusher: {
+    key: '255f010d210933ca7675',
+    beamsDefaultInterest: ['general']
+  },
   env: 'live',
   APIEndpoint: 'https://us.practera.com/',
   intercomAppId: '',

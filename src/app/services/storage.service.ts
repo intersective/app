@@ -6,6 +6,7 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 });
 
 export interface User {
+  id?: string;
   name?: string;
   apikey?: string;
   contactNumber?: string;
@@ -121,15 +122,6 @@ export class BrowserStorageService {
 
   setUser(user: User) {
     this.set('me', Object.assign(this.getUser(), user));
-    return true;
-  }
-
-  getReferrer() {
-    return this.get('referrer') || {};
-  }
-
-  setReferrer(referrer: Referrer) {
-    this.set('referrer', {...this.getReferrer(), ...referrer});
     return true;
   }
 

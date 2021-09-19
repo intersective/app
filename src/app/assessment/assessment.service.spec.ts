@@ -1,14 +1,17 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
 import { TestUtils } from '@testing/utils';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
@@ -20,6 +23,10 @@ describe('AssessmentService', () => {
         {
           provide: UtilsService,
           useClass: TestUtils,
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
         {
           provide: NotificationService,
@@ -43,6 +50,7 @@ describe('AssessmentService', () => {
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     utils = TestBed.inject(UtilsService);
   });
 
@@ -423,17 +431,20 @@ describe('AssessmentService', () => {
       };
     });
 
-    afterEach(() => {
+    afterEach(fakeAsync(() => {
       requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment', 2, 3).subscribe(
-        result => {
-          expect(result.assessment).toEqual(expectedAssessment);
-          expect(result.submission).toEqual(expectedSubmission);
-          expect(result.review).toEqual(expectedReview);
+        res => {
+          res.then(result => {
+            expect(result.assessment).toEqual(expectedAssessment);
+            expect(result.submission).toEqual(expectedSubmission);
+            expect(result.review).toEqual(expectedReview);
+          });
         }
       );
+      flush();
       expect(requestSpy.graphQLQuery.calls.count()).toBe(1);
-    });
+    }));
 
     it('should get correct assessment data', () => {});
 
@@ -534,15 +545,16 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing saveFeedbackReviewed()', () => {
-    it('should post correct data', () => {
+    it('should post correct data', fakeAsync(() => {
       service.saveFeedbackReviewed(11);
+      flush();
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(requestSpy.post.calls.first().args[0].data).toEqual({
         project_id: 1,
         identifier: 'AssessmentSubmission-11',
         is_done: true
       });
-    });
+    }));
   });
 
   describe('when testing popUpReviewRating()', () => {
@@ -557,12 +569,21 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing checkReviewer()', () => {
-    it('should return null if no reviewer passed in', () => {
-      expect(service.checkReviewer(null)).toEqual(null);
-    });
-    it('should return null if reviewer is the current person', () => {
-      expect(service.checkReviewer({name: 'Test'})).toEqual(null);
-    });
+    it('should return null if no reviewer passed in', fakeAsync(() => {
+      service.checkReviewer(null).then(result => {
+        expect(result).toEqual(null);
+      });
+      flush();
+    }));
+
+    it('should return null if reviewer is the current person', fakeAsync(() => {
+      const sameName = 'Test';
+      nativeStorageSpy.getObject.and.returnValue({name: sameName});
+      service.checkReviewer({name: sameName}).then(result => {
+        expect(result).toEqual(null);
+      });
+      flush();
+    }));
   });
 
 });

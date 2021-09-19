@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -26,7 +26,7 @@ export class AuthRegistrationComponent implements OnInit {
   password: string;
   confirmPassword: string;
   isAgreed = false;
-  registerationForm: FormGroup;
+  registrationForm: FormGroup;
   hide_password = false;
   user: any = {
     email: null,
@@ -40,6 +40,7 @@ export class AuthRegistrationComponent implements OnInit {
   showPassword = false;
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
+  submitting = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -68,7 +69,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   initForm() {
-    this.registerationForm = new FormGroup({
+    this.registrationForm = new FormGroup({
       email: new FormControl('', [Validators.email]),
       password: new FormControl('', [
         Validators.required,
@@ -79,74 +80,68 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   validateQueryParams() {
-    let redirect = [];
-    redirect = ['login'];
+    const redirect = ['login'];
 
     const verifyRegistration = this.newRelic.createTracer('verify registration');
     const getConfig = this.newRelic.createTracer('retrieve configurations');
 
     // access query params
-    this.route.queryParamMap.subscribe(queryParams => {
+    this.route.queryParamMap.subscribe(async () => {
       this.user.email = this.route.snapshot.paramMap.get('email');
       this.user.key = this.route.snapshot.paramMap.get('key');
+
       if (this.user.email && this.user.key) {
         // check is Url valid or not.
         this.authService.verifyRegistration({
-            email: this.user.email,
-            key: this.user.key
-          }).subscribe(
-            response => {
-              verifyRegistration();
+          email: this.user.email,
+          key: this.user.key
+        }).subscribe(response => {
+          verifyRegistration();
 
-              if (response) {
-                const user = response.data.User;
-                // Setting user data after registration verified.
-                this.user.contact = (user || {}).contact_number || null;
-                this.user.id = user.id;
+          if (response) {
+            const user = response.data.User;
+            // Setting user data after registration verified.
+            this.user.contact = (user || {}).contact_number || null;
+            this.user.id = user.id;
 
-                // Update storage data
-                this.storage.setUser({
-                  contactNumber: this.user.contact,
-                  email: this.user.email
-                });
+            // Update storage data
+            this.storage.setUser({
+              contactNumber: this.user.contact,
+              email: this.user.email
+            });
 
-                // get app configaration
-                this.authService.checkDomain({
-                  domain: this.domain
-                }).subscribe(
-                  res => {
-                    getConfig();
+            // get app configaration
+            this.authService.checkDomain({
+              domain: this.domain
+            }).subscribe(res => {
+              getConfig();
 
-                    let data = (res.data || {}).data;
-                    data = this.utils.find(data, function(datum) {
-                      return (
-                        datum.config && datum.config.auth_via_contact_number
-                      );
-                    });
-                    if (data && data.config) {
-                      if (data.config.auth_via_contact_number === true) {
-                        this.hide_password = true;
-                        this.user.password = this.autoGeneratePassword();
-                        this.confirmPassword = this.user.password;
-                      }
-                    }
-                  },
-                  err => {
-                    getConfig();
-                    this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
-                    this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
-                  }
+              let data = (res.data || {}).data;
+              data = this.utils.find(data, function(datum) {
+                return (
+                  datum.config && datum.config.auth_via_contact_number
                 );
+              });
+              if (data && data.config) {
+                if (data.config.auth_via_contact_number === true) {
+                  this.hide_password = true;
+                  this.user.password = this.autoGeneratePassword();
+                  this.confirmPassword = this.user.password;
+                }
               }
-            },
-            error => {
-              verifyRegistration();
-              this.newRelic.noticeError('verification failed', JSON.stringify(error));
-              this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
-            }
-          );
+            },           async err => {
+              getConfig();
+              this.newRelic.noticeError('Get configurations failed', JSON.stringify(err));
+              await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+            });
+          }
+        },           async error => {
+          verifyRegistration();
+          this.newRelic.noticeError('verification failed', JSON.stringify(error));
+          await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+        });
       } else {
-        this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+        await this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
       }
     });
   }
@@ -174,13 +169,15 @@ export class AuthRegistrationComponent implements OnInit {
    * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
    */
   register() {
+    this.submitting = true;
     if (this.validateRegistration()) {
       const nrRegisterTracer = this.newRelic.createTracer('registering');
       this.newRelic.actionText('Validated registration');
       if (this.unRegisteredDirectLink) {
         this._setupPassword();
       }
-      this.authService
+
+      return this.authService
         .saveRegistration({
           password: this.confirmPassword,
           user_id: this.user.id,
@@ -190,32 +187,36 @@ export class AuthRegistrationComponent implements OnInit {
           response => {
             nrRegisterTracer();
             const nrAutoLoginTracer = this.newRelic.createTracer('auto login');
-            this.authService
+            return this.authService
               .login({
                 username: this.user.email,
                 password: this.confirmPassword
               })
               .subscribe(
                 async res => {
-                  this.storage.set('isLoggedIn', true);
-                  this.storage.stacks = res.stacks;
-                  this.storage.loginApiKey = res.apikey;
+                  const loggedIn = await res;
+                  nrAutoLoginTracer();
                   this.storage.remove('unRegisteredDirectLink');
-                  this.showPopupMessages('shortMessage', 'Registration success!', ['switcher', 'switcher-program']);
+                  const route = await this.switcherService.switchProgramAndNavigate(loggedIn.programs);
+                  await this.showPopupMessages('shortMessage', 'Registration success!', route);
+                  this.submitting = false;
+                  return;
                 },
-                err => {
+                async err => {
                   nrAutoLoginTracer();
                   this.newRelic.noticeError('auto login failed', JSON.stringify(err));
-                  this.showPopupMessages('shortMessage', 'Registration not complete!');
+                  await this.showPopupMessages('shortMessage', 'Registration not complete!');
+                  this.submitting = false;
+                  return;
                 }
               );
           },
-          error => {
+          async error => {
             this.newRelic.noticeError('registration failed', JSON.stringify(error));
 
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
-                return this.notificationService.alert({
+                await this.notificationService.alert({
                   message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
                     Please try again. <br>
                     You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
@@ -226,24 +227,37 @@ export class AuthRegistrationComponent implements OnInit {
                     }
                   ],
                 });
+                this.submitting = false;
+                return;
               }
             }
-            this.showPopupMessages('shortMessage', 'Registration not complete!');
+            await this.showPopupMessages('shortMessage', 'Registration not complete!');
+            this.submitting = false;
+            return;
           }
         );
     }
+    this.submitting = false;
+    return;
   }
 
   removeErrorMessages() {
     this.errors = [];
   }
 
-  validateRegistration() {
+  /**
+   * validate registration link & form
+   *
+   * @return {boolean} true = valid & false = invalid
+   */
+  validateRegistration(): boolean {
     let isValid = true;
     this.errors = [];
+    const tncMsg = 'You need to agree with terms and Conditions.';
+
     if (this.unRegisteredDirectLink) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
@@ -252,49 +266,49 @@ export class AuthRegistrationComponent implements OnInit {
     }
     if (this.hide_password) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
         return isValid;
       }
-    } else if (this.registerationForm.valid) {
-      const pass = this.registerationForm.controls.password.value;
-      const confirmPass = this.registerationForm.controls.confirmPassword.value;
+    } else if (this.registrationForm.valid) {
+      const pass = this.registrationForm.controls.password.value;
+      const confirmPass = this.registrationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
         this.errors.push('Your passwords don\'t match.');
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push(tncMsg);
         isValid = false;
         return isValid;
       } else {
         return isValid;
       }
     } else {
-      for (const conrtoller in this.registerationForm.controls) {
-        if (this.registerationForm.controls[conrtoller].errors) {
-          isValid = false;
-          for (const key in this.registerationForm.controls[conrtoller].errors) {
-            if (
-              this.registerationForm.controls[conrtoller].errors.hasOwnProperty(
-                key
-              )
-            ) {
-              switch (key) {
-                case 'required':
-                  this.errors.push('Please fill in your password');
-                  break;
-                case 'minlength':
-                  this.errors.push(
-                    'Your password needs to be more than 8 characters.'
-                  );
-                  break;
-                default:
-                  this.errors.push(this.registerationForm.controls.errors[key]);
+      for (const controller in this.registrationForm.controls) {
+        if (this.registrationForm.controls.hasOwnProperty(controller)) {
+
+          const thisErrors = this.registrationForm.controls[controller].errors;
+
+          if (thisErrors) {
+            isValid = false;
+            for (const key in thisErrors) {
+              if (thisErrors.hasOwnProperty(key)) {
+                switch (key) {
+                  case 'required':
+                    this.errors.push('Please fill in your password');
+                    break;
+                  case 'minlength':
+                    this.errors.push(
+                      'Your password needs to be more than 8 characters.'
+                    );
+                    break;
+                  default:
+                    this.errors.push(this.registrationForm.controls.errors[key]);
+                }
               }
-              return;
             }
           }
         }
@@ -303,15 +317,14 @@ export class AuthRegistrationComponent implements OnInit {
     }
   }
 
-  private showPopupMessages(type: string, message: string, redirect?: any) {
-    this.notificationService
-      .popUp(
-        type,
-        {
-          message: message
-        },
-        redirect ? redirect : false
-      );
+  private showPopupMessages(type: string, message: string, redirect?: any): Promise<void> {
+    return this.notificationService.popUp(
+      type,
+      {
+        message: message
+      },
+      redirect ? redirect : false
+    );
   }
 
   private _setupPassword() {
@@ -323,7 +336,7 @@ export class AuthRegistrationComponent implements OnInit {
     this.confirmPassword = this.user.password;
   }
 
-  async termsAndConditionsPopup() {
+  async termsAndConditionsPopup(): Promise<HTMLIonModalElement> {
     const modal = await this.modalController.create({
       component: TermsConditionsPreviewComponent,
       swipeToClose: false,
@@ -335,6 +348,7 @@ export class AuthRegistrationComponent implements OnInit {
         this.isAgreed = modalData.data.isAgreed;
       }
     });
+    return modal;
   }
 
 }

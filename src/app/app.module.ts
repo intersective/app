@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
+import { HTTP } from '@ionic-native/http/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
@@ -27,6 +28,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { BrowserStorageService } from '@services/storage.service';
+import { IonicStorageModule } from '@ionic/storage';
 import { AuthService } from './auth/auth.service';
 
 /**
@@ -87,6 +89,12 @@ function initializeApp(
     BrowserAnimationsModule,
     HttpClientModule,
     IonicModule.forRoot(),
+    AuthModule,
+    RequestModule.forRoot({
+      appkey: environment.appkey,
+      loginApiUrl: environment.loginAPIUrl,
+    }),
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
     EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),
@@ -112,6 +120,7 @@ function initializeApp(
     },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // Custom
+    HTTP,
     UtilsService,
     VersionCheckService,
   ],

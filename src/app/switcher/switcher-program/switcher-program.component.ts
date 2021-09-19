@@ -1,14 +1,18 @@
 import { Component, AfterContentChecked } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Injectable } from '@angular/core';
-import { RouterEnter } from '@services/router-enter.service';
-import { SwitcherService, ProgramObj } from '../switcher.service';
-import { LoadingController } from '@ionic/angular';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { AuthService } from '@app/auth/auth.service';
+import { Injectable, Inject } from '@angular/core';
+import { RouterEnter } from '@services/router-enter.service';
+import { SwitcherService, ProgramObj } from '../switcher.service';
+import { LoadingController } from '@ionic/angular';
+import { environment } from '@environments/environment';
+import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { of } from 'rxjs/observable/of';
 
 @Injectable({
   providedIn: 'root'
@@ -47,42 +51,51 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
   onEnter() {
     this.programs = [];
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getPrograms(this.stacks).subscribe(
-      async programs => {
-        // redirect user back to login if didn't found any program for the user.
-        if (programs.length <= 0) {
-          return this.notificationService.alert({
-            header: 'Error in accessing experiences',
-            message: `Didn't find any experience user has access to enter. Please Login using another valid account.`,
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.isProgramsLoading = false;
-                  this.router.navigate(['logout']);
-                },
-              },
-            ],
-          });
-        }
-
-        this.programs = programs;
-
-        // IF user have access to only one program then switch to it
-        if (programs.length === 1) {
-          await this.switch(0);
-        } else {
+    this.activatedRoute.data.subscribe(() => {
+      this.subscription = fromPromise(this.switcherService.getPrograms(this.stacks)).subscribe(res => {
+        res.subscribe(async programs => {
+          this.programs = Object.values(programs);
+          await this._getPrograms(programs);
+        }, error => {
           this.isProgramsLoading = false;
-        }
-      },
-      error => {
-        this.isProgramsLoading = false;
+        });
       });
+    });
   }
 
   ngAfterContentChecked() {
     document.getElementById('page-title').focus();
+  }
+
+  private async _getPrograms(programs) {
+    const projectIds = Object.values(programs).map((v: ProgramObj) => v.project.id);
+
+    // redirect user back to login if didn't found any program for the user.
+    if (programs.length <= 0) {
+      return this.notificationService.alert({
+        header: 'Error in accessing experiences',
+        message: `Didn't find any experience user has access to enter. Please Login using another valid account.`,
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel',
+            handler: () => {
+              this.isProgramsLoading = false;
+              this.router.navigate(['logout']);
+            },
+          },
+        ],
+      });
+    }
+
+    this.programs = programs;
+
+    // IF user have access to only one program then switch to it
+    if (programs.length === 1) {
+      await this.switch(0);
+    } else {
+      this.isProgramsLoading = false;
+    }
   }
 
   async switch(index): Promise<void> {

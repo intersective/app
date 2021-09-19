@@ -1,15 +1,20 @@
 import { Component } from '@angular/core';
 import { TabsService } from './tabs.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { RouterEnter } from '@services/router-enter.service';
+import { AuthService } from '../auth/auth.service';
 import { SwitcherService } from '../switcher/switcher.service';
+import { PushNotificationService } from '@services/push-notification.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ChatService } from '@app/chat/chat.service';
+import { BrowserStorageService } from '@app/services/storage.service';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { of, BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tabs',
@@ -18,17 +23,25 @@ import { ChatService } from '@app/chat/chat.service';
 })
 export class TabsComponent extends RouterEnter {
   routeUrl = '/app';
-  showReview = false;
-  showChat = false;
-  showEvents = false;
   noOfTodoItems = 0;
-  noOfChats = 0;
   selectedTab = '';
+
+  private _me$ = new BehaviorSubject<any>({});
+  private _noOfChats$ = new BehaviorSubject<any>(0);
+  private _showChat$ = new BehaviorSubject<any>(false);
+  private _showEvents$ = new BehaviorSubject<any>(false);
+  private _showReview$ = new BehaviorSubject<any>(false);
+  me$ = this._me$.asObservable();
+  noOfChats$ = this._noOfChats$.asObservable();
+  showChat$ = this._showChat$.asObservable();
+  showEvents$ = this._showEvents$.asObservable();
+  showReview$ = this._showReview$.asObservable();
 
   constructor(
     readonly utils: UtilsService,
     readonly storage: BrowserStorageService,
     public router: Router,
+    private routes: ActivatedRoute,
     private tabsService: TabsService,
     private switcherService: SwitcherService,
     private reviewsService: ReviewListService,
@@ -36,6 +49,9 @@ export class TabsComponent extends RouterEnter {
     private eventsService: EventListService,
     private newRelic: NewRelicService,
     readonly chatService: ChatService,
+    private nativeStorage: NativeStorageService,
+    private authService: AuthService,
+    private pushNotificationService: PushNotificationService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -47,76 +63,110 @@ export class TabsComponent extends RouterEnter {
       this.utils.getEvent('event-reminder').subscribe(event => {
         this.noOfTodoItems++;
       });
+
       this.utils.getEvent('chat:new-message').subscribe(event => {
         this.tabsService.getNoOfChats().subscribe(noOfChats => {
-          this.noOfChats = noOfChats;
+          this._noOfChats$.next(noOfChats);
         });
       });
       this.utils.getEvent('chat-badge-update').subscribe(event => {
         this.tabsService.getNoOfChats().subscribe(noOfChats => {
-          this.noOfChats = noOfChats;
+          this._noOfChats$.next(noOfChats);
         });
       });
     }
+
+    this.routes.data.subscribe(data => {
+      const { user } = data;
+      if (!this.utils.isEqual(this._me$.value, user)) {
+        this._me$.next(user);
+      }
+
+      // enforced inside tabComponent to guarantee successful retrieval of uuid
+      if (!user.uuid) {
+        this.authService.getUUID().subscribe(uuid => {
+          if (uuid) {
+            this.nativeStorage.setObject('me', { uuid });
+            this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+              console.log('interests::', res);
+            });
+          } else {
+            console.error('Failed UUID retrieval::', uuid);
+          }
+        });
+      }
+    });
+
+    this.me$.subscribe(user => this.updateShowList(user));
   }
 
   get restrictedAccess() {
     return this.storage.singlePageAccess;
   }
 
-  private _initialise() {
-    this.showChat = this.showChat || false;
-    this.showReview = this.showReview || false;
-    this.showEvents = this.showEvents || false;
-  }
-
   onEnter() {
-    this._initialise();
     this._checkRoute();
     this._stopPlayingVideos();
     this._topicStopReading();
-    this.tabsService.getNoOfTodoItems().subscribe(noOfTodoItems => {
-      this.noOfTodoItems = noOfTodoItems;
+    fromPromise(this.tabsService.getNoOfTodoItems()).subscribe(noOfTodoItems => {
+      noOfTodoItems.subscribe(quantity => {
+        this.noOfTodoItems = quantity;
+      });
     });
+  }
 
-    if (!this.storage.getUser().chatEnabled) { // keep configuration-based value
-      this.showChat = false;
+  private updateShowList(user) {
+    const {
+      teamId,
+      hasReviews,
+      hasEvents,
+      chatEnabled,
+    } = user;
+
+    // display the chat tab if the user is in team
+    if (!chatEnabled) { // keep configuration-based value
+      this._showChat$.next(false);
     } else {
       // [AV2-950]: display chat tab if a user has chatroom available
       this.chatService.getChatList().subscribe(chats => {
         if (chats && chats.length > 0) {
-          this.showChat = true;
+          this._showChat$.next(true);
 
           // only get the unread chats when chatroom is available
           this.tabsService.getNoOfChats().subscribe(noOfChats => {
-            this.noOfChats = noOfChats;
+            this._noOfChats$.next(noOfChats);
           });
         } else {
-          this.showChat = false;
+          this._showChat$.next(false);
         }
       });
     }
 
-    if (this.storage.getUser().hasReviews) {
-      this.showReview = true;
+    if (hasReviews) {
+      this._showReview$.next(true);
     } else {
-      this.showReview = false;
+      this._showReview$.next(false);
       this.reviewsService.getReviews().subscribe(data => {
         if (data.length) {
-          this.showReview = true;
+          this._showReview$.next(true);
         }
       });
     }
-    if (this.storage.getUser().hasEvents) {
-      this.showEvents = true;
+
+    if (hasEvents) {
+      this._showEvents$.next(true);
     } else {
-      this.showEvents = false;
+      this._showEvents$.next(false);
       this.eventsService.getEvents().subscribe(events => {
-        this.showEvents = !this.utils.isEmpty(events);
+        this._showEvents$.next(!this.utils.isEmpty(events));
       });
     }
   }
 
+  /**
+   * highlight active tab (on focus)
+   * @return void
+   */
   private _checkRoute() {
     this.newRelic.actionText(`selected ${this.router.url}`);
     switch (this.router.url) {
@@ -148,6 +198,9 @@ export class TabsComponent extends RouterEnter {
     }
   }
 
+  /**
+   * stop any playing video
+   */
   private _stopPlayingVideos() {
     this.sharedService.stopPlayingVideos();
   }
@@ -156,5 +209,4 @@ export class TabsComponent extends RouterEnter {
     // if user looking at topic mark it stop reading before go back.
     this.sharedService.markTopicStopOnNavigating();
   }
-
 }

@@ -9,8 +9,10 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 import { TestUtils } from '@testing/utils';
 
 
@@ -23,7 +25,7 @@ describe('AuthDirectLoginComponent', () => {
   let utils: UtilsService;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -35,6 +37,10 @@ describe('AuthDirectLoginComponent', () => {
         {
           provide: UtilsService,
           useClass: TestUtils,
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
         {
           provide: BrowserStorageService,
@@ -87,15 +93,17 @@ describe('AuthDirectLoginComponent', () => {
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
   beforeEach(() => {
     authServiceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(of({}));
-    storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
-    storageSpy.getConfig.and.returnValue({logo: null});
+    nativeStorageSpy.getObject.and.returnValue([{timeline: {id: 1}}]);
+    // apolloSpy.getClient.and.returnValue({clearStore: () => true});
+    // storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
+    // storageSpy.getConfig.and.returnValue({logo: null});
   });
 
   describe('when testing ngOnInit()', () => {
@@ -187,12 +195,21 @@ describe('AuthDirectLoginComponent', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
       });
-      it('program switcher page if timeline id is not in programs', () => {
-        params.redirect = 'home';
-        params.tl = 999;
+
+      it('program switcher page if timeline id is not in programs', fakeAsync(() => {
+        tmpParams.redirect = 'home';
+        nativeStorageSpy.getObject.and.returnValue([
+          {timeline: {id: 2}}
+        ]);
+        utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+
+        tmpParams.redirect = 'home';
+        tmpParams.tl = 999;
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
-      });
+        tick();
+      }));
+
       it('home page', () => {
         tmpParams.redirect = 'home';
         redirect = ['app', 'home'];

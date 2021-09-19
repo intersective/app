@@ -14,10 +14,11 @@ import {
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { ApolloService } from '../apollo/apollo.service';
 import { UtilsService } from '@app/services/utils.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock } from '@testing/mocked.service';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -73,6 +74,7 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
+  let nativeStorageSpy: NativeStorageService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -108,6 +110,10 @@ describe('RequestService', () => {
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         }
       ]
     });
@@ -117,6 +123,7 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    nativeStorageSpy = TestBed.inject(NativeStorageService);
   });
 
   it('should be created', () => {
@@ -365,6 +372,52 @@ describe('RequestService', () => {
         }
       );
       const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'PUT'}).flush(ERR_MESSAGE, err);
+
+      expect(res).toBeUndefined();
+      expect(errRes).toEqual(ERR_MESSAGE);
+    }));
+  });
+
+  describe('put()', () => {
+    const testURL = 'https://www.put-test.com';
+    const sampleData = {
+      sample: 'data'
+    };
+
+    it('should perform a PUT request based on provided URL', fakeAsync(() => {
+      let res = { body: true };
+
+      service.put(testURL, sampleData).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'PUT' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(testURL);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform error handling when fail', fakeAsync(() => {
+      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
+
+      const ERR_MESSAGE = 'Invalid PUT Request';
+      const err = { success: false, status: 400, statusText: 'Bad Request' };
+      let res: any;
+      let errRes: any;
+      service.put(testURL, sampleData).subscribe(
+        _res => {
+          res = _res;
+        },
+        _err => {
+          errRes = _err;
+        }
+      );
+      const req = mockBackend.expectOne({ url: testURL, method: 'PUT'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);

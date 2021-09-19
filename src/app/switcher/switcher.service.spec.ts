@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks, flush } from '@angular/core/testing';
 import { SwitcherService } from './switcher.service';
 import { of, Observable, pipe } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
@@ -7,8 +7,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock, NativeStorageServiceMock} from '@testing/mocked.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { environment } from '@environments/environment';
@@ -20,6 +21,7 @@ describe('SwitcherService', () => {
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let eventSpy: jasmine.SpyObj<EventListService>;
   let reviewSpy: jasmine.SpyObj<ReviewListService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
@@ -29,39 +31,44 @@ describe('SwitcherService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule ],
-        providers: [
-          SwitcherService,
-          EventListService,
-          ReviewListService,
-          PusherService,
-          {
-            provide: SharedService,
-            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
-          },
-          {
-            provide: UtilsService,
-            useClass: TestUtils,
-          },
-          {
-            provide: BrowserStorageService,
-            useClass: BrowserStorageServiceMock
-          },
-          {
-            provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
-          },
-          {
-            provide: NotificationService,
-            useValue: jasmine.createSpyObj('NotificationService', ['modal'])
-          },
-        ]
+      imports: [ HttpClientTestingModule ],
+      providers: [
+        SwitcherService,
+        EventListService,
+        ReviewListService,
+        PusherService,
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
+        {
+          provide: BrowserStorageService,
+          useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+        },
+        {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+      ]
     });
     service = TestBed.inject(SwitcherService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
     eventSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
     reviewSpy = TestBed.inject(ReviewListService) as jasmine.SpyObj<ReviewListService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
@@ -191,6 +198,31 @@ describe('SwitcherService', () => {
     }));
   });
 
+  describe('getPrograms()', () => {
+    it('should get program list from storage/cache', fakeAsync(() => {
+      nativeStorageSpy.getObject.and.returnValue([
+        {
+          program: {},
+          timeline: {},
+          project: {
+            lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
+          },
+          enrolment: {}
+        }
+      ]);
+      tick();
+
+      service.getPrograms(mockStacks).then(res => {
+        res.subscribe(programs => {
+          expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
+        });
+      });
+
+      flushMicrotasks();
+      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('programs');
+    }));
+  });
+
   describe('when testing getLeadImage()', () => {
     it(`should null if project didn't have lead image `, () => {
         expect(service.getLeadImage({})).toBe(null);
@@ -212,13 +244,13 @@ describe('SwitcherService', () => {
   });
 
   describe('when testing checkIsOneProgram()', () => {
-    it('should return true if got Array with one program object ', () => {
+    it('should return true if got Array with one program object ', async () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}])).toBe(true);
+        expect(await service.checkIsOneProgram([{}])).toBe(true);
     });
-    it('should return false if got Array multiple program objects ', () => {
+    it('should return false if got Array multiple program objects ', async () => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
-        expect(service.checkIsOneProgram([{}, {}, {}])).toBe(false);
+        expect(await service.checkIsOneProgram([{}, {}, {}])).toBe(false);
     });
     it('should get cached program when programs params is empty', () => {
       const SAMPLE = [{}];
@@ -374,8 +406,93 @@ describe('SwitcherService', () => {
       spyOn(service, 'getEvents').and.returnValue(of());
     });
 
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[0]).subscribe();
+    /*beforeEach(() => {
+      spyOn(service, 'getNewJwt');
+      spyOn(service, 'getTeamInfo');
+      spyOn(service, 'getMyInfo');
+      spyOn(service, 'getReviews');
+      spyOn(service, 'getEvents');
+    });*/
+
+    it('should collect related data based on selected program', async () => {
+      const switcher = await service.switchProgram(ProgramFixture[0]);
+      switcher.subscribe(() => {
+
+        spyOn(utils, 'has');
+        spyOn(service, 'getNewJwt');
+        spyOn(service, 'getTeamInfo');
+        spyOn(service, 'getMyInfo');
+        spyOn(service, 'getReviews');
+        spyOn(service, 'getEvents');
+
+        expect(utils.has).toHaveBeenCalled();
+        expect(storageSpy.setUser).toHaveBeenCalled();
+        expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+        expect(service.getNewJwt).toHaveBeenCalled();
+        expect(service.getTeamInfo).toHaveBeenCalled();
+        expect(service.getMyInfo).toHaveBeenCalled();
+        expect(service.getReviews).toHaveBeenCalled();
+        expect(service.getEvents).toHaveBeenCalled();
+      });
+    });
+
+    describe('with null experience config', () => {
+      it('should collect related data based on selected program', fakeAsync(() => {
+        const user = {
+          enrolment: {
+            contact_number: '0123456792'
+          },
+          themeColor: 'sample 3',
+          programId: 3,
+          programName: 'test program 3',
+          programImage: undefined,
+          hasReviewRating: false,
+          truncateDescription: true,
+          experienceId: 3,
+          projectId: 3,
+          timelineId: 3,
+          contactNumber: '0123456792',
+          activityCardImage: '',
+          activityCompleteMessage: null,
+          teamId: null,
+          hasEvents: false,
+          hasReviews: false
+        };
+
+        service.switchProgram(ProgramFixture[2]).then(switcher => {
+          spyOn(utils, 'has');
+          spyOn(service, 'getNewJwt');
+          spyOn(service, 'getTeamInfo');
+          spyOn(service, 'getMyInfo');
+          spyOn(service, 'getReviews');
+          spyOn(service, 'getEvents');
+
+          expect(nativeStorageSpy.setObject).toHaveBeenCalledWith('me', user);
+          flushMicrotasks();
+
+          expect(storageSpy.setUser).toHaveBeenCalledWith(user);
+          expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+          flushMicrotasks();
+
+          switcher.toPromise().then(res => {
+            console.log('ding', res);
+
+            expect(service.getNewJwt).toHaveBeenCalled();
+            expect(service.getTeamInfo).toHaveBeenCalled();
+            expect(service.getMyInfo).toHaveBeenCalled();
+            expect(service.getReviews).toHaveBeenCalled();
+            expect(service.getEvents).toHaveBeenCalled();
+          });
+        });
+
+        flush();
+      }));
+    });
+
+    it('should collect related data based on selected program', fakeAsync(() => {
+      service.switchProgram(ProgramFixture[0]);
+      flushMicrotasks();
+
       expect(storageSpy.setUser).toHaveBeenCalled();
       expect(sharedSpy.onPageLoad).toHaveBeenCalled();
       expect(service.getNewJwt).toHaveBeenCalled();
@@ -383,12 +500,14 @@ describe('SwitcherService', () => {
       expect(service.getMyInfo).toHaveBeenCalled();
       expect(service.getReviews).toHaveBeenCalled();
       expect(service.getEvents).toHaveBeenCalled();
-    });
+    }));
 
-    it('should set the correct user data (1)', () => {
+    it('should set the correct user data (1)', fakeAsync(() => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
-      service.switchProgram(programObj).subscribe();
+      service.switchProgram(programObj);
+      flushMicrotasks();
+
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         programId: ProgramFixture[3].program.id,
         programName: ProgramFixture[3].program.name,
@@ -412,6 +531,16 @@ describe('SwitcherService', () => {
         hasEvents: false,
         hasReviews: false
       });
+    }));
+  });
+
+  describe('switchProgram() with null experience', () => {
+    it('should collect related data based on selected program', () => {
+      service.switchProgram(ProgramFixture[3]).then(switcher => {
+        switcher.subscribe(() => {
+          spyOn(utils, 'has');
+        });
+      });
     });
 
     it('should set the correct user data (2)', () => {
@@ -426,29 +555,30 @@ describe('SwitcherService', () => {
         activity_complete_message: 'completed',
         chat_enable: false,
       };
-      service.switchProgram(programObj).subscribe();
-      expect(storageSpy.setUser).toHaveBeenCalledWith({
-        programId: ProgramFixture[2].program.id,
-        programName: ProgramFixture[2].program.name,
-        programImage: ProgramFixture[2].project.lead_image,
-        hasReviewRating: true,
-        truncateDescription: false,
-        experienceId: ProgramFixture[2].program.experience_id,
-        projectId: ProgramFixture[2].project.id,
-        timelineId: ProgramFixture[2].timeline.id,
-        contactNumber: ProgramFixture[2].enrolment.contact_number,
-        colors: {
-          theme: 'none',
-          primary: undefined,
-          secondary: undefined,
-        },
-        activityCardImage: '/assets/style',
-        enrolment: ProgramFixture[2].enrolment,
-        activityCompleteMessage: 'completed',
-        chatEnabled: false,
-        teamId: null,
-        hasEvents: false,
-        hasReviews: false
+      service.switchProgram(programObj).then(() => {
+        expect(storageSpy.setUser).toHaveBeenCalledWith({
+          programId: ProgramFixture[2].program.id,
+          programName: ProgramFixture[2].program.name,
+          programImage: ProgramFixture[2].project.lead_image,
+          hasReviewRating: true,
+          truncateDescription: false,
+          experienceId: ProgramFixture[2].program.experience_id,
+          projectId: ProgramFixture[2].project.id,
+          timelineId: ProgramFixture[2].timeline.id,
+          contactNumber: ProgramFixture[2].enrolment.contact_number,
+          colors: {
+            theme: 'none',
+            primary: undefined,
+            secondary: undefined,
+          },
+          activityCardImage: '/assets/style',
+          enrolment: ProgramFixture[2].enrolment,
+          activityCompleteMessage: 'completed',
+          chatEnabled: false,
+          teamId: null,
+          hasEvents: false,
+          hasReviews: false
+        });
       });
     });
   });

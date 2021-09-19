@@ -5,6 +5,7 @@ import { PopUpComponent } from './pop-up/pop-up.component';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
+import { PNPermissionModalComponent } from '@shared/components/pn-permission-modal/pn-permission-modal.component';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
 import { UtilsService } from '@services/utils.service';
 
@@ -27,8 +28,16 @@ export class NotificationService {
     readonly utils: UtilsService,
   ) {}
 
-  dismiss() {
-    return this.modalController.dismiss();
+  /**
+   * dismiss overlaid modal (on the very top)
+   * @return {Promise<boolean>} true: removed, false: fail to remove
+   */
+  async dismiss(): Promise<boolean> {
+    const hasOverlay = await this.modalController.getTop(); // return undefined if no overlay found
+    if (hasOverlay) {
+      return this.modalController.dismiss();
+    }
+    return;
   }
 
   /**
@@ -116,7 +125,7 @@ export class NotificationService {
       achievement
     };
     if (type === 'notification') {
-      this.achievementService.markAchievementAsSeen(achievement.id);
+      await this.achievementService.markAchievementAsSeen(achievement.id);
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup' : 'practera-popup desktop-view',
@@ -171,6 +180,19 @@ export class NotificationService {
     return await this.modal(
       ActivityCompletePopUpComponent,
       { activityId, activityCompleted },
+      {
+        cssClass: cssClass,
+        keyboardClose: false,
+        backdropDismiss: false
+      }
+    );
+  }
+
+  async pushNotificationPermissionPopUp(message: string, icon: string) {
+    const cssClass = 'practera-popup push-notification-popup';
+    return await this.modal(
+      PNPermissionModalComponent,
+      { message , icon },
       {
         cssClass: cssClass,
         keyboardClose: false,

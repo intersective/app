@@ -11,6 +11,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
 
@@ -66,9 +67,10 @@ export class RequestService {
   private loggedOut: boolean;
 
   constructor(
-    private http: HttpClient,
+    private httpClient: HttpClient,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private nativeStorage: NativeStorageService,
     private router: Router,
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
@@ -86,9 +88,8 @@ export class RequestService {
    * @param {'Content-Type': string } header
    * @returns {HttpHeaders}
    */
-  appendHeaders(header = {}) {
-    const headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
-    return headers;
+  appendHeaders(header = {}): HttpHeaders {
+    return new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, header));
   }
 
   /**
@@ -96,8 +97,8 @@ export class RequestService {
    * @param options
    * @returns {any}
    */
-  setParams(options) {
-    let params: any;
+  setParams(options): HttpParams {
+    let params: HttpParams;
     if (!this.utils.isEmpty(options)) {
       params = new HttpParams();
       this.utils.each(options, (value, key) => {
@@ -107,16 +108,38 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
+  private getEndpointUrl(endpoint, isLoginAPI?: boolean): string {
     let endpointUrl = '';
     if (isLoginAPI) {
       endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
+    } else if (endpoint.includes('https://') || endpoint.includes('http://') || endpoint.includes('capacitor://')) {
+      endpointUrl = endpoint;
     } else {
       throw new Error('Cannot find API URL.');
     }
+
+
+
     return endpointUrl;
+  }
+
+  private preprocessHttpEvent(options?: {
+    headers?: any;
+    params?: any;
+  }) {
+    if (!options) {
+      options = {};
+    }
+
+    if (!this.utils.has(options, 'headers')) {
+      options.headers = '';
+    }
+    if (!this.utils.has(options, 'params')) {
+      options.params = '';
+    }
+    return options;
   }
 
   /**
@@ -127,16 +150,8 @@ export class RequestService {
    * @returns {Observable<any>}
    */
   get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
+    httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
@@ -145,10 +160,12 @@ export class RequestService {
     } else {
       apiEndpoint = this.getEndpointUrl(endPoint);
     }
-    return this.http.get<any>(apiEndpoint, {
+    const request = this.httpClient.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -159,16 +176,7 @@ export class RequestService {
   }
 
   post(params: POSTParams): Observable<any> {
-    if (!params.httpOptions) {
-      params.httpOptions = {};
-    }
-
-    if (!this.utils.has(params.httpOptions, 'headers')) {
-      params.httpOptions.headers = '';
-    }
-    if (!this.utils.has(params.httpOptions, 'params')) {
-      params.httpOptions.params = '';
-    }
+    params.httpOptions = this.preprocessHttpEvent(params.httpOptions);
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
@@ -180,10 +188,12 @@ export class RequestService {
       apiEndpoint = this.getEndpointUrl(params.endPoint);
     }
 
-    return this.http.post<any>(apiEndpoint, params.data, {
+    const request = this.httpClient.post<any>(apiEndpoint, data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -194,16 +204,10 @@ export class RequestService {
   }
 
   put(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
+    httpOptions = this.preprocessHttpEvent(httpOptions);
 
-    if (!this.utils.has(httpOptions, 'headers')) {
-      httpOptions.headers = '';
-    }
-    if (!this.utils.has(httpOptions, 'params')) {
-      httpOptions.params = '';
-    }
+    const headers = this.appendHeaders(httpOptions.headers);
+    const params = this.setParams(httpOptions.params);
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
@@ -213,10 +217,7 @@ export class RequestService {
       apiEndpoint = this.getEndpointUrl(endPoint);
     }
 
-    return this.http.put<any>(apiEndpoint, data, {
-      headers: this.appendHeaders(httpOptions.headers),
-      params: this.setParams(httpOptions.params)
-    })
+    return this.httpClient.put<any>(apiEndpoint, data, { headers, params })
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -299,10 +300,13 @@ export class RequestService {
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
+
+    const request = this.httpClient.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
-    })
+    });
+
+    return request
       .pipe(concatMap(response => {
         this._refreshApikey(response);
         return of(response);
@@ -327,7 +331,8 @@ export class RequestService {
 
   private handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
-      console.error(error); // log to console instead
+      const errorMessage = error.message || error;
+      console.error(errorMessage); // log to console instead
     }
 
     // log the user out if jwt expired
@@ -367,6 +372,7 @@ export class RequestService {
   private _refreshApikey(response) {
     if (this.utils.has(response, 'apikey')) {
       this.storage.setUser({apikey: response.apikey});
+      this.nativeStorage.setObject('me', {apikey: response.apikey});
     }
   }
 }

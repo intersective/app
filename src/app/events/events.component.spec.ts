@@ -4,6 +4,9 @@ import { EventListModule } from '../event-list/event-list.module';
 import { EventDetailModule } from '../event-detail/event-detail.module';
 import { AssessmentModule } from '../assessment/assessment.module';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { NotificationService } from '@shared/notification/notification.service';
+import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
@@ -29,10 +32,23 @@ describe('EventsComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            data: of(true),
             snapshot: {
               paramMap: convertToParamMap({ activity_id: 1, event_id: 2 })
             }
           }
+        },
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpyObj('PushNotificationService', [
+            'promptForPermission',
+          ])
+        },
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', [
+            'pushNotificationPermissionPopUp',
+          ])
         },
       ]
     })

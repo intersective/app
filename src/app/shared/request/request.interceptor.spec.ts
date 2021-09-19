@@ -4,11 +4,15 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RequestModule } from './request.module';
 import { RequestInterceptor } from './request.interceptor';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
-import { BrowserStorageService } from '@services/storage.service';
 
 import { Router } from '@angular/router';
 import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { asyncData } from '@testing/async-observable-helpers';
+import { BrowserStorageService, User } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
+
+import { NativeStorageServiceMock, BrowserStorageServiceMock } from '@testing/mocked.service';
+import { Apollo } from 'apollo-angular';
 
 describe('RequestInterceptor', () => {
   const APPKEY = 'TEST';
@@ -16,6 +20,7 @@ describe('RequestInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
   let storageSpy: BrowserStorageService;
+  let nativeStorageSpy: NativeStorageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,8 +43,15 @@ describe('RequestInterceptor', () => {
           multi: true,
         },
         {
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
+        },
+        {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
+        },
+        {
+          provide: HTTP,
         }
       ]
     });
@@ -47,6 +59,7 @@ describe('RequestInterceptor', () => {
     http = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
     storageSpy = TestBed.inject(BrowserStorageService);
+    nativeStorageSpy = TestBed.inject(NativeStorageService);
   });
 
   beforeEach(fakeAsync(() => {
@@ -94,7 +107,7 @@ describe('RequestInterceptor', () => {
     const req = httpMock.expectOne({ method: 'GET' });
     req.flush({});
 
-    expect(storageSpy.getUser).toHaveBeenCalled();
+    expect(nativeStorageSpy.getObject).toHaveBeenCalled();
     expect(req.request.url).not.toContain('/message/chat/list.json');
     expect(req.request.url).not.toContain('/message/chat/create_message');
     expect(req.request.url).not.toContain('/message/chat/edit_message');

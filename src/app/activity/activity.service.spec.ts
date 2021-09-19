@@ -4,7 +4,8 @@ import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
+import { NativeStorageServiceMock } from '@testing/mocked.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
@@ -14,7 +15,7 @@ describe('ActivityService', () => {
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -38,8 +39,8 @@ describe('ActivityService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['activityCompletePopUp'])
         },
         {
-          provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer'])
+          provide: NativeStorageService,
+          useClass: NativeStorageServiceMock
         },
         {
           provide: Router,
@@ -52,7 +53,7 @@ describe('ActivityService', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
-    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
   });
 
   it('should be created', () => {
@@ -225,12 +226,14 @@ describe('ActivityService', () => {
           task: null
         }
       }));
-      storageSpy.getReferrer.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue({
         activityTaskUrl: 'abc',
       });
       service.gotoNextTask(1, 'assessment', 2);
       tick();
       expect(utils.redirectToUrl).toHaveBeenCalled();
+      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
+      expect(redirectToUrlSpy).toHaveBeenCalled();
     }));
 
     it('should pop up modal', fakeAsync(() => {

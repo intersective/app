@@ -12,7 +12,11 @@ export class FastFeedbackSubmitterService {
     private request: RequestService
   ) {}
 
-  submit(data, params) {
+  submit(data, params: {
+    context_id: number;
+    team_id?: number;
+    target_user_id?: number;
+  }) {
     return this.request.post(
       {
         endPoint: api.submit,

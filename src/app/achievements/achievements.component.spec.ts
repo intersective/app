@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core
 import { AchievementsComponent } from './achievements.component';
 import { AchievementsService } from './achievements.service';
 import { Observable, of, pipe } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import {
   HttpTestingController,
@@ -12,6 +12,7 @@ import {
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
+import { BrowserStorageService } from '@services/storage.service';
 
 class Page {
   get totalPoints() {
@@ -58,12 +59,24 @@ describe('AchievementsComponent', () => {
         },
         NewRelicService,
         {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'])
+        },
+        {
           provide: AchievementsService,
           useValue: jasmine.createSpyObj('AchievementsService', [
             'getAchievements',
             'getIsPointsConfigured',
             'getEarnedPoints'
           ])
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: {
+              subscribe: () => true,
+            }
+          }
         },
         {
           provide: Router,
@@ -121,7 +134,6 @@ describe('AchievementsComponent', () => {
     });
 
     it(`should get correct achievements`, fakeAsync(() => {
-      spyOn(component.storage, 'get').and.returnValue({});
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.loadingAchievements).toBe(false);

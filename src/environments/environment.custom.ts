@@ -1,7 +1,10 @@
 export const environment = {
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   appkey: '<CUSTOM_APPKEY>',
-  pusherKey: '<CUSTOM_PUSHERKEY>',
+  pusher: {
+    key: '<CUSTOM_PUSHERKEY>',
+    beamsDefaultInterest: ['general']
+  },
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
@@ -37,4 +40,8 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  lambdaServices: {
+    pusherBeamsAuth: '<CUSTOM_PUSHER_BEAMS_ENDPOINT>',
+    preferences: '<CUSTOM_PREFERENCE_ENDPOINT>'
+  },
 };

@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NativeStorageService, Referrer } from '@services/native-storage.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -39,9 +39,9 @@ export class ActivityComponent {
     public router: Router,
     private activityService: ActivityService,
     private notificationService: NotificationService,
-    public storage: BrowserStorageService,
     public eventListService: EventListService,
     public fastFeedbackService: FastFeedbackService,
+    private nativeStorage: NativeStorageService,
     private newRelic: NewRelicService,
     private ngZone: NgZone,
     private apolloService: ApolloService,
@@ -144,23 +144,24 @@ export class ActivityComponent {
     }
   }
 
-  back() {
-    const referrer = this.storage.getReferrer();
-    if (this.utils.has(referrer, 'url') && referrer.route === 'activity-task') {
+  async back() {
+    const referrer: Referrer = await this.nativeStorage.getObject('referrer');
+    if (this.utils.has(referrer, 'activityTaskUrl') || (this.utils.has(referrer, 'url') && referrer.route === 'activity-task')) {
       this.newRelic.actionText('Navigating to external return URL from Activity');
-      this.utils.redirectToUrl(referrer.url);
+      this.utils.redirectToUrl(referrer.activityTaskUrl || referrer.url);
       return ;
     }
     this._navigate([ 'app', 'home' ]);
     this.newRelic.actionText('Back button pressed on Activities Page.');
   }
 
-  goto(task) {
+  async goto(task) {
     this.newRelic.actionText(`Selected Task (${task.type}): ID ${task.id}`);
 
     switch (task.type) {
       case 'Assessment':
-        if (task.isForTeam && !this.storage.getUser().teamId) {
+        const { teamId } = await this.nativeStorage.getObject('me');
+        if (task.isForTeam && !teamId) {
           this.notificationService.popUp('shortMessage', {message: 'To do this assessment, you have to be in a team.'});
           break;
         }

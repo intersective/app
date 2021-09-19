@@ -22,6 +22,7 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
 
   constructor (
     public router: Router,
+    private routes: ActivatedRoute,
     readonly utils: UtilsService,
     readonly achievementService: AchievementsService,
     private ngZone: NgZone,
@@ -32,10 +33,12 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
   }
 
   onEnter() {
-    this.userInfo = {
-      image: this.storage.get('me').image,
-      name: this.storage.get('me').name
-    };
+    this.routes.data.subscribe(data => {
+      this.userInfo = {
+        image: data.user.image,
+        name: data.user.name,
+      };
+    });
     this.loadingAchievements = true;
     this.achievementService.getAchievements().subscribe(
       achievements => {

@@ -12,6 +12,9 @@ export enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
 }
+import { Plugins } from '@capacitor/core';
+
+const { CustomNativePlugin } = Plugins;
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
 declare var window: any;
@@ -424,8 +427,24 @@ export class UtilsService {
     }
   }
 
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goSettingStatus = await CustomNativePlugin.goToAppSetting();
+    return goSettingStatus;
+  }
+
   redirectToUrl(url: string) {
     window.location.href = `${ url.match(/^https*:\/\//) ? '' : 'https://' }${ url }`;
+  }
+
+  /**
+   * inherit lodash's deep equal
+   */
+  isEqual(current, comparedTarget) {
+    return this.lodash.isEqual(current, comparedTarget);
   }
 
   /**

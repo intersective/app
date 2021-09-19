@@ -32,6 +32,7 @@
               },
               {
                 "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
                 "input": "src/well-known",
                 "output": "./.well-known"
               }
@@ -113,6 +114,40 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
+            "alpha-native": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.p2.ts"
+                }
+              ],
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false
+            },
+            "production-native": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production-native.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
             "ci": {
               "progress": false
             }
@@ -132,6 +167,12 @@
             },
             "stage": {
               "browserTarget": "app:build:stage"
+            },
+            "alpha-native": {
+              "browserTarget": "app:build:alpha-native"
+            },
+            "p2": {
+              "browserTarget": "app:build:alpha-native"
             },
             "dev": {
               "browserTarget": "app:build:dev"
@@ -169,6 +210,7 @@
               },
               {
                 "glob": "**/*",
+                "ignore": ["assetlinks.json.custom"],
                 "input": "src/well-known",
                 "output": "./.well-known"
               }

@@ -26,7 +26,7 @@ export class AuthLoginComponent implements OnInit {
     private notificationService: NotificationService,
     private utils: UtilsService,
     private newRelic: NewRelicService,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
@@ -42,7 +42,7 @@ export class AuthLoginComponent implements OnInit {
    * - Redirect user to the experience switcher page. as experience switcher page we use program swtcher page.
    * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
    */
-  login() {
+  async login() {
     if (this.utils.isEmpty(this.loginForm.value.username) || this.utils.isEmpty(this.loginForm.value.password)) {
       return this.notificationFormat('Your username or password is empty, please fill them in.');
     }
@@ -51,29 +51,33 @@ export class AuthLoginComponent implements OnInit {
     const nrLoginTracer = this.newRelic.createTracer('login request started', (message) => {
       this.newRelic.setCustomAttribute('login status', message);
     });
+
     return this.authService.login({
       username: this.loginForm.value.username,
       password: this.loginForm.value.password,
-    }).subscribe(
-      (res: {
-        apikey: string;
-        stacks: Stack[];
-      }) => {
-        if (res.stacks && res.stacks.length === 0) {
-          return this.notificationFormat('Invalid user account.');
-        }
+    }).subscribe(async (res: {
+      apikey: string;
+      stacks: Stack[];
+    }) => {
+      const promiseRes = await res;
 
-        this.storage.set('isLoggedIn', true);
-        this.storage.stacks = res.stacks;
-        this.storage.loginApiKey = res.apikey;
-        this.isLoggingIn = false;
-        return this.router.navigate(['switcher', 'switcher-program']);
-      },
-      err => {
-        nrLoginTracer();
-        this._handleError(err);
+      if (promiseRes.stacks && promiseRes.stacks.length === 0) {
+        return this.notificationFormat('Invalid user account.');
       }
-    );
+
+      nrLoginTracer('login successful');
+      this.newRelic.actionText('login successful');
+
+      this.storage.set('isLoggedIn', true);
+      this.storage.stacks = res.stacks;
+      this.storage.loginApiKey = res.apikey;
+      this.isLoggingIn = false;
+      return this.router.navigate(['switcher', 'switcher-program']);
+    },
+    err => {
+      nrLoginTracer();
+      this._handleError(err);
+    });
   }
 
   /**
