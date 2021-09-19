@@ -277,7 +277,7 @@ describe('ActivityComponent', () => {
       // flush();
       // expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
       // expect(redirectToUrlSpy).toHaveBeenCalled();
-    });
+    }));
   });
 
   describe('when testing goto()', () => {
