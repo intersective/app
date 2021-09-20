@@ -226,14 +226,13 @@ describe('ActivityService', () => {
           task: null
         }
       }));
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         activityTaskUrl: 'abc',
-      });
+      }));
       service.gotoNextTask(1, 'assessment', 2);
       tick();
       expect(utils.redirectToUrl).toHaveBeenCalled();
       expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
-      expect(redirectToUrlSpy).toHaveBeenCalled();
     }));
 
     it('should pop up modal', fakeAsync(() => {

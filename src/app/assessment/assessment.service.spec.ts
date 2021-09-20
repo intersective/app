@@ -578,7 +578,7 @@ describe('AssessmentService', () => {
 
     it('should return null if reviewer is the current person', fakeAsync(() => {
       const sameName = 'Test';
-      nativeStorageSpy.getObject.and.returnValue({name: sameName});
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({ name: sameName }));
       service.checkReviewer({name: sameName}).then(result => {
         expect(result).toEqual(null);
       });

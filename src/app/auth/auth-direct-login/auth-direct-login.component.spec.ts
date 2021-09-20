@@ -99,7 +99,7 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   beforeEach(() => {
-    authServiceSpy.directLogin.and.returnValue(Promise.resolve(of({})));
+    authServiceSpy.directLogin.and.returnValue(Promise.resolve(of(Promise.resolve({}))));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     nativeStorageSpy.getObject.and.returnValue(Promise.resolve([{timeline: {id: 1}}]));
@@ -200,9 +200,9 @@ describe('AuthDirectLoginComponent', () => {
 
       it('program switcher page if timeline id is not in programs', fakeAsync(() => {
         tmpParams.redirect = 'home';
-        nativeStorageSpy.getObject.and.returnValue([
-          {timeline: {id: 2}}
-        ]);
+        nativeStorageSpy.getObject.and.returnValue(Promise.resolve([
+          { timeline: { id: 2 } }
+        ]));
         utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
 
         tmpParams.redirect = 'home';

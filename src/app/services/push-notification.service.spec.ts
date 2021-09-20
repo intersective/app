@@ -253,11 +253,11 @@ describe('PushNotificationService', () => {
         service['pusherBeams'] = PusherBeams;
       });
 
-      xit('should use back subscribeToInterest() to subcribe to interest', fakeAsync(() => {
+      /* xit('should use back subscribeToInterest() to subcribe to interest', fakeAsync(() => {
         service.subscribeToInterests(INTERESTS);
         // expect(service.subscribeToInterest).toHaveBeenCalledTimes(2);
         expect(PusherBeams.setDeviceInterests).toHaveBeenCalledWith(INTERESTS);
-      }));
+      })); */
 
       xit('should accept single interest subscription', fakeAsync(() => {
         service.subscribeToInterests('single-interest');

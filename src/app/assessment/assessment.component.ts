@@ -13,6 +13,7 @@ import { interval, timer, Subscription } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { PushNotificationService, PermissionTypes } from '@services/push-notification.service';
+import { BrowserStorageService } from '@app/services/storage.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -100,6 +101,7 @@ export class AssessmentComponent extends RouterEnter {
     private notificationService: NotificationService,
     public sharedService: SharedService,
     private nativeStorage: NativeStorageService,
+    private storageService: BrowserStorageService,
     private activityService: ActivityService,
     private fastFeedbackService: FastFeedbackService,
     private ngZone: NgZone,
@@ -123,7 +125,7 @@ export class AssessmentComponent extends RouterEnter {
    * @return  {boolean}  cached singlePageAccess in localstorage
    */
   get restrictedAccess() {
-    return this.storage.singlePageAccess;
+    return this.storageService.singlePageAccess;
   }
 
   randomCode(type) {

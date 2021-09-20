@@ -39,7 +39,7 @@ describe('NativeStorageService', function() {
 
   describe('set "referrer" value into cache', function() {
     it('should set referrer information', fakeAsync(() => {
-      spyOn(service, 'getObject').and.returnValues({});
+      spyOn(service, 'getObject').and.returnValues(Promise.resolve({}));
 
       const KEY = 'referrer';
       const PARAM = { activityTaskUrl: 'tester' };

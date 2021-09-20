@@ -8,6 +8,7 @@ import { NativeStorageService } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { ReviewRatingComponent } from '../review-rating/review-rating.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Observable } from 'rxjs/internal/Observable';
 
 /**
  * @name api

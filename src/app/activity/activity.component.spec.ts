@@ -267,11 +267,11 @@ describe('ActivityComponent', () => {
     }));
 
     it('should navigate to the external url', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         activityTaskUrl: 'abc',
         route: 'activity-task',
         url: 'abc',
-      });
+      }));
       component.back();
       expect(utils.redirectToUrl).toHaveBeenCalled();
       // flush();
@@ -329,9 +329,9 @@ describe('ActivityComponent', () => {
     }));
 
     it('should pop up not in team message', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         teamId: null
-      });
+      }));
       component.goto({
         id: 2,
         type: 'Assessment',
