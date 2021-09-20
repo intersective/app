@@ -11,6 +11,7 @@ import { TestUtils } from '@testing/utils';
 describe('AchievementsService', () => {
   let service: AchievementsService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let utilSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,6 +41,7 @@ describe('AchievementsService', () => {
     });
     service = TestBed.inject(AchievementsService) as jasmine.SpyObj<AchievementsService>;
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    utilSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
   it('should be created', () => {
@@ -148,7 +150,7 @@ describe('AchievementsService', () => {
   });
 
   it(`should post the correct data when marking achievement as seen`, fakeAsync(() => {
-    const anyValue = TestUtils.randomNumber();
+    const anyValue = utilSpy.randomNumber();
 
     requestSpy.post.and.returnValue(of({}));
     service.markAchievementAsSeen(11);

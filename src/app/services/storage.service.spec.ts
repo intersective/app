@@ -80,7 +80,7 @@ describe('StorageService', () => {
 
   describe('setReferrer()', () => {
     it('should set referrer information', () => {
-      service.getReferrer = jasmine.createSpy('getUser').and.returnValue({});
+      service.getReferrer = jasmine.createSpy('getReferrer').and.returnValue({});
 
       service.setReferrer({ route: 'activity-task', url: 'tester' });
       expect(storageSpy.setItem).toHaveBeenCalledWith('referrer', '{"route":"activity-task","url":"tester"}');

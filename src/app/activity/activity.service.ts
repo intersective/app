@@ -3,10 +3,11 @@ import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { NativeStorageService, Referrer } from '@services/native-storage.service';
+import { NativeStorageService } from '@services/native-storage.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Router } from '@angular/router';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Referrer } from '@app/services/storage.service';
 
 /**
  * @name api

@@ -26,6 +26,7 @@ describe('AuthDirectLoginComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let switcherSpy: jasmine.SpyObj<SwitcherService>;
   let nativeStorageSpy: jasmine.SpyObj<NativeStorageService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -94,13 +95,14 @@ describe('AuthDirectLoginComponent', () => {
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
     switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
     nativeStorageSpy = TestBed.inject(NativeStorageService) as jasmine.SpyObj<NativeStorageService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   beforeEach(() => {
-    authServiceSpy.directLogin.and.returnValue(of({}));
+    authServiceSpy.directLogin.and.returnValue(Promise.resolve(of({})));
     switcherSpy.getMyInfo.and.returnValue(of({}));
-    switcherSpy.switchProgram.and.returnValue(of({}));
-    nativeStorageSpy.getObject.and.returnValue([{timeline: {id: 1}}]);
+    switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
+    nativeStorageSpy.getObject.and.returnValue(Promise.resolve([{timeline: {id: 1}}]));
     // apolloSpy.getClient.and.returnValue({clearStore: () => true});
     // storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     // storageSpy.getConfig.and.returnValue({logo: null});

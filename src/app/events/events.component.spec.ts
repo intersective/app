@@ -10,6 +10,7 @@ import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
+import { of } from 'rxjs';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;

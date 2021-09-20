@@ -82,7 +82,8 @@ export class SwitcherService {
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
     private eventsService: EventListService,
-    private devModeService: DevModeService
+    private devModeService: DevModeService,
+    private nativeStorage: NativeStorageService
   ) {}
 
   getPrograms(stackList: Stack[]): Observable<any> {
@@ -236,6 +237,7 @@ export class SwitcherService {
 
     const colors = this.extractColors(programObj);
 
+    const { program, project, experience, timeline, enrolment } = programObj;
 
     const themeColor = this.utils.has(programObj, 'program.config.theme_color') ? program.config.theme_color : '#2bbfd4';
 
@@ -244,7 +246,6 @@ export class SwitcherService {
       cardBackgroundImage = '/assets/' + program.config.card_style;
     }
 
-    const { program, project, experience, timeline, enrolment } = programObj;
     const experienceConfig = experience ? experience.config : {};
     const user = {
       // enrolment,
@@ -386,10 +387,10 @@ export class SwitcherService {
           return ['switcher', 'switcher-program'];
         // Array with one program object -> [{}]
         } else if (Array.isArray(programs) && isOneProgram) {
-          await this.switchProgram(programs[0]).toPromise();
+          await this.switchProgram(programs[0]);
         } else {
           // one program object -> {}
-          await (await this.switchProgram(programs).toPromise());
+          await (await this.switchProgram(programs));
         }
 
         await this.pusherService.initialise({ unsubscribe: true });

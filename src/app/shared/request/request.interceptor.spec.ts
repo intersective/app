@@ -50,9 +50,6 @@ describe('RequestInterceptor', () => {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock
         },
-        {
-          provide: HTTP,
-        }
       ]
     });
 

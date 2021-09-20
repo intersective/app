@@ -200,19 +200,7 @@ describe('SwitcherService', () => {
 
   describe('getPrograms()', () => {
     it('should get program list from storage/cache', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue([
-        {
-          program: {},
-          timeline: {},
-          project: {
-            lead_image: 'https://www.filepicker.io/api/file/DAsMaIUcQcSM3IFqalPN'
-          },
-          enrolment: {}
-        }
-      ]);
-      tick();
-
-      service.getPrograms(mockStacks).then(res => {
+      service.getPrograms(mockStacks).toPromise().then(res => {
         res.subscribe(programs => {
           expect(programs[0].project.lead_image).toContain('https://cdn.filestackcontent.com/resize=fit:crop,width:');
         });
@@ -256,7 +244,7 @@ describe('SwitcherService', () => {
       const SAMPLE = [{}];
       spyOn(utils, 'isEmpty').and.returnValue(true);
       storageSpy.get = jasmine.createSpy('storageSpy.get').and.returnValue(SAMPLE);
-      expect(service.checkIsOneProgram(SAMPLE)).toBe(true);
+      expect(service.checkIsOneProgram(SAMPLE)).toBe(Promise.resolve(true));
       expect(storageSpy.get).toHaveBeenCalledWith('programs');
     });
   });
@@ -280,7 +268,7 @@ describe('SwitcherService', () => {
 
     it('should return [switcher] if programs is Array with multiple program objects ', fakeAsync(() => {
         let result;
-        spyOn(service, 'checkIsOneProgram').and.returnValue(false);
+        spyOn(service, 'checkIsOneProgram').and.returnValue(Promise.resolve(false));
         spyOn(Array, 'isArray').and.returnValue(true);
         service.switchProgramAndNavigate(ProgramFixture).then(data => {
           result = data;
@@ -292,9 +280,9 @@ describe('SwitcherService', () => {
     it('should return [app, home] if programs is Array with multiple program objects', fakeAsync(() => {
       environment.goMobile = false;
       const [firstProgram] = ProgramFixture;
-      spyOn(service, 'checkIsOneProgram').and.returnValue(true);
+      spyOn(service, 'checkIsOneProgram').and.returnValue(Promise.resolve(true));
       spyOn(Array, 'isArray').and.returnValue(true);
-      spyOn(service, 'switchProgram').and.returnValue(of(res => res(true)));
+      spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of(res => res(true))));
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {
@@ -308,7 +296,7 @@ describe('SwitcherService', () => {
     it('should return [app, home] if programs is not an Array and got one program object (direct link)', fakeAsync(() => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+        spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of({})));
 
         // simulate direct-link
         storageSpy.get = jasmine.createSpy('get').and.returnValue(true);
@@ -327,7 +315,7 @@ describe('SwitcherService', () => {
     it('should return [app, home] if programs is not an Array and got one program object (not direct link)', fakeAsync(() => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+        spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of({})));
 
         // disable direct-link
         storageSpy.get = jasmine.createSpy('get').and.returnValue(false);

@@ -155,9 +155,9 @@ describe('TasksComponent', () => {
         defaultCountryModel: 'AUS',
         lastLogin: 1619660600368
       };
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         teamId: null
-      });
+      }));
     });
 
     afterEach(fakeAsync(() => {
@@ -281,10 +281,11 @@ describe('TasksComponent', () => {
           status: ''
         }
       ];
-      nativeStorageSpy.getObject.and.returnValue({ teamId: null });
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({ teamId: null }));
       expectedAssessmentId = 2;
       expectedContextId = 22;
     });
+
     it('should go to the team assessment(not finished) in the tasks', () => {
       tasks = [
         {
@@ -312,7 +313,7 @@ describe('TasksComponent', () => {
           contextId: 44
         }
       ];
-      nativeStorageSpy.getObject.and.returnValue({ teamId: 1 });
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({ teamId: 1 }));
       expectedAssessmentId = 4;
       expectedContextId = 44;
     });

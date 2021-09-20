@@ -147,7 +147,7 @@ describe('AuthService', () => {
     }));
 
     service.logout = jasmine.createSpy().and.returnValue(true);
-    nativeStorageSpy.getObject.and.returnValue(true);
+    nativeStorageSpy.getObject.and.returnValue(Promise.resolve(true));
     const direction = service.directLogin({ authToken: 'abcd' });
     direction.then(res => {
       res.subscribe(login => {
@@ -188,9 +188,9 @@ describe('AuthService', () => {
 
   describe('when testing isAuthenticated()', () => {
     it('should return true', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         isLoggedIn: true
-      });
+      }));
       service.isAuthenticated().then(authenticated => {
         expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('isLoggedIn');
         expect(authenticated).toEqual(true);
@@ -199,9 +199,9 @@ describe('AuthService', () => {
     }));
 
     it('should return false', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue({
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
         isLoggedIn: false
-      });
+      }));
       service.isAuthenticated().then(authenticated => {
         expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('isLoggedIn');
         expect(authenticated).toEqual(false);
@@ -212,7 +212,7 @@ describe('AuthService', () => {
 
   describe('when testing logout()', () => {
     it('should navigate to login by default', fakeAsync(() => {
-      nativeStorageSpy.getObject.and.returnValue({ color: '' });
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({ color: '' }));
       service.logout({});
       tick();
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
@@ -224,7 +224,7 @@ describe('AuthService', () => {
 
     it('should pass navigation data', fakeAsync(() => {
       const logoutData = { data: 'data' };
-      nativeStorageSpy.getObject.and.returnValue({color: ''});
+      nativeStorageSpy.getObject.and.returnValue(Promise.resolve({color: ''}));
       service.logout(logoutData);
       tick();
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);

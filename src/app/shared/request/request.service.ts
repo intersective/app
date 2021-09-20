@@ -188,7 +188,7 @@ export class RequestService {
       apiEndpoint = this.getEndpointUrl(params.endPoint);
     }
 
-    const request = this.httpClient.post<any>(apiEndpoint, data, {
+    const request = this.httpClient.post<any>(apiEndpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
     });

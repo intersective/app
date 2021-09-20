@@ -185,19 +185,6 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingAchievements = false;
       })
     );
-
-    if (typeof environment.intercom !== 'undefined' && environment.intercom === true) {
-      this.intercom.boot({
-        app_id: environment.intercomAppId,
-        name: this.name, // Full name
-        email: this.email, // Email address
-        apikey: this.apikey, // user's apikey
-        // Supports all optional configuration.
-        widget: {
-          'activator': '#intercom'
-        }
-      });
-    }
   }
 
   goTo(destination) {

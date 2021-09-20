@@ -276,7 +276,7 @@ describe('AssessmentComponent', () => {
       review: null
     }));
     assessmentServiceSpy.saveAnswers.and.returnValue(of(true));
-    assessmentServiceSpy.saveFeedbackReviewed.and.returnValue(of({success: true}));
+    assessmentServiceSpy.saveFeedbackReviewed.and.returnValue(Promise.resolve(of({success: true})));
     activitySpy.gotoNextTask.and.returnValue(new Promise(() => {}));
     component.routeUrl = '/test';
   });

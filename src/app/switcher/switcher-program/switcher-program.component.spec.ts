@@ -125,9 +125,7 @@ describe('SwitcherProgramComponent', () => {
     });
 
     beforeEach(() => {
-      switcherSpy.getPrograms.and.returnValue(new Promise(resolve => {
-        return resolve(of(programs));
-      }));
+      switcherSpy.getPrograms.and.returnValue(of(programs));
     });
     it('should allert if no programs found', () => {
       const programs = [];

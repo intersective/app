@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
 import { of } from 'rxjs';
@@ -13,7 +13,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
-import { NotificationService } from '@app/shared/notification/notification.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -54,7 +53,7 @@ describe('ProjectComponent', () => {
   let utils: UtilsService;
   let homeSpy: jasmine.SpyObj<HomeService>;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -109,7 +108,7 @@ describe('ProjectComponent', () => {
       ],
     })
     .compileComponents();
-  }));
+  });
 
   const milestones = Array.from({length: 5}, (x, i) => {
     return {

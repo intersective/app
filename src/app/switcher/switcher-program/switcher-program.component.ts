@@ -52,7 +52,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     this.programs = [];
     this.newRelic.setPageViewName('program switcher');
     this.activatedRoute.data.subscribe(() => {
-      this.subscription = fromPromise(this.switcherService.getPrograms(this.stacks)).subscribe(res => {
+      this.subscription = this.switcherService.getPrograms(this.stacks).subscribe(res => {
         res.subscribe(async programs => {
           this.programs = Object.values(programs);
           await this._getPrograms(programs);

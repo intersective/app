@@ -1,13 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Storage } from '@ionic/storage';
 
-export interface Referrer {
-  // redirect user to this url when
-  // 1. user click back button of activity detail page
-  // 2. user click continue button of last task
-  activityTaskUrl: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })

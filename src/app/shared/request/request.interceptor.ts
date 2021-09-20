@@ -44,11 +44,12 @@ export class RequestInterceptor implements HttpInterceptor {
       const paramsInject = req.params;
 
       // inject appkey
-      if (this.currenConfig.appkey) {
-        headers['appkey'] = this.currenConfig.appkey;
+      if (!this.isLoginAPIURL(req) && this.currenConfig.appkey) {
+        const appkey = this.currenConfig.appkey;
+        headers['appkey'] = appkey;
       }
 
-      if (apikey) {
+      if (apikey && !headers['apikey']) {
         headers['apikey'] = apikey;
       }
       if (timelineId) {
@@ -64,6 +65,12 @@ export class RequestInterceptor implements HttpInterceptor {
         headers['teamId'] = teamId.toString();
       }
 
+      // no need to send apikey in hrader for auth.json.
+      // in normal login process we didn't have apikey before login.
+      // in direct login/ login with apikey we send apikey in request body.
+      if (req.url.includes('/auths.json')) {
+        delete headers['apikey'];
+      }
 
       if (Capacitor.isNative) {
         return this.handleNativeRequest(req.clone({
@@ -109,27 +116,6 @@ export class RequestInterceptor implements HttpInterceptor {
     headerKeys.forEach((key) => {
       headers[key] = request.headers.get(key);
     });
-
-    // inject appkey
-    if (!this.isLoginAPIURL(request) && this.currenConfig.appkey) {
-      const appkey = this.currenConfig.appkey;
-      headers['appkey'] = appkey;
-    }
-
-    if (apikey && !headers['apikey']) {
-      headers['apikey'] = apikey;
-    }
-    if (timelineId) {
-      // header value must be string [ES6]
-      headers['timelineId'] = timelineId.toString();
-    }
-
-    // no need to send apikey in header for auth.json.
-    // in normal login process we didn't have apikey before login.
-    // in direct login/ login with apikey we send apikey in request body.
-    if (request.url.includes('/auths.json')) {
-      delete headers['apikey'];
-    }
 
     try {
       await this.platform.ready();
