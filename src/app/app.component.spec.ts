@@ -88,7 +88,10 @@ describe('AppComponent', () => {
           useValue: jasmine.createSpyObj('NewRelicService', ['noticeError']),
         },
         DomSanitizer,
-        PushNotificationService,
+        {
+          provide: PushNotificationService,
+          useValue: jasmine.createSpy('PushNotificationService'),
+        }
       ],
     }).compileComponents();
 

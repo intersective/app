@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, flushMicrotasks, flush } from '@angular/core/testing';
 import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
@@ -208,18 +208,23 @@ describe('ActivityService', () => {
           task: null
         }
       }));
-      service.gotoNextTask(1, 'assessment', 2);
-      tick();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-      expect(routerSpy.navigate.calls.first().args[1]).toEqual({
-        queryParams: {
-          activityId: 1,
-          activityCompleted: true,
-        }
+      service.gotoNextTask(1, 'assessment', 2).then(() => {
+        const [first, second] = routerSpy.navigate.calls.first().args;
+        console.log('asd:first()', );
+        expect(first).toEqual(['app', 'home']);
+        expect(second).toEqual({
+          queryParams: {
+            activityId: 1,
+            activityCompleted: true,
+          }
+        });
       });
+
+      flushMicrotasks();
     }));
 
     it('should go to external url', fakeAsync(() => {
+      utils.has = jasmine.createSpy('has').and.returnValue(true);
       requestSpy.get.and.returnValue(of({
         data: {
           is_last: true,
@@ -227,15 +232,19 @@ describe('ActivityService', () => {
         }
       }));
       nativeStorageSpy.getObject.and.returnValue(Promise.resolve({
-        activityTaskUrl: 'abc',
+        activityTaskUrl: 'abc123',
       }));
-      service.gotoNextTask(1, 'assessment', 2);
-      tick();
-      expect(utils.redirectToUrl).toHaveBeenCalled();
-      expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
+
+      flush();
+      service.gotoNextTask(1, 'assessment', 2).then(() => {
+        expect(utils.redirectToUrl).toHaveBeenCalled();
+        expect(nativeStorageSpy.getObject).toHaveBeenCalledWith('referrer');
+      });
+      flushMicrotasks();
     }));
 
     it('should pop up modal', fakeAsync(() => {
+      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(false);
       requestSpy.get.and.returnValue(of({
         data: {
           is_last: true,
@@ -247,9 +256,11 @@ describe('ActivityService', () => {
           }
         }
       }));
-      service.gotoNextTask(1, 'assessment', 2);
-      tick();
-      expect(notificationSpy.activityCompletePopUp.calls.count()).toBe(1);
+
+      service.gotoNextTask(1, 'assessment', 2).then(() => {
+        expect(notificationSpy.activityCompletePopUp).toHaveBeenCalledTimes(1);
+      });
+      flushMicrotasks();
     }));
 
     it('should go to assessment page', fakeAsync(() => {

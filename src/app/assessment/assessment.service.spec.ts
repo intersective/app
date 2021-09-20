@@ -544,17 +544,17 @@ describe('AssessmentService', () => {
     });
   });
 
-  describe('when testing saveFeedbackReviewed()', () => {
-    it('should post correct data', fakeAsync(() => {
-      service.saveFeedbackReviewed(11);
-      flush();
+  describe('when testing saveFeedbackReviewed()', async () => {
+    it('should post correct data', async () => {
+      await service.saveFeedbackReviewed(11);
+
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(requestSpy.post.calls.first().args[0].data).toEqual({
-        project_id: 1,
+        project_id: 'test_project_id', // 1,
         identifier: 'AssessmentSubmission-11',
         is_done: true
       });
-    }));
+    });
   });
 
   describe('when testing popUpReviewRating()', () => {
@@ -569,21 +569,17 @@ describe('AssessmentService', () => {
   });
 
   describe('when testing checkReviewer()', () => {
-    it('should return null if no reviewer passed in', fakeAsync(() => {
-      service.checkReviewer(null).then(result => {
-        expect(result).toEqual(null);
-      });
-      flush();
-    }));
+    it('should return null if no reviewer passed in', async () => {
+      const result = await service.checkReviewer(null);
+      expect(result).toEqual(null);
+    });
 
-    it('should return null if reviewer is the current person', fakeAsync(() => {
+    it('should return null if reviewer is the current person', async () => {
       const sameName = 'Test';
       nativeStorageSpy.getObject.and.returnValue(Promise.resolve({ name: sameName }));
-      service.checkReviewer({name: sameName}).then(result => {
-        expect(result).toEqual(null);
-      });
-      flush();
-    }));
+      const result = await service.checkReviewer({name: sameName});
+      expect(result).toEqual(null);
+    });
   });
 
 });
