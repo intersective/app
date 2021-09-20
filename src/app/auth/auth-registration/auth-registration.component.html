@@ -56,7 +56,13 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        <ion-button *ngIf="submitting; else registerTmp" id="btn-register" shape="round" expand="full" color="primary" disabled>
+          <ion-spinner name="dots"></ion-spinner>
+        </ion-button>
+        <ng-template #registerTmp>
+          <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        </ng-template>
+
       </form>
     </ng-container>
 
