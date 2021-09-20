@@ -7,7 +7,6 @@ import { SharedService } from '@services/shared.service';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { NativeStorageService } from '@services/native-storage.service';
 import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
@@ -36,7 +35,6 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private storage: BrowserStorageService,
-    private nativeStorage: NativeStorageService,
     private versionCheckService: VersionCheckService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,

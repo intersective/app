@@ -20,6 +20,7 @@ import { of } from 'rxjs';
 // import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
+import { PushNotificationService } from './services/push-notification.service';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -87,6 +88,7 @@ describe('AppComponent', () => {
           useValue: jasmine.createSpyObj('NewRelicService', ['noticeError']),
         },
         DomSanitizer,
+        PushNotificationService,
       ],
     }).compileComponents();
 
