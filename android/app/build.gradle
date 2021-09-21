@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "io.ionic.starter"
+        applicationId "com.practera.appv2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -37,6 +37,10 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    implementation 'com.google.firebase:firebase-core:17.4.4'
+    implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
+    implementation 'com.pusher:push-notifications-android:${ANDROID_SDK_VERSION}'
+    testImplementation 'junit:junit:4.12'
 }
 
 apply from: 'capacitor.build.gradle'

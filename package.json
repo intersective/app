@@ -43,6 +43,7 @@
     "@capacitor/core": "3.2.3",
     "@capacitor/haptics": "^1.0.3",
     "@capacitor/keyboard": "^1.0.3",
+    "@capacitor/push-notifications": "^1.0.4",
     "@capacitor/status-bar": "^1.0.3",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/splash-screen": "^5.0.0",
