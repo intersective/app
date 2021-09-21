@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "practera-appv2",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
