@@ -7,13 +7,16 @@ import { SwitcherProgramComponent } from './switcher-program.component';
 import { SwitcherService } from '../switcher.service';
 import { MockSwitcherService, MockRouter, MockNewRelicService } from '@testing/mocked.service';
 import { ProgramFixture } from '@testing/fixtures/programs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { LoadingController } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
+import { BrowserStorageService } from '@app/services/storage.service';
+import { MockStacks } from '@testing/fixtures/stacks';
+import { AuthService } from '@app/auth/auth.service';
 
 describe('SwitcherProgramComponent', () => {
   let component: SwitcherProgramComponent;
@@ -23,6 +26,8 @@ describe('SwitcherProgramComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let loadingSpy: jasmine.SpyObj<LoadingController>;
   let notifySpy: jasmine.SpyObj<NotificationService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let authSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -30,11 +35,16 @@ describe('SwitcherProgramComponent', () => {
       declarations: [SwitcherProgramComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
         PusherService,
-        NotificationService,
-        UtilsService,
         LoadingController,
+        {
+          provide: NotificationService,
+          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: NewRelicService,
           useClass: MockNewRelicService
@@ -46,6 +56,24 @@ describe('SwitcherProgramComponent', () => {
         {
           provide: SwitcherService,
           useClass: MockSwitcherService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: of(true)
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', ['logout']),
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'stackConfig',
+            'setUser',
+            'set'
+          ]),
         }
       ]
     }).compileComponents();
@@ -57,6 +85,8 @@ describe('SwitcherProgramComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     loadingSpy = TestBed.inject(LoadingController) as jasmine.SpyObj<LoadingController>;
     notifySpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   }));
 
   beforeEach(() => {
@@ -83,11 +113,30 @@ describe('SwitcherProgramComponent', () => {
       expect(switcherSpy.getPrograms).toHaveBeenCalled();
       expect(component.programs).toEqual(programs);
     });
+    it('should allert if no programs found', () => {
+      const programs = [];
+      programs.forEach((p, i) => {
+        programs[i].progress = (i + 1) / 10,
+        programs[i].todoItems = (i + 1);
+      });
+      switcherSpy.getPrograms.and.returnValue(of(programs));
+      component.onEnter();
+
+      expect(notifySpy.alert).toHaveBeenCalled();
+    });
+    it('should throw error when no stack available', () => {
+      const SAMPLE_ERROR = 'SAMPLE ERROR';
+      switcherSpy.getPrograms.and.returnValue(throwError(SAMPLE_ERROR));
+      component.onEnter();
+
+      expect(component.isProgramsLoading).toBeFalsy();
+      expect(component.programs).toEqual([]);
+    });
   });
 
   describe('switch()', () => {
     const testRoute = ['test', 'path'];
-    const programIndex = 0;
+    const index = 0;
 
     beforeEach(() => {
       component.programs = ProgramFixture; // load fixture
@@ -100,13 +149,29 @@ describe('SwitcherProgramComponent', () => {
     it('should switch to selected program based on provided programmatic index', fakeAsync(() => {
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
+    }));
+
+    it('should store selected stack & program based on programmatic index', fakeAsync(() => {
+      switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise(res => res(testRoute)));
+      component.stacks = MockStacks;
+      component.switch(index);
+      flushMicrotasks();
+
+      expect(newrelicSpy.createTracer).toHaveBeenCalled();
+      expect(newrelicSpy.actionText).toHaveBeenCalled();
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(testRoute);
+      expect(storageSpy.stackConfig).toEqual(ProgramFixture[index].stack);
+      expect(storageSpy.setUser).toHaveBeenCalledWith({apikey: ProgramFixture[index].apikey});
+      expect(storageSpy.set).toHaveBeenCalledWith('programs', ProgramFixture);
+      expect(storageSpy.set).toHaveBeenCalledWith('isLoggedIn', true);
     }));
 
     it('should popup error at failed program switching', fakeAsync(() => {
@@ -115,14 +180,13 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',
@@ -137,20 +201,26 @@ describe('SwitcherProgramComponent', () => {
       };
       switcherSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(new Promise((res, reject) => reject(error)
       ));
-      spyOn(notifySpy, 'alert');
 
-      component.switch(programIndex);
+      component.switch(index);
       flushMicrotasks();
 
       expect(newrelicSpy.createTracer).toHaveBeenCalled();
       expect(newrelicSpy.actionText).toHaveBeenCalled();
-      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[programIndex]);
+      expect(switcherSpy.switchProgramAndNavigate).toHaveBeenCalledWith(ProgramFixture[index]);
       expect(routerSpy.navigate).not.toHaveBeenCalled();
       expect(notifySpy.alert).toHaveBeenCalledWith({
         header: 'Error switching program',
         message: JSON.stringify(error)
       });
       expect(newrelicSpy.noticeError).toHaveBeenCalled();
+    }));
+  });
+  describe('logout()', () => {
+    it('should logout with authService.logout', fakeAsync(() => {
+      component.logout();
+      flushMicrotasks();
+      expect(authSpy.logout).toHaveBeenCalled();
     }));
   });
 });

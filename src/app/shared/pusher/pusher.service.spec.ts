@@ -11,7 +11,7 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 class PusherLib extends Pusher {
   connection;
@@ -51,7 +51,6 @@ describe('PusherConfig', () => {
 
   it('should have pusherKey & apiurl', () => {
     expect(config.pusherKey).toEqual('');
-    expect(config.apiurl).toEqual('');
   });
 });
 
@@ -87,9 +86,11 @@ describe('PusherService', async () => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule ],
       providers: [
-        Apollo,
         PusherService,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         /*{
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', [
@@ -116,8 +117,7 @@ describe('PusherService', async () => {
         {
           provide: PusherConfig,
           useValue: {
-            pusherKey: PUSHERKEY,
-            apiurl: PUSHER_APIURL
+            pusherKey: PUSHERKEY
           }
         },
         {
@@ -276,7 +276,6 @@ describe('PusherService', async () => {
 
     it('should initialise pusher', fakeAsync(() => {
       expect(service['pusher']).not.toBeTruthy();
-      expect(service['apiurl']).toBe(PUSHER_APIURL);
 
       service.initialise().then();
       flushMicrotasks();

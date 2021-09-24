@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -418,7 +418,11 @@ export class AssessmentService {
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
-    return this.request.post(api.post.todoitem, postData);
+    return this.request.post(
+      {
+        endPoint: api.post.todoitem,
+        data: postData
+      });
   }
 
   /**
