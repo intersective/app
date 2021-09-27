@@ -7,7 +7,9 @@
   },
   "exclude": [
     "test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "./environments/environment.*.ts",
+    "./testing/**/*.ts"
   ],
   "include": [
     "src/**/*.d.ts"
