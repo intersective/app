@@ -7,7 +7,7 @@ import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
 import com.google.firebase.messaging.RemoteMessage;
 import com.practera.capacitor.custom.CustomNativePlugin;
-import com.practera.capacitor.pusherbeams.PusherBeams;
+import com.practera.capacitor.pusherbeams.PusherBeamsPlugin;
 import com.pusher.pushnotifications.PushNotificationReceivedListener;
 import com.pusher.pushnotifications.PushNotifications;
 
@@ -21,7 +21,7 @@ public class MainActivity extends BridgeActivity {
     PushNotifications.start(getApplicationContext(), "c0ba349e-66c6-440d-8ac7-fe229709d088");
     PushNotifications.addDeviceInterest("general");
 
-    registerPlugin(PusherBeams.class);
+    registerPlugin(PusherBeamsPlugin.class);
     registerPlugin(CustomNativePlugin.class);
   }
 
