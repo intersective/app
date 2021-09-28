@@ -18,16 +18,11 @@ public class MainActivity extends BridgeActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    // Initializes the Bridge
-    this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
-      // Additional plugins you've installed go here
-      // Ex: add(TotallyAwesomePlugin.class);
-      PushNotifications.start(getApplicationContext(), "c0ba349e-66c6-440d-8ac7-fe229709d088");
-      PushNotifications.addDeviceInterest("general");
+    PushNotifications.start(getApplicationContext(), "c0ba349e-66c6-440d-8ac7-fe229709d088");
+    PushNotifications.addDeviceInterest("general");
 
-      add(PusherBeams.class);
-      add(CustomNativePlugin.class);
-    }});
+    registerPlugin(PusherBeams.class);
+    registerPlugin(CustomNativePlugin.class);
   }
 
   @Override

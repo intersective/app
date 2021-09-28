@@ -38,8 +38,8 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
     implementation 'com.google.firebase:firebase-core:17.4.4'
-    implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
-    implementation 'com.pusher:push-notifications-android:${ANDROID_SDK_VERSION}'
+    implementation 'com.google.firebase:firebase-messaging:20.2.3'
+    implementation 'com.pusher:push-notifications-android:1.6.2'
     testImplementation 'junit:junit:4.12'
 }
 
