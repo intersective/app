@@ -154,7 +154,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: true,
-        teamId: 'SAMPLE_ID'
+        teamId: 999
       });
       chatSpy.getChatList.and.returnValue(of(ChatsFixture));
       fixture.detectChanges();
@@ -170,7 +170,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: false,
-        teamId: 'SAMPLE_ID'
+        teamId: 9999 // 'SAMPLE_ID'
       });
       chatSpy.getChatList.and.returnValue(of([]));
       fixture.detectChanges();
@@ -188,7 +188,6 @@ describe('TabsComponent', () => {
         teamId: null,
         name: 'Test User',
         email: 'user@test.com',
-        id: 1
       });
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));
