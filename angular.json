@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
   "version": 1,
   "defaultProject": "app",
   "newProjectRoot": "projects",
@@ -36,18 +36,20 @@
                 "output": "./.well-known"
               }
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss", "src/styles.scss"],
-            "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
-              "./src/assets/newrelic.js"
+            "styles": [
+              {
+                "input": "src/theme/variables.scss"
+              },
+              {
+                "input": "src/global.scss"
+              },
+              {
+                "input": "src/styles.scss"
+              }
             ],
-            "aot": false,
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
+            "scripts": [
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
+            ]
           },
           "configurations": {
             "trial": {
@@ -183,11 +185,14 @@
           }
         },
         "lint": {
-          "builder": "@angular-eslint/builder:lint",
+          "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
             ]
           }
         },

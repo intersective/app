@@ -18,12 +18,3 @@ e2e/config/index.ts
 e2e/protractor-dev.conf.js
 src/environments/environment.ts
 src/environments/environment.ts.*
-electron
-android/local.properties
-.gradle/*/executionHistory/*.lock
-.gitsecret/keys/random_seed
-!*.secret
-android/app/google-services.json
-src/environments/environment.alpha-native.ts
-src/environments/environment.p2.ts
-src/environments/environment.production-native.ts

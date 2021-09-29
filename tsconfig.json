@@ -4,47 +4,27 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "es2020",
+    "module": "esnext",
     "moduleResolution": "node",
-    "importHelpers": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "target": "es2015",
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
       "es2018",
-      "dom"
+      "dom",
+      "esnext.asynciterable"
     ],
     "baseUrl": "src",
     "paths": {
-      "@app/*": [
-        "app/*"
-      ],
-      "@services/*": [
-        "app/services/*"
-      ],
-      "@components/*": [
-        "app/shared/components/*"
-      ],
-      "@shared/*": [
-        "app/shared/*"
-      ],
-      "@environments/*": [
-        "environments/*"
-      ],
-      "@testing/*": [
-        "testing/*"
-      ]
-    },
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+      "@app/*": ["app/*"],
+      "@services/*": ["app/services/*"],
+      "@components/*": ["app/shared/components/*"],
+      "@shared/*": ["app/shared/*"],
+      "@environments/*": ["environments/*"],
+      "@testing/*": ["testing/*"]
+    }
   }
 }

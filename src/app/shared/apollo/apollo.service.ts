@@ -1,9 +1,11 @@
-import { HttpLink } from 'apollo-angular/http';
-import { gql, Apollo } from 'apollo-angular';
-import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
+import { HttpLink } from 'apollo-angular-link-http';
 import { BrowserStorageService } from '@services/storage.service';
+import gql from 'graphql-tag';
+import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
 
 enum ClientType {
   core = 'CORE',
@@ -90,11 +92,11 @@ export class ApolloService {
   }
 
   getClient() {
-    return this.apollo.client;
+    return this.apollo.getClient();
   }
 
   updateCache(taskName: string, { data }): void {
-    this.apollo.client.writeFragment({
+    this.apollo.getClient().writeFragment({
       id: taskName,
       fragment: gql`
         fragment task on Task {
@@ -155,7 +157,7 @@ export class ApolloService {
   }
 
   writeFragment({ id, fragment, data }) {
-    return this.apollo.client.writeFragment({
+    return this.apollo.getClient().writeFragment({
       id,
       data,
       fragment: gql`${fragment}`,
