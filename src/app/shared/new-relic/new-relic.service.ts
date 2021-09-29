@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
-import { interaction, noticeError, setCustomAttribute, setPageViewName } from 'new-relic-browser';
-declare var newrelic: any;
+// import { noticeError } from 'newrelic';
+// import * as newrelic from './../../../../assets/newrelic';
+// import 'newrelic';
+/*import {
+  interaction,
+  setErrorHandler,
+  setPageViewName,
+  addRelease,
+} from 'new-relic-browser';*/
 
+import * as NewRelic from 'new-relic-browser';
+// import * as NewRelic from 'newrelic';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -11,15 +20,14 @@ import { environment } from '@environments/environment';
 
 export class NewRelicService {
   private newrelic;
-  private interaction; // newrelic browser interaction
+  private interaction;
 
   constructor(
     private storage: BrowserStorageService
   ) {
-    if (!this.newrelic) {
-      this.newrelic = newrelic;
-      this.interaction = this.newrelic.interaction();
-      this.interaction.onEnd(function() {
+    if (newrelic) {
+      this.newrelic = newrelic.interaction();
+      this.newrelic.onEnd(function() {
         console.log('interaction ended');
       });
     }
@@ -29,44 +37,42 @@ export class NewRelicService {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.setPageViewName(name);
+    return newrelic.setPageViewName(name);
   }
 
   addPageAction(name, customAttr?) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.addPageAction(name, customAttr);
+    return newrelic.addPageAction(name, customAttr);
   }
 
   setCustomAttribute(name, value) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.newrelic.setCustomAttribute(name, value);
+    return newrelic.setCustomAttribute(name, value);
   }
 
   noticeError(error, customAttr?) {
     if (!environment.newrelic) {
       return null;
     }
-
     const { userHash, enrolment } = this.storage.getUser();
     if (userHash) {
-      this.setCustomAttribute('user hash', userHash);
+      this.setAttribute('user hash', userHash);
     }
     if (enrolment && enrolment.id) {
-      this.setCustomAttribute('enrolment ID', enrolment.id);
+      this.setAttribute('enrolment ID', enrolment.id);
     }
-
-    return this.newrelic.noticeError(error);
+    return newrelic.noticeError(error);
   }
 
   createTracer(name, callback?) {
     if (!environment.newrelic) {
       return () => ({ });
     }
-    const newInteraction = this.newrelic.interaction();
+    const newInteraction = newrelic.interaction();
     return newInteraction.createTracer(name, callback);
   }
 
@@ -74,20 +80,20 @@ export class NewRelicService {
     if (!environment.newrelic) {
       return null;
     }
-    return this.interaction.getContext().save();
+    return this.newrelic.getContext().save();
   }
 
   actionText(name) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.interaction.actionText(name).save();
+    return this.newrelic.actionText(name).save();
   }
 
   setAttribute(name, value) {
     if (!environment.newrelic) {
       return null;
     }
-    return this.interaction.setAttribute(name, value).save();
+    return this.newrelic.setAttribute(name, value).save();
   }
 }
