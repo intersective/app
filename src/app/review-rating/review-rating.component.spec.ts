@@ -7,6 +7,7 @@ import { UtilsService } from '@services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from './review-rating.service';
 import { ModalController } from '@ionic/angular';
+import { FastFeedbackService } from '@app/fast-feedback/fast-feedback.service';
 import { TestUtils } from '@testing/utils';
 import { NotificationService } from '@app/shared/notification/notification.service';
 
@@ -15,6 +16,7 @@ describe('ReviewRatingComponent', () => {
   let fixture: ComponentFixture<ReviewRatingComponent>;
   let serviceSpy: jasmine.SpyObj<ReviewRatingService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -47,6 +49,12 @@ describe('ReviewRatingComponent', () => {
             dismiss: jasmine.createSpy('dismiss')
           }
         },
+        {
+          provide: FastFeedbackService,
+          useValue: jasmine.createSpyObj('FastFeedbackService', {
+            pullFastFeedback: of(true)
+          })
+        },
       ]
     })
     .compileComponents();
@@ -57,6 +65,7 @@ describe('ReviewRatingComponent', () => {
     component = fixture.componentInstance;
     serviceSpy = TestBed.inject(ReviewRatingService) as jasmine.SpyObj<ReviewRatingService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
   });
 
   it('should create', () => {
@@ -87,6 +96,26 @@ describe('ReviewRatingComponent', () => {
     });
     it('should submit rating and navigate', () => {
       component.redirect = ['home'];
+    });
+  });
+
+  describe('submitReviewRating() - straightforward test', () => {
+    it('should trigger pulse check API when stay on same view', () => {
+      component.redirect = null;
+
+      component.ratingData = {
+        assessment_review_id: 1,
+        rating: 0.123,
+        comment: '',
+        tags: []
+      };
+      serviceSpy.submitRating.and.returnValue(of(''));
+      component.submitReviewRating();
+      expect(serviceSpy.submitRating.calls.count()).toBe(1);
+      expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
+      expect(component.isSubmitting).toBe(false);
+      expect(routerSpy.navigate.calls.count()).toBe(0);
+      expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalledTimes(1);
     });
   });
 
