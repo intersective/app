@@ -91,7 +91,6 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
       message: 'loading...'
     });
     this.newRelic.actionText(`selected ${this.programs[index].program.name}`);
-
     await loading.present();
 
     try {
