@@ -5,12 +5,17 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
+interface TopicAttachment {
+  name: string;
+  url: string;
+}
+
 export interface Topic {
   id: number;
   title: string;
   content: any;
   videolink?: string;
-  files: Array<object>;
+  files: TopicAttachment[];
   hasComments: boolean;
 }
 
