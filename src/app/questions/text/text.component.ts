@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-text',
@@ -26,8 +26,8 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  // AbstractControl that is passed in from parent component
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer

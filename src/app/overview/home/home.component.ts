@@ -34,7 +34,7 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   progress = 0;
   loadingProgress = true;
-  todoItems: Array<TodoItem | Event> = [];
+  todoItems: any[] = [];
   eventReminders: Array<Event> = [];
   loadingTodoItems = true;
   subscriptions: Subscription[] = [];

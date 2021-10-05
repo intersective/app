@@ -11,14 +11,14 @@ import { UtilsService } from '@services/utils.service';
 })
 export class ActivityCardComponent implements OnInit {
   @Input() loading: boolean;
-  @Input() activity: {
+  @Input() activity: Partial<{
     id: number;
     name: string;
     isLocked?: boolean;
     progress?: number;
     leadImage?: string;
     highlighted?: boolean;
-  };
+  }>;
   backgroundImageStyle = '';
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';

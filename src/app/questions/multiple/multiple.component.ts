@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
 @Component({
@@ -27,8 +27,8 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  // AbstractControl that is passed in from parent component
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
