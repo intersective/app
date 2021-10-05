@@ -11,7 +11,7 @@
         <ion-col size="6" class="ion-padding home-component" appFloat>
           <app-home [refresh]="initiator$"></app-home>
         </ion-col>
-        <ion-col class="ion-no-padding" appFloat isActivityCard="true">
+        <ion-col class="ion-no-padding" appFloat [isActivityCard]="true">
           <app-project [refresh]="initiator$"></app-project>
         </ion-col>
       </ion-row>
@@ -19,7 +19,7 @@
   </ng-container>
 </ion-content>
 <ng-template #singlePage>
-  <ion-content appFloat isActivityCard="true">
+  <ion-content appFloat [isActivityCard]="true">
     <app-home [refresh]="initiator$"></app-home>
     <app-project [refresh]="initiator$"></app-project>
   </ion-content>

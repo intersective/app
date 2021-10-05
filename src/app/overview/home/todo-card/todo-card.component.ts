@@ -8,7 +8,7 @@ import { TodoItem } from '../home.service';
 })
 export class TodoCardComponent {
   @Input() loading: boolean;
-  @Input() todoItem: TodoItem | boolean;
+  @Input() todoItem: TodoItem;
   icons = {
     feedback_available: 'information-circle-outline',
     review_submission: 'information-circle-outline',
