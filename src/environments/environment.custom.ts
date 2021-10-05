@@ -37,4 +37,8 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  lambdaServices: {
+    pusherBeamsAuth: '<CUSTOM_PUSHER_BEAMS_ENDPOINT>',
+    preferences: '<CUSTOM_PREFERENCE_ENDPOINT>'
+  }
 };
