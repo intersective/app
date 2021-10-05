@@ -69,7 +69,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false
+              "buildOptimizer": true
             },
             "us": {
               "fileReplacements": [
@@ -90,7 +90,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false
+              "buildOptimizer": true
             },
             "custom": {
               "fileReplacements": [
@@ -111,7 +111,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false
+              "buildOptimizer": true
             },
             "ci": {
               "progress": false

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, AfterContentInit, AfterViewInit, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
@@ -41,7 +41,7 @@ export class ChatRoomComponent extends RouterEnter {
   // channel member list
   memberList: ChannelMembers[] = [];
   // the message that the current user is typing
-  message: string;
+  typingMessage: string;
   messagePageCursor = '';
   messagePageSize = 20;
   loadingChatMessages = false;
@@ -55,7 +55,6 @@ export class ChatRoomComponent extends RouterEnter {
     private chatService: ChatService,
     public router: Router,
     public storage: BrowserStorageService,
-    private route: ActivatedRoute,
     public utils: UtilsService,
     public pusherService: PusherService,
     private filestackService: FilestackService,
@@ -98,7 +97,7 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   private _initialise() {
-    this.message = '';
+    this.typingMessage = '';
     this.messageList = [];
     this.loadingChatMessages = false;
     this.messagePageCursor = '';
@@ -208,10 +207,10 @@ export class ChatRoomComponent extends RouterEnter {
   }
 
   sendMessage() {
-    if (!this.message) {
+    if (!this.typingMessage) {
       return;
     }
-    const message = this.message;
+    const message = this.typingMessage;
     this._beforeSenMessages();
     this.chatService.postNewMessage({
       channelUuid: this.channelUuid,
@@ -263,7 +262,7 @@ export class ChatRoomComponent extends RouterEnter {
   private _beforeSenMessages() {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
-    this.message = '';
+    this.typingMessage = '';
     this.element.nativeElement.querySelector('textarea').style.height = 'auto';
   }
 
@@ -435,7 +434,7 @@ export class ChatRoomComponent extends RouterEnter {
    * Trigger typing event when user is typing
    */
   typing() {
-    if (!this.utils.isEmpty(this.message)) {
+    if (!this.utils.isEmpty(this.typingMessage)) {
       this.showBottomAttachmentButtons = true;
       this._scrollToBottom();
     } else {
@@ -509,7 +508,7 @@ export class ChatRoomComponent extends RouterEnter {
     this.sendingMessage = true;
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
-      message: this.message,
+      message: this.typingMessage,
       file: JSON.stringify(file)
     }).subscribe(
       response => {

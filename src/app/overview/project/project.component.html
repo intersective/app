@@ -21,7 +21,7 @@
                   [name]="isCollapsed(milestone) ? 'chevron-down' : 'chevron-up'"
                   class="collapsible-icon"
                 ></ion-icon>
-              </button>  
+              </button>
             </ion-item>
 
             <ion-card-content
@@ -86,7 +86,7 @@
                         <ion-skeleton-text animated></ion-skeleton-text>
                       </ion-avatar>
                     </div>
-                    <app-activity-card loading="true" activity="false" class="activity-card"></app-activity-card>
+                    <app-activity-card [loading]="true" activity="false" class="activity-card"></app-activity-card>
                   </ion-item>
                 </ion-col>
               </ion-row>
