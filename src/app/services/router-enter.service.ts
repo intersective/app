@@ -1,7 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { OnInit, OnDestroy, Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription } from 'rxjs/Subscription';
 
+@Injectable({
+  providedIn: 'root'
+})
 export class RouterEnter implements OnInit, OnDestroy {
   subscription: Subscription;
   subscriptions: Subscription[] = [];

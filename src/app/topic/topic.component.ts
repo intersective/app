@@ -139,7 +139,6 @@ export class TopicComponent extends RouterEnter {
           embedVideo.classList.remove('desktop-view');
         }
         embedVideo.classList.add('plyr__video-embed');
-        // tslint:disable-next-line:no-unused-expression
         new Plyr(embedVideo as HTMLElement, {ratio: '16:9'});
         // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
         // so we need to add topic-video and desktop-view to that div to load video properly .
@@ -160,7 +159,6 @@ export class TopicComponent extends RouterEnter {
           embedVideo.classList.add('desktop-view');
         }
       });
-    // tslint:disable-next-line:align
     }, 500);
   }
 

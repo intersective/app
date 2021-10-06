@@ -9,7 +9,7 @@ import { environment } from '@environments/environment';
   styleUrls: ['file-display.component.scss']
 })
 export class FileDisplayComponent implements OnInit, OnChanges {
-  private virusDetection: any;
+  public virusDetection: any;
   private quarantine: any;
 
   @Input() fileType = 'any';

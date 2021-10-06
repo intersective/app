@@ -61,6 +61,7 @@ export interface Timeline {
 export interface Experience {
   id: number;
   config: any;
+  status?: string;
 }
 
 export interface Enrolment {

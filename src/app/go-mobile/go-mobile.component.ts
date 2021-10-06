@@ -136,7 +136,7 @@ export class GoMobileComponent implements OnInit {
     return false;
   }
 
-  updateCountry(contactNumber: string) {
+  updateCountry(contactNumber?: string) {
     this.profile.contactNumber = contactNumber;
   }
 

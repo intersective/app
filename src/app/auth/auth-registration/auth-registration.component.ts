@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -7,7 +7,6 @@ import {
   Validators,
   FormControl,
   FormGroup,
-  FormBuilder
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { of, throwError, iif } from 'rxjs';
@@ -16,12 +15,11 @@ import { concatMap, retryWhen, delay } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { SwitcherService } from '../../switcher/switcher.service';
 import { TermsConditionsPreviewComponent } from '../terms-conditions-preview/terms-conditions-preview.component';
 
 @Component({
   selector: 'app-auth-registration',
-  templateUrl: './auth-registration.component.html',
+  templateUrl: 'auth-registration.component.html',
   styleUrls: ['./auth-registration.component.scss']
 })
 export class AuthRegistrationComponent implements OnInit {
@@ -51,7 +49,6 @@ export class AuthRegistrationComponent implements OnInit {
     private storage: BrowserStorageService,
     private notificationService: NotificationService,
     private newRelic: NewRelicService,
-    private switcherService: SwitcherService,
     private modalController: ModalController,
   ) {
     this.initForm();
@@ -363,4 +360,7 @@ export class AuthRegistrationComponent implements OnInit {
     });
   }
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
 }

@@ -19,6 +19,14 @@ Run `npm run start` to start a development server on your local, and call stage-
 
 Run `npm run local` to start a development server on your local, and call 127.0.0.1:8080 for API
 
+### Capacitor App development
+
+We have a version where this app encapsulated with capacitor v3. One of our in-house plugin made to allow this hybrid app to communicate between native code with Pusher's Beams API (at OS level).
+
+#### Encrpyted content management
+
+Some content in this repo is encrypted with gpg. We use [gitsecret](https://git-secret.io/) to manage our sensitive data sharing between active code contributor. Tools required: gpg & git-secret. Please follow the gitsecret link above to start setting up.
+
 ### Release Processes
 
 1. Merge `develop` branch to `master` (if we are releasing develop branch)
