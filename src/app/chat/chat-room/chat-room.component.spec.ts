@@ -259,7 +259,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing sendMessage()', () => {
     it('should call correctly', () => {
-      component.message = 'testing message';
+      component.typingMessage = 'testing message';
       component.channelUuid = '05';
       const saveMessageRes = {
         uuid: '0403b4d9',
