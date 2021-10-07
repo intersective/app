@@ -22,8 +22,8 @@ on:
         description: 'Reason for deployment'     
         required: true
         default: ''
-  push:
-    branches: [ released-US ]
+  # push:
+  #   branches: [ released-US ]
 
 ################################################
 #  GITHUB ACTION JOBS
