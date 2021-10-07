@@ -53,8 +53,8 @@ export class AppComponent implements OnInit {
     this.analyseQueryParams();
   }
 
-  initializeApp(): Promise<any> {
-    return this.platform.ready().then(async () => {
+  initializeApp() {
+    return this.platform.ready().then((): void => {
       if (environment.production) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
