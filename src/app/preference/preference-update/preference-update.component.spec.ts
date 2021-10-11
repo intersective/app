@@ -182,14 +182,14 @@ describe('PreferenceUpdateComponent', () => {
       component.currentPreference = component.filterPreferences(SAMPLE_PREFERENCE, preferenceKey);
       expect(component.currentPreference).toEqual(bestKey);
 
-      component.updatePreference({ medium: 'sms', checked: true });
+      component.updatePreference({ medium: 'sms', event: { checked: true } });
       expect(component['newUpdates']).toEqual(jasmine.objectContaining({
         [preferenceKey]: {
           'sms': true
         }
       }));
 
-      component.updatePreference({ medium: 'email', checked: true });
+      component.updatePreference({ medium: 'email', event: { checked: true } });
       expect(component['newUpdates']).toEqual(jasmine.objectContaining({
         [preferenceKey]: {
           'sms': true,

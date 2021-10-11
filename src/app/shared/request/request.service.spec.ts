@@ -74,7 +74,6 @@ describe('RequestService', () => {
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
   let apolloServiceSpy: ApolloService;
-  let httpClient: HttpClient;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -117,7 +116,6 @@ describe('RequestService', () => {
 
     service = TestBed.inject(RequestService);
     mockBackend = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
@@ -464,14 +462,14 @@ describe('RequestService', () => {
     }`;
 
     it('trigger GraphQL API to fetch record once', () => {
-      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
+      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(apolloServiceSpy.graphQLFetch).toHaveBeenCalled();
       mockBackend.verify();
     });
 
     it('should handle throwed error at error occur', () => {
-      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
+      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
       service['handleError'] = jasmine.createSpy('handleError');
 
       service.graphQLFetch(SAMPLE_QUERY).subscribe();

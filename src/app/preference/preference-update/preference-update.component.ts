@@ -88,7 +88,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
    * @description prepare new data changes for PUT request to preference API (with @func back())
    * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
    */
-  updatePreference(changes: { medium: string; event: IonToggle; }) {
+  updatePreference(changes: { medium: string; event: { checked: boolean }; }) {
     const { medium, event } = changes;
     const checked = event.checked;
 
