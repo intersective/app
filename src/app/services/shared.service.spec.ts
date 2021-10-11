@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { TestBed, tick } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
 import { NotificationService } from '@app/shared/notification/notification.service';
 import { RequestService } from '@app/shared/request/request.service';
@@ -10,6 +10,7 @@ import { Observable, of } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { ApolloService } from '@shared/apollo/apollo.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 
 describe('SharedService', () => {
@@ -19,11 +20,23 @@ describe('SharedService', () => {
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
   let pusherServiceSpy: PusherService;
+  let apolloServiceSpy: ApolloService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         SharedService,
+        {
+          provide: PusherService,
+          useValue: jasmine.createSpyObj('PusherService', ['initialise']),
+        },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'initiateCoreClient',
+            'initiateChatClient',
+          ]),
+        },
         {
           provide: UtilsService,
           useClass: TestUtils
@@ -78,12 +91,12 @@ describe('SharedService', () => {
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
     requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
+    apolloServiceSpy = TestBed.inject(ApolloService);
   });
 
   it('should created', () => {
     expect(service).toBeTruthy();
   });
-
 
   describe('getTeamInfo()', () => {
     it('should make GraphQL API request to retrieve team info', () => {
@@ -124,4 +137,43 @@ describe('SharedService', () => {
       expect(utilsSpy.changeCardBackgroundImage).toHaveBeenCalled();
     });
   });
+
+  describe('initWebServices()', () => {
+    it('should init web services', fakeAsync(() => {
+      storageSpy.stackConfig = {
+        uuid: '002',
+        name: 'Practera App - Local Development',
+        description: 'Participate in an experience as a learner or reviewer - Local',
+        image: 'https://media.intersective.com/img/learners_reviewers.png',
+        url: 'http://127.0.0.1:4200/',
+        type: 'app',
+        coreApi: 'http://127.0.0.1:8080',
+        coreGraphQLApi: 'http://127.0.0.1:8000',
+        chatApi: 'http://localhost:3000/local/graphql',
+        filestack: {
+          s3Config: {
+            container: 'practera-aus',
+            region: 'ap-southeast-2'
+          },
+        },
+        defaultCountryModel: 'AUS',
+        lastLogin: 1619660600368
+      };
+      service.initWebServices();
+      tick();
+      expect(pusherServiceSpy.initialise).toHaveBeenCalled();
+      expect(apolloServiceSpy.initiateCoreClient).toHaveBeenCalled();
+      expect(apolloServiceSpy.initiateChatClient).toHaveBeenCalled();
+    }));
+
+    it('should not init web services if no stack info in stroage', fakeAsync(() => {
+      storageSpy.stackConfig = null;
+      service.initWebServices();
+      tick();
+      expect(pusherServiceSpy.initialise).not.toHaveBeenCalled();
+      expect(apolloServiceSpy.initiateCoreClient).not.toHaveBeenCalled();
+      expect(apolloServiceSpy.initiateChatClient).not.toHaveBeenCalled();
+    }));
+  });
+
 });

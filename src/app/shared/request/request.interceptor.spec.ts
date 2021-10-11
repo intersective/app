@@ -2,21 +2,18 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { RequestModule } from './request.module';
-import { RequestService } from './request.service';
 import { RequestInterceptor } from './request.interceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { asyncData } from '@testing/async-observable-helpers';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 
 import { Router } from '@angular/router';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 
 describe('RequestInterceptor', () => {
   const APPKEY = 'TEST';
   const routerSpy = TestUtils.createRouterSpy();
-  let service: RequestService;
+  let http: HttpClient;
   let httpMock: HttpTestingController;
   let storageSpy: BrowserStorageService;
 
@@ -26,12 +23,11 @@ describe('RequestInterceptor', () => {
         HttpClientTestingModule,
         RequestModule.forRoot({
           appkey: APPKEY,
-          prefixUrl: 'test.com'
+          loginApiUrl: 'login.com'
         })
       ],
       providers: [
-        Apollo,
-        RequestService,
+        HttpClient,
         {
           provide: Router,
           useValue: routerSpy
@@ -48,13 +44,32 @@ describe('RequestInterceptor', () => {
       ]
     });
 
-    service = TestBed.inject(RequestService);
+    http = TestBed.inject(HttpClient);
     httpMock = TestBed.inject(HttpTestingController);
     storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   beforeEach(fakeAsync(() => {
-    service.get('/test').subscribe(_res => {
+    storageSpy.stackConfig = {
+      uuid: '12345',
+      name: 'Practera Classic App - Stage',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://test.com',
+      type: 'app',
+      coreApi: 'https://test.com',
+      coreGraphQLApi: 'https://test.com',
+      chatApi: 'https://test.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-stage.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    };
+    http.get('/test').subscribe(_res => {
       expect(_res).toBeTruthy();
     });
     tick();
@@ -89,17 +104,35 @@ describe('RequestInterceptor', () => {
   }));
 
   it('should not return teamId when url contains teams.json', fakeAsync(() => {
-      service.get('/teams.json').subscribe(_res => {
-        expect(_res).toBeTruthy();
-      });
-      tick();
+    const URL = 'https://test.com/teams.json';
+    http.get(URL).subscribe(_res => {
+      expect(_res).toBeTruthy();
+    });
+    tick();
 
-      const req = httpMock.expectOne({
-        url: 'test.com/teams.json',
-        method: 'GET'
-      });
+    const req = httpMock.expectOne({
+      url: URL,
+      method: 'GET'
+    });
 
-      expect(req.request.url).toContain('/teams.json');
-      expect(req.request.headers.get('teamId')).toBe(null);
-    }));
+    expect(req.request.url).toContain('/teams.json');
+    expect(req.request.headers.get('teamId')).toBe(null);
+  }));
+
+  it('should not return apikey when url contains /auths.json', fakeAsync(() => {
+    const URL = 'https://test.com/auths.json';
+    http.get(URL).subscribe(_res => {
+      expect(_res).toBeTruthy();
+    });
+    tick();
+
+    const req = httpMock.expectOne({
+      url: URL,
+      method: 'GET'
+    });
+
+    expect(req.request.url).toContain('/auths.json');
+    expect(req.request.headers.get('apikey')).toBe(null);
+  }));
+
 });
