@@ -57,7 +57,6 @@ export class TestUtils extends SpyObject {
   dueDateFormatter;
   changeThemeColor;
   changeCardBackgroundImage;
-  has;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
