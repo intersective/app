@@ -18,6 +18,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { ApolloService } from '../apollo/apollo.service';
 import { UtilsService } from '@app/services/utils.service';
+import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -81,7 +82,8 @@ describe('RequestService', () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', [
-            'graphQLQuery',
+            'graphQLWatch',
+            'graphQLFetch',
             'graphQLMutate',
             'chatGraphQLQuery',
             'chatGraphQLMutate',
@@ -116,7 +118,8 @@ describe('RequestService', () => {
     mockBackend = TestBed.inject(HttpTestingController);
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
-    storageSpy = TestBed.inject(BrowserStorageService);
+    storageSpy = TestBed.inject(BrowserStorageService);Î
+    apolloServiceSpy = TestBed.inject(ApolloService);Î
   });
 
   it('should be created', () => {
@@ -441,6 +444,29 @@ describe('RequestService', () => {
 
       service.apiResponseFormatError('testing error');
       expect(console.error).toHaveBeenCalledWith('API response format error.\ntesting error');
+    });
+  });
+
+  describe('graphQLFetch()', () => {
+    const SAMPLE_QUERY = `query user {
+      teams {
+        sample
+        format
+      }
+    }`;
+
+    it('trigger GraphQL API to fetch record once', () => {
+      apolloServiceSpy.graphQLFetchquery = jasmine.createSpy('graphQLFetchquery').and.returnValue(of({ data: true }));
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(apolloServiceSpy.query).toHaveBeenCalled();
+    });
+
+    it('should handle throwed error at error occur', () => {
+      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
+      service['handleError'] = jasmine.createSpy('handleError');
+
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(service['handleError']).toHaveBeenCalled();
     });
   });
 
