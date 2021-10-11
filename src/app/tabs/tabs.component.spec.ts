@@ -105,7 +105,6 @@ describe('TabsComponent', () => {
         {
           provide: SharedService,
           useValue: jasmine.createSpyObj('SharedService', [
-            'getTeamInfo',
             'stopPlayingVideos',
             'markTopicStopOnNavigating',
           ])
