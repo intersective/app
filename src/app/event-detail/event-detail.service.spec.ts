@@ -3,7 +3,6 @@ import { EventDetailService } from './event-detail.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testing/utils';
-import { Apollo } from 'apollo-angular';
 
 describe('EventDetailService', () => {
   let service: EventDetailService;
@@ -13,7 +12,6 @@ describe('EventDetailService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         EventDetailService,
         {
           provide: RequestService,
@@ -50,7 +48,7 @@ describe('EventDetailService', () => {
   it('should pass correct parameter to bookEvent()', () => {
     requestSpy.post.and.returnValue(of({}));
     service.bookEvent(mockEvent).subscribe();
-    expect(requestSpy.post.calls.first().args[1]).toEqual({
+    expect(requestSpy.post.calls.first().args[0].data).toEqual({
       event_id: mockEvent.id,
       delete_previous: mockEvent.singleBooking
     });

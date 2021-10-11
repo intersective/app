@@ -31,7 +31,9 @@ export class ReviewsComponent extends RouterEnter {
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     // trigger onEnter after the element get generated
     setTimeout(() => {
-      this.reviewList.onEnter();
+      if (this.reviewList && this.reviewList.onEnter) {
+        this.reviewList.onEnter();
+      }
     });
   }
 
@@ -46,7 +48,9 @@ export class ReviewsComponent extends RouterEnter {
     this.contextId = +event.contextId;
     // trigger onEnter after the element get generated
     setTimeout(() => {
-      this.assessment.onEnter();
+      if (this.assessment && this.assessment.onEnter) {
+        this.assessment.onEnter();
+      }
     });
   }
 
