@@ -119,7 +119,7 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
-    apolloSpy = TestBed.inject(ApolloService);
+    apolloServiceSpy = TestBed.inject(ApolloService);
   });
 
   it('should be created', () => {
@@ -465,7 +465,6 @@ describe('RequestService', () => {
       apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(apolloServiceSpy.graphQLFetch).toHaveBeenCalled();
-      mockBackend.verify();
     });
 
     it('should handle throwed error at error occur', () => {
