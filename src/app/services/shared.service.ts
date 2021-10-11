@@ -96,6 +96,7 @@ export class SharedService {
     return this.request.graphQLFetch(
       `query user {
         teams {
+          id
           uuid
           name
         }
