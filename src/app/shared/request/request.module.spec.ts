@@ -10,7 +10,7 @@ describe('RequestModule', () => {
       imports: [
         RequestModule.forRoot({
           appkey: 'TEST',
-          loginApiUrl: 'TEST'
+          prefixUrl: 'TEST',
         }),
       ],
     });

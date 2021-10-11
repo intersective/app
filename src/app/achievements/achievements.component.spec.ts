@@ -10,8 +10,7 @@ import {
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 class Page {
   get totalPoints() {
@@ -52,10 +51,7 @@ describe('AchievementsComponent', () => {
       declarations: [ AchievementsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
         NewRelicService,
         {
           provide: AchievementsService,

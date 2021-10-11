@@ -16,7 +16,7 @@ import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
@@ -31,20 +31,13 @@ describe('ContactNumberFormComponent', () => {
       declarations: [ ContactNumberFormComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock,
         },
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
-        {
-          provide: SettingService,
-          useValue: jasmine.createSpyObj('SettingService', {
-            updateProfile: of(true)
-          }),
-        },
+        UtilsService,
+        SettingService,
         {
           provide: NotificationService,
           useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
@@ -168,7 +161,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (US)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
         success: true
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
@@ -187,7 +180,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (AUS)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
         success: true
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
@@ -206,7 +199,7 @@ describe('ContactNumberFormComponent', () => {
 
     it('should fail update contact number gracefully (notify user)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
+      spyOn(settingSpy, 'updateProfile').and.returnValue(of({
         success: false
       }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {

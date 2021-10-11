@@ -7,7 +7,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
-import { ApolloService } from '@shared/apollo/apollo.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
 
@@ -40,9 +39,8 @@ export class SharedService {
     private request: RequestService,
     private http: HttpClient,
     private newrelic: NewRelicService,
-    private topicService: TopicService,
-    private apolloService: ApolloService,
-    private pusherService: PusherService
+    private readonly topicService: TopicService,
+    private readonly pusherService: PusherService,
   ) {}
 
   // call this function on every page refresh and after switch program
@@ -122,11 +120,27 @@ export class SharedService {
   }
 
   updateProfile(data: Profile) {
-    return this.request.post(
-      {
-        endPoint: api.post.profile,
-        data
-      });
+    return this.request.post(api.post.profile, data);
+  }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.utils.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utils.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utils.utcToLocal(dueDate);
   }
 
   /**
@@ -178,14 +192,10 @@ export class SharedService {
   }
 
   /**
-   * Initialise web services like Pusher/ apollo if there stack info in storage
-   */
+  * Initialise web services like Pusher
+  */
   async initWebServices() {
-    if (this.storage.stackConfig) {
-      await this.pusherService.initialise();
-      this.apolloService.initiateCoreClient();
-      this.apolloService.initiateChatClient();
-    }
+    await this.pusherService.initialise();
   }
 
 }

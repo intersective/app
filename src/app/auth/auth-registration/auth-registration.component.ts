@@ -10,8 +10,6 @@ import {
   FormBuilder
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { of, throwError, iif } from 'rxjs';
-import { concatMap, retryWhen, delay } from 'rxjs/operators';
 
 import { AuthService } from '../auth.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -28,7 +26,6 @@ export class AuthRegistrationComponent implements OnInit {
   password: string;
   confirmPassword: string;
   isAgreed = false;
-  submitting = false;
   registerationForm: FormGroup;
   hide_password = false;
   user: any = {
@@ -166,18 +163,7 @@ export class AuthRegistrationComponent implements OnInit {
     window.open(fileURL, '_system');
   }
 
-   /**
-   * This method will log user in to the system.
-   * - first it check for validation of password. if it invalid will show an error in UI.
-   * - Then it call 'Core API' to register the new user by passing 'password', 'user_id', and 'key'.
-   * - After API call success. Then it calling 'Login API' through 'authService.login' by passing 'username' and 'password'.
-   * - If API call success 'Lgoin API' will return 'apikey'.
-   * - Then method calling 'Core API' through 'authService.directLoginWithApikey' by passing 'apikey' got from response of 'authService.login'
-   * - If API call success 'Core API' will return programs and other things related to login user.
-   * to read more about flow check documentation (./docs/workflows/auth-workflows.md)
-   */
   register() {
-    this.submitting = true;
     if (this.validateRegistration()) {
       const nrRegisterTracer = this.newRelic.createTracer('registering');
       this.newRelic.actionText('Validated registration');
@@ -196,46 +182,25 @@ export class AuthRegistrationComponent implements OnInit {
             const nrAutoLoginTracer = this.newRelic.createTracer('auto login');
             this.authService
               .login({
-                username: this.user.email,
+                email: this.user.email,
                 password: this.confirmPassword
               })
-              .pipe(
-                // using retryWhen to handle errors
-                retryWhen(errors => errors.pipe(
-                // Use concat map to keep the errors in order and make sure they aren't executed in parallel
-                concatMap((e, i) =>
-                  // Executes a conditional Observable depending on the result of the first argument
-                  iif(
-                    // only retrying 3 times.
-                    // why 3 times - it is not predictable how much time it takes to save user to global DB. so we try 3 times.
-                    () => i > 3,
-                    // If the condition is true we throw the error (the last error)
-                    throwError(e),
-                    // Otherwise we pipe this back into our stream and delay the retry
-                    of(e).pipe(delay(3000)))
-                )
-              ))
-              )
               .subscribe(
                 async res => {
-                  this.storage.set('isLoggedIn', true);
-                  this.storage.stacks = res.stacks;
-                  this.storage.loginApiKey = res.apikey;
+                  nrAutoLoginTracer();
                   this.storage.remove('unRegisteredDirectLink');
-                  this.submitting = false;
-                  this.showPopupMessages('shortMessage', 'Registration success!', ['switcher', 'switcher-program']);
+                  const route = await this.switcherService.switchProgramAndNavigate(res.programs);
+                  this.showPopupMessages('shortMessage', 'Registration success!', route);
                 },
                 err => {
                   nrAutoLoginTracer();
                   this.newRelic.noticeError('auto login failed', JSON.stringify(err));
-                  this.submitting = false;
-                  this.showPopupMessages('shortMessage', 'Auto login not completed! Please login using your new credentials');
+                  this.showPopupMessages('shortMessage', 'Registration not complete!');
                 }
               );
           },
           error => {
             this.newRelic.noticeError('registration failed', JSON.stringify(error));
-            this.submitting = false;
 
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
@@ -255,8 +220,6 @@ export class AuthRegistrationComponent implements OnInit {
             this.showPopupMessages('shortMessage', 'Registration not complete!');
           }
         );
-    } else {
-      this.submitting = false;
     }
   }
 

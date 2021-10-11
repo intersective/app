@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
@@ -26,7 +27,9 @@ export class AppComponent implements OnInit {
     private versionCheckService: VersionCheckService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    // private splashScreen: SplashScreen,
+    // private statusBar: StatusBar
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -49,18 +52,107 @@ export class AppComponent implements OnInit {
     this.configVerification();
     this.sharedService.onPageLoad();
 
-    this.getCustomConfigurations();
-    this.analyseQueryParams();
+    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
+    // Get the custom branding info and update the theme color if needed
+    const domain = window.location.hostname;
+    this.authService.getConfig({domain}).subscribe(
+      (response: any) => {
+        if (response !== null) {
+          const expConfig = response.data;
+          const numOfConfigs = expConfig.length;
+          if (numOfConfigs > 0 && numOfConfigs < 2) {
+            let logo = expConfig[0].logo;
+
+            const config = expConfig[0].config || {}; // let it fail gracefully
+
+            if (config.html_branding && config.html_branding.header) {
+              this.customHeader = config.html_branding.header;
+            }
+            if (this.customHeader) {
+              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
+            }
+
+            // add the domain if the logo url is not a full url
+            if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+              logo = environment.APIEndpoint + logo;
+            }
+            const colors = {
+              theme: config.theme_color,
+            };
+            this.storage.setConfig({
+              logo,
+              colors,
+            });
+
+            // use brand color from getConfig API if no cached color available
+            // in storage.getUser()
+            if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+              this.utils.changeThemeColor(colors);
+            }
+          }
+        }
+      },
+      err => {
+        this.newRelic.noticeError(`${JSON.stringify(err)}`);
+      }
+    );
+
+    let searchParams = null;
+    let queryString = '';
+    if (window.location.search) {
+      queryString =  window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    }
+    searchParams = new URLSearchParams(queryString);
+
+    if (searchParams.has('apikey')) {
+      const queries = this.utils.urlQueryToObject(queryString);
+      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
+    }
+
+    if (searchParams.has('do')) {
+      switch (searchParams.get('do')) {
+        case 'secure':
+          if (searchParams.has('auth_token')) {
+            const queries = this.utils.urlQueryToObject(queryString);
+            this.navigate([
+              'secure',
+              searchParams.get('auth_token'),
+              queries
+            ]);
+          }
+          break;
+        case 'resetpassword':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            this.navigate([
+              'reset_password',
+              searchParams.get('key'),
+              searchParams.get('email')
+            ]);
+          }
+          break;
+
+        case 'registration':
+          if (searchParams.has('key') && searchParams.has('email')) {
+            this.navigate([
+              'registration',
+              searchParams.get('email'),
+              searchParams.get('key')
+            ]);
+          }
+          break;
+      }
+    }
   }
 
-  initializeApp(): Promise<any> {
-    return this.platform.ready().then(async () => {
+  initializeApp() {
+    this.platform.ready().then(async () => {
       if (environment.production) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }
-
-      // initialise Pusher/ apollo when app loading if there stack info in storage
+      // initialise Pusher when app loading
       this.sharedService.initWebServices();
     });
   }
@@ -76,105 +168,4 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  /**
-   * find specific URL parameters in URL and act on them
-   *
-   * @return  {Promise<any>} deferred navigation to other page based on
-   *                          value available in URL
-   */
-  analyseQueryParams(): Promise<any> {
-    const searchParams = this.utils.getQueryParams();
-
-    if (searchParams.has('do')) {
-      switch (searchParams.get('do')) {
-        case 'secure':
-          if (searchParams.has('auth_token')) {
-            const queries = this.utils.urlQueryToObject(searchParams.toString());
-            return this.navigate([
-              'secure',
-              searchParams.get('auth_token'),
-              queries
-            ]);
-          }
-          break;
-
-        case 'resetpassword':
-          if (searchParams.has('apikey')) {
-            return this.navigate([
-              'reset_password',
-              searchParams.get('apikey')
-            ]);
-          }
-          break;
-
-        case 'registration':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            return this.navigate([
-              'registration',
-              searchParams.get('email'),
-              searchParams.get('key')
-            ]);
-          }
-          break;
-      }
-    }
-
-    if (searchParams.has('apikey')) {
-      const queries = this.utils.urlQueryToObject(searchParams.toString());
-      return this.navigate(['global_login', searchParams.get('apikey'), queries]);
-    }
-  }
-
-  // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
-  /**
-   * this will call core API to get custom branding and will update branding info.
-   * it will only call core API if url have stack_uuid or storage have stackConfig.
-   */
-  getCustomConfigurations() {
-    const queryParams = this.utils.getQueryParams();
-    if (queryParams.has('stack_uuid') || this.storage.stackConfig) {
-      const domain = window.location.hostname;
-      this.authService.getConfig({domain}).subscribe(
-        (response: any) => {
-          if (response !== null) {
-            const expConfig = response.data;
-            const numOfConfigs = expConfig.length;
-            if (numOfConfigs > 0 && numOfConfigs < 2) {
-              let logo = expConfig[0].logo;
-
-              const config = expConfig[0].config || {}; // let it fail gracefully
-
-              if (config.html_branding && config.html_branding.header) {
-                this.customHeader = config.html_branding.header;
-              }
-              if (this.customHeader) {
-                this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
-              }
-
-              // add the domain if the logo url is not a full url
-              if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
-                logo = environment.APIEndpoint + logo;
-              }
-              const colors = {
-                theme: config.theme_color,
-              };
-              this.storage.setConfig({
-                logo,
-                colors,
-              });
-
-              // use brand color from getConfig API if no cached color available
-              // in storage.getUser()
-              if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
-                this.utils.changeThemeColor(colors);
-              }
-            }
-          }
-        },
-        err => {
-          this.newRelic.noticeError(`${JSON.stringify(err)}`);
-        }
-      );
-    }
-  }
 }

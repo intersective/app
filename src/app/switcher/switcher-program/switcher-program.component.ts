@@ -1,14 +1,14 @@
 import { Component, AfterContentChecked } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Injectable, Inject } from '@angular/core';
 import { RouterEnter } from '@services/router-enter.service';
 import { SwitcherService, ProgramObj } from '../switcher.service';
 import { LoadingController } from '@ionic/angular';
+import { environment } from '@environments/environment';
+import { PusherService } from '@shared/pusher/pusher.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService, Stack } from '@services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
-import { AuthService } from '@app/auth/auth.service';
+import { UtilsService } from '@services/utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,66 +23,38 @@ import { AuthService } from '@app/auth/auth.service';
 export class SwitcherProgramComponent extends RouterEnter implements AfterContentChecked {
   routeUrl = '/switcher/switcher-program';
   programs: Array<ProgramObj>;
-  isProgramsLoading: boolean;
-  stacks: Stack[];
-
   constructor(
     public loadingController: LoadingController,
     public router: Router,
+    private pusherService: PusherService,
     private switcherService: SwitcherService,
     private newRelic: NewRelicService,
     private notificationService: NotificationService,
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService,
-    readonly storage: BrowserStorageService,
-    readonly utils: UtilsService,
-  ) {
-    super(router);
-    this.activatedRoute.data.subscribe(data => {
-      this.isProgramsLoading = true;
-      this.stacks = data.stacks;
-    });
-  }
+    private utils: UtilsService
+  ) { super(router); }
 
   onEnter() {
-    this.programs = [];
     this.newRelic.setPageViewName('program switcher');
-    this.switcherService.getPrograms(this.stacks).subscribe(
-      async programs => {
-        // redirect user back to login if didn't found any program for the user.
-        if (programs.length <= 0) {
-          return this.notificationService.alert({
-            header: 'Error in accessing experiences',
-            message: `Didn't find any experience user has access to enter. Please Login using another valid account.`,
-            buttons: [
-              {
-                text: 'OK',
-                role: 'cancel',
-                handler: () => {
-                  this.isProgramsLoading = false;
-                  this.router.navigate(['logout']);
-                },
-              },
-            ],
-          });
-        }
-
+    this.switcherService.getPrograms()
+      .subscribe(programs => {
         this.programs = programs;
-
-        // IF user have access to only one program then switch to it
-        if (programs.length === 1) {
-          await this.switch(0);
-        } else {
-          this.isProgramsLoading = false;
-        }
-      },
-      error => {
-        this.isProgramsLoading = false;
+        this._getProgresses(programs);
       });
   }
 
   ngAfterContentChecked() {
     document.getElementById('page-title').focus();
+  }
+
+  private _getProgresses(programs) {
+    const projectIds = programs.map(v => v.project.id);
+    this.switcherService.getProgresses(projectIds).subscribe(res => {
+      res.forEach(progress => {
+        const i = this.programs.findIndex(program => program.project.id === progress.id);
+        this.programs[i].progress = progress.progress;
+        this.programs[i].todoItems = progress.todoItems;
+      });
+    });
   }
 
   async switch(index): Promise<void> {
@@ -95,14 +67,8 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
     await loading.present();
 
     try {
-      this.storage.setUser({apikey: this.programs[index].apikey});
-      this.storage.set('programs', this.programs);
-      this.storage.set('isLoggedIn', true);
-      this.storage.stackConfig = this.programs[index].stack;
-
       const route = await this.switcherService.switchProgramAndNavigate(this.programs[index]);
       loading.dismiss().then(() => {
-        this.isProgramsLoading = false;
         nrSwitchedProgramTracer();
         this.router.navigate(route);
       });
@@ -116,9 +82,5 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
       this.newRelic.noticeError('switch program failed', JSON.stringify(err));
     }
     return;
-  }
-
-  logout() {
-    return this.authService.logout();
   }
 }

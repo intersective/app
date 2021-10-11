@@ -1,7 +1,7 @@
 import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
 import { Observable, interval, pipe } from 'rxjs';
 import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { RequestService } from '@shared/request/request.service';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class VersionCheckService {
   private currentHash = '{{POST_BUILD_ENTERS_HASH_HERE}}';
 
   constructor(
-    private http: HttpClient,
+    private requestService: RequestService,
     private router: Router,
     private ngZone: NgZone
   ) {}
@@ -27,22 +27,19 @@ export class VersionCheckService {
             this.router.navigate(['logout', { t: new Date().getTime() }]);
           }
         },
-        (err) => console.error
+        (err) => console.log
       );
     });
   }
 
   trackVersion(frequency): Observable<any> {
     return interval(frequency).pipe(
-      () => this.http.get(
-        `${window.location.origin}/version.json?t=${new Date().getTime()}`,
-        {
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-          },
-        },
+      switchMap(() => this.requestService.get(`${window.location.origin}/version.json?t=${new Date().getTime()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
+          'Pragma': 'no-cache',
+          'Expires': 0,
+        }}),
       ),
       retryWhen(errors => {
         // retry for 5 times if anything go wrong

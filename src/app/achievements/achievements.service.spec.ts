@@ -3,8 +3,7 @@ import { AchievementsService } from './achievements.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('AchievementsService', () => {
   let service: AchievementsService;
@@ -13,10 +12,7 @@ describe('AchievementsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
         AchievementsService,
         {
           provide: RequestService,
@@ -145,7 +141,7 @@ describe('AchievementsService', () => {
     requestSpy.post.and.returnValue(of({}));
     service.markAchievementAsSeen(11);
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[0].data).toEqual({
+    expect(requestSpy.post.calls.first().args[1]).toEqual({
       project_id: 1,
       identifier: 'Achievement-11',
       is_done: true

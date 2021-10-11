@@ -4,6 +4,7 @@
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
   production: false,
+  skipGlobalLogin: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
@@ -11,7 +12,6 @@ export const environment = {
   graphQL: 'http://127.0.0.1:8000/',
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
-  loginAPIUrl: 'https://login-api.practera.com/',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
   intercomAppId: '',
   filestack: {

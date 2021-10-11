@@ -32,10 +32,6 @@ export class ReviewRatingService {
       tags: data.tags
     };
 
-    return this.request.post(
-      {
-        endPoint: api.post.reviewRating,
-        data: postData
-      });
+    return this.request.post(api.post.reviewRating, postData);
   }
 }

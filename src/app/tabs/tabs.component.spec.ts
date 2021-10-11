@@ -14,7 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 import { ChatService } from '@app/chat/chat.service';
 import { ChatsFixture } from '@testing/fixtures';
 
@@ -42,10 +42,8 @@ describe('TabsComponent', () => {
       declarations: [ TabsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
+        UtilsService,
         {
           provide: ModalController,
           useValue: {
@@ -102,13 +100,6 @@ describe('TabsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
-        {
-          provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', [
-            'stopPlayingVideos',
-            'markTopicStopOnNavigating',
-          ])
-        }
       ],
     })
     .compileComponents();

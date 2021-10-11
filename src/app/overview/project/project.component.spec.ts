@@ -2,17 +2,19 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, QueryList } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectComponent } from './project.component';
 import { ProjectService } from './project.service';
-import { of } from 'rxjs';
+import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
 import { HomeService } from '../home/home.service';
 import { TestUtils } from '@testing/utils';
+import { DOCUMENT } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
-import { NotificationService } from '@app/shared/notification/notification.service';
+import { Apollo } from 'apollo-angular';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -63,11 +65,9 @@ describe('ProjectComponent', () => {
       declarations: [ ProjectComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
+        UtilsService,
         NewRelicService,
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
         {
           provide: ElementRef,
           useClass: MockElementRef
@@ -96,10 +96,6 @@ describe('ProjectComponent', () => {
         {
           provide: Document,
           useClass: MockDocument
-        },
-        {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['presentToast'])
         }
       ],
     })

@@ -6,6 +6,7 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 describe('EventListService', () => {
   let service: EventListService;
@@ -17,11 +18,9 @@ describe('EventListService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         EventListService,
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        UtilsService,
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])

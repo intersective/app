@@ -13,7 +13,7 @@ import {
 } from '@angular/common/http/testing';
 import { NotificationService } from '@shared/notification/notification.service';
 import { MockRouter } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewListComponent', () => {
   let component: ReviewListComponent;
@@ -28,15 +28,10 @@ describe('ReviewListComponent', () => {
       declarations: [ ReviewListComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
+        Apollo,
+        UtilsService,
         NewRelicService,
-        {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert']),
-        },
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        NotificationService,
         {
           provide: ReviewListService,
           useValue: jasmine.createSpyObj('ReviewListService', ['getReviews'])
@@ -66,7 +61,7 @@ describe('ReviewListComponent', () => {
         isDone: i > 3,
         name: 'Assessment' + i,
         submitterName: 'Submitter' + i,
-        date: UtilsService.prototype.timeFormatter('2019-02-01'),
+        date: utils.timeFormatter('2019-02-01'),
         teamName: '',
         contextId: i + 3
       };
@@ -87,7 +82,7 @@ describe('ReviewListComponent', () => {
     const assessmentId = 2;
     const submissionId = 3;
 
-    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
+    spyOn(utils, 'isMobile').and.returnValue(false);
     spyOn(component.navigate, 'emit');
     component.gotoReview(contextId, assessmentId, submissionId);
 
@@ -100,7 +95,7 @@ describe('ReviewListComponent', () => {
   });
 
   it('should navigate to the correct page gotoReview() (mobile)', () => {
-    utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
+    spyOn(utils, 'isMobile').and.returnValue(true);
     component.gotoReview(1, 2, 3);
     expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3, {from: 'reviews'}]);
   });

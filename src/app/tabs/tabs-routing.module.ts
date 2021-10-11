@@ -15,7 +15,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../overview/overview.module').then(m => m.OverviewModule),
+            loadChildren: '../overview/overview.module#OverviewModule',
           }
         ]
       },
@@ -24,7 +24,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../events/events.module').then(m => m.EventsModule),
+            loadChildren: '../events/events.module#EventsModule',
           }
         ]
       },
@@ -33,7 +33,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../tasks/tasks.module').then(m => m.TasksModule),
+            loadChildren: '../tasks/tasks.module#TasksModule'
           }
         ]
       },
@@ -42,7 +42,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../reviews/reviews.module').then(m => m.ReviewsModule),
+            loadChildren: '../reviews/reviews.module#ReviewsModule'
           }
         ]
       },
@@ -51,7 +51,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule),
+            loadChildren: '../chat/chat.module#ChatModule',
           }
         ]
       },
@@ -60,7 +60,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('../settings/settings.module').then(m => m.SettingsModule),
+            loadChildren: '../settings/settings.module#SettingsModule'
           }
         ],
         canDeactivate: [SinglePageDeactivateGuard]

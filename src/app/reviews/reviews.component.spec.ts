@@ -1,11 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { ReviewsComponent } from './reviews.component';
-import { Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { ReviewListComponent } from '../review-list/review-list.component';
+import { Apollo } from 'apollo-angular';
 
 describe('ReviewsComponent', () => {
   let fixture: ComponentFixture<ReviewsComponent>;
@@ -16,10 +16,7 @@ describe('ReviewsComponent', () => {
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       declarations: [ ReviewsComponent ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({submissionId: 1}),

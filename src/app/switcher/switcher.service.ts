@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin, throwError } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService, DevModeService } from '@shared/request/request.service';
+import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService, Stack } from '@services/storage.service';
+import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { SharedService } from '@services/shared.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
-import { HttpParams } from '@angular/common/http';
 
 /**
  * @name api
@@ -18,9 +17,7 @@ import { HttpParams } from '@angular/common/http';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json',
-  jwt: 'api/v2/users/jwt/refresh.json',
-  login: 'api/auths.json'
+  jwt: 'api/v2/users/jwt/refresh.json'
 };
 
 export interface ProgramObj {
@@ -31,8 +28,6 @@ export interface ProgramObj {
   experience: Experience;
   progress?: number;
   todoItems?: number;
-  apikey: string;
-  stack: Stack;
 }
 
 export interface Program {
@@ -81,100 +76,22 @@ export class SwitcherService {
     private pusherService: PusherService,
     private reviewsService: ReviewListService,
     private eventsService: EventListService,
-    private devModeService: DevModeService
   ) {}
 
-  getPrograms(stackList: Stack[]): Observable<any> {
-    if (!stackList || stackList.length < 1) {
-      return throwError('No stacks available.');
-    }
-    const stackRequests = [];
-    const apikeyFromLoginAPI = this.storage.loginApiKey;
-    const body = new HttpParams()
-      .set('apikey', apikeyFromLoginAPI);
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      service: 'LOGIN'
-    };
-    stackList.forEach(stack => {
-      stackRequests.push(this.request.post(
-        {
-          endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
-          data: body,
-          httpOptions: { headers },
-          isFullUrl: true
-        }).pipe(map(res => {
-          res.stack = stack;
-          return res;
-        })));
-    });
-    return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
-  }
-
-  private _normaliseAuthResults(apiResults: any[]): any {
-    const programsList = [];
-    apiResults.forEach(result => {
-      const data = result.data;
-      if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
-        data.Timelines.map(
-          timeline => {
-            // Only show the experiences that user have license as participant or mentor
-            if (this.devModeService.isDevMode() || this.utils.has(timeline, 'License.role') && (timeline.License.role === 'participant' || timeline.License.role === 'mentor')) {
-              if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-                if (!this.utils.has(timeline.Program, 'config')) {
-                  timeline.Program.config = {
-                    theme_color: 'var(--ion-color-primary)'
-                  };
-                } else {
-                  timeline.Program.config.theme_color = 'var(--ion-color-primary)';
-                }
-              }
-              // Update lead image if project have one.
-              timeline.Project.lead_image = this.getLeadImage(timeline.Project);
-
-              // Not showing draft experiences in experience switcher page
-              // If there are no status that means it's a P1 experience so we need to show it.
-              if (!this.utils.has(timeline.Experience, 'status') || timeline.Experience.status !== 'draft') {
-                programsList.push({
-                  enrolment: timeline.Enrolment,
-                  program: timeline.Program,
-                  project: timeline.Project,
-                  timeline: timeline.Timeline,
-                  experience: timeline.Experience,
-                  stack: result.stack,
-                  apikey: data.apikey
-                });
-              }
-            }
-          }
-        );
-      }
-    });
-    // sort program list before return by enrolment date
-    programsList.sort((a, b) => {
-      a = new Date(a.enrolment.created);
-      b = new Date(b.enrolment.created);
-      return a.date - a.date;
-    });
-    return programsList;
-  }
-
-  /**
-   * update lead image url to file stack resize url depend on device.
-   * @param project project object
-   * @returns string - lead imahe url
-   */
-  getLeadImage(project: any) {
+  getPrograms() {
+    const programs = this.storage.get('programs');
     const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
     let imagewidth = 600;
-    if (project.lead_image) {
-      const imageId = project.lead_image.split('/').pop();
-      if (!this.utils.isMobile()) {
-        imagewidth = 1024;
+    programs.forEach(program => {
+      if (program.project.lead_image) {
+        const imageId = program.project.lead_image.split('/').pop();
+        if (!this.utils.isMobile()) {
+          imagewidth = 1024;
+        }
+        program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
       }
-      return `${cdn}${imagewidth}/${imageId}`;
-    }
-    return null;
+    });
+    return of(programs);
   }
 
   /**
@@ -226,7 +143,7 @@ export class SwitcherService {
   }
 
   switchProgram(programObj: ProgramObj): Observable<any> {
-    // initialise Pusher and apollo here if there stack info in storage
+    // initialise Pusher
     this.sharedService.initWebServices();
 
     const colors = this.extractColors(programObj);
@@ -349,7 +266,7 @@ export class SwitcherService {
       } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
         await this.switchProgram(programs[0]).toPromise();
       } else {
-        // one program object -> {}
+      // one program object -> {}
         await this.switchProgram(programs).toPromise();
       }
 

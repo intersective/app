@@ -41,7 +41,7 @@ const routes: Routes = [
         canActivate: [UnauthorizedGuard],
       },
       {
-        path: 'reset_password/:apikey',
+        path: 'reset_password/:key/:email',
         component: AuthResetPasswordComponent,
         canActivate: [UnauthorizedGuard],
       },

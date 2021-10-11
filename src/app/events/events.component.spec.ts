@@ -3,10 +3,11 @@ import { EventsComponent } from './events.component';
 import { EventListModule } from '../event-list/event-list.module';
 import { EventDetailModule } from '../event-detail/event-detail.module';
 import { AssessmentModule } from '../assessment/assessment.module';
+import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { MockRouter } from '@testing/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
@@ -18,10 +19,7 @@ describe('EventsComponent', () => {
       imports: [ EventListModule, EventDetailModule, AssessmentModule ],
       declarations: [ EventsComponent ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
         {
           provide: Router,
           useClass: MockRouter

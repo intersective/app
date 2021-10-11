@@ -22,11 +22,7 @@ export class SettingService {
   }
 
   updateProfileImage(data) {
-    return this.request.post(
-      {
-       endPoint: api.profileImageUpload,
-       data
-      })
+    return this.request.post(api.profileImageUpload, data)
       .pipe(map(response => {
         if (response.success && response.data) {
           return response.data;

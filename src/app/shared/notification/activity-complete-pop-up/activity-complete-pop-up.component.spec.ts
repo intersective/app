@@ -5,8 +5,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testing/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 describe('ActivityCompletePopUpComponent', () => {
   let component: ActivityCompletePopUpComponent;
@@ -19,10 +18,7 @@ describe('ActivityCompletePopUpComponent', () => {
       declarations: [ ActivityCompletePopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
         {
           provide: ModalController,
           useValue: modalCtrlSpy

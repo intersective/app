@@ -112,11 +112,6 @@ export class AchievementsService {
       identifier: 'Achievement-' + achievementId,
       is_done: true
     };
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: postData
-      }
-    ).subscribe();
+    return this.request.post(api.post.todoItem, postData).subscribe();
   }
 }

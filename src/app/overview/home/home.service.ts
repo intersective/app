@@ -4,8 +4,11 @@ import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { Activity } from '../project/project.service';
+import { Question, Meta} from '../../fast-feedback/fast-feedback.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Event, EventListService } from '@app/event-list/event-list.service';
+import { SharedService } from '@services/shared.service';
 
 /**
  * @name api
@@ -54,9 +57,10 @@ export class HomeService {
     private utils: UtilsService,
     private notification: NotificationService,
     private eventsService: EventListService,
+    public sharedService: SharedService
   ) {}
 
-  getTodoItems(): Observable<any> {
+  getTodoItems() {
     return this.request.get(api.get.todoItem, {
         params: {
           project_id: this.storage.getUser().projectId
@@ -185,7 +189,7 @@ export class HomeService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = this.utils.dueDateFormatter(todoItem.meta.due_date);
+    item.description = this.sharedService.dueDateFormatter(todoItem.meta.due_date);
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -353,7 +357,7 @@ export class HomeService {
         return {
           type: 'assessment_submission_reminder',
           name: event.meta.AssessmentSubmissionReminder.assessment_name,
-          description: this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          description: this.sharedService.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
@@ -396,15 +400,11 @@ export class HomeService {
   }
 
   postEventReminder(event) {
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: {
-          project_id: this.storage.getUser().projectId,
-          identifier: 'EventReminder-' + event.id,
-          is_done: true
-        }
-      }).subscribe();
+    return this.request.post(api.post.todoItem, {
+      project_id: this.storage.getUser().projectId,
+      identifier: 'EventReminder-' + event.id,
+      is_done: true
+    }).subscribe();
   }
 
 }

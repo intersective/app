@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventDetailComponent } from './event-detail.component';
 import { EventDetailService } from './event-detail.service';
-import { of } from 'rxjs';
+import { Observable, of, pipe } from 'rxjs';
 import { Router } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';
@@ -11,6 +11,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
+import { Apollo } from 'apollo-angular';
 
 class Page {
   get eventName() {
@@ -68,10 +69,8 @@ describe('EventDetailComponent', () => {
       declarations: [ EventDetailComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
+        Apollo,
+        UtilsService,
         {
           provide: EventDetailService,
           useValue: jasmine.createSpyObj('EventDetailService', ['cancelEvent', 'bookEvent'])

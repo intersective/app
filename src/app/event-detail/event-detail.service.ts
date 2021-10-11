@@ -21,14 +21,10 @@ export class EventDetailService {
   ) {}
 
   bookEvent(event: Event) {
-    return this.request.post(
-      {
-        endPoint: api.post.book,
-        data: {
-          event_id: event.id,
-          delete_previous: event.singleBooking
-        }
-      });
+    return this.request.post(api.post.book, {
+      event_id: event.id,
+      delete_previous: event.singleBooking
+    });
   }
 
   cancelEvent(event: Event) {

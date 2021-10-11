@@ -3,8 +3,7 @@ import { UtilsService, ThemeColor } from './utils.service';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { TestUtils } from '@testing/utils';
-import { ApolloService } from '@app/shared/apollo/apollo.service';
+import { Apollo } from 'apollo-angular';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {
@@ -23,15 +22,8 @@ describe('UtilsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        Apollo,
         UtilsService,
-        {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', {
-            'getClient': {
-              clearStore: jasmine.createSpy('clearStore')
-            }
-          })
-        }
       ]
     });
 
@@ -516,48 +508,6 @@ describe('UtilsService', () => {
       const randomNumber = service.randomNumber();
       expect(randomNumber).not.toEqual(123456);
       expect(typeof randomNumber === 'number').toBeTruthy();
-    });
-  });
-
-  describe('urlFormatter()', () => {
-    it('should format any kind of api url', () => {
-      const domains = [
-        'test.practera.com',
-        'http://test.practera.com',
-        'https://test.practera.com',
-        'test.practera.com/',
-        'http://test.practera.com/',
-        'https://test.practera.com/',
-      ];
-      const endpoints = ['login', '/login', 'login/', undefined];
-
-      const expectDomains = [
-        'https://test.practera.com/login',
-        'https://test.practera.com',
-        'http://test.practera.com/login',
-        'http://test.practera.com'
-      ];
-
-      domains.forEach((domain, dIndex) => {
-        endpoints.forEach((endpoint, eIndex) => {
-
-          if ((domain.includes('https://')) || (!domain.includes('https://') && !domain.includes('http://'))) {
-            if (eIndex === 3) {
-              expect(service.urlFormatter(domain, endpoint)).toEqual(expectDomains[1]);
-            } else {
-              expect(service.urlFormatter(domain, endpoint)).toEqual(expectDomains[0]);
-            }
-          }
-
-          if (domain.includes('http://')) {
-            if (eIndex === 3) {
-              expect(service.urlFormatter(domain, endpoint)).toEqual(expectDomains[3]);
-            } else {
-              expect(service.urlFormatter(domain, endpoint)).toEqual(expectDomains[2]);
-            }
-          }
-        });
-      });
     });
   });
 });

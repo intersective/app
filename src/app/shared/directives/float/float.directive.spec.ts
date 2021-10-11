@@ -1,10 +1,10 @@
 import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { TestBed, ComponentFixture, async } from '@angular/core/testing';
-import { ElementRef, Component, DebugElement, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ElementRef, Component, DebugElement } from '@angular/core';
 import { UtilsService } from '@services/utils.service';
 import { FloatDirective } from './float.directive';
-import { TestUtils } from '@testing/utils';
+import { Apollo } from 'apollo-angular';
 
 // @NOTE: keep this for future elements debugging (unit testing purpose only)
 function cardListingHelper(debugElement) {
@@ -108,18 +108,14 @@ describe('FloatDirective', () => {
       TestBed.configureTestingModule({
         imports: [ IonicModule ],
         declarations: [ TestScrollComponent, FloatDirective ],
-        schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
         providers: [
-          {
-            provide: UtilsService,
-            useClass: TestUtils,
-          },
+          Apollo,
+          UtilsService,
           // ElementRef
         ]
       });
 
       fixture = TestBed.createComponent(TestScrollComponent);
-      fixture.detectChanges(); // initial binding
       component = fixture.componentInstance;
       debugElement = fixture.debugElement.query(By.css('ion-content'));
     });
@@ -163,10 +159,8 @@ describe('FloatDirective', () => {
         imports: [ IonicModule ],
         declarations: [ FloatDirective, TestAppFloatIsActivityCardComponent ],
         providers: [
-          {
-            provide: UtilsService,
-            useClass: TestUtils
-          },
+          Apollo,
+          UtilsService,
         ]
       });
 

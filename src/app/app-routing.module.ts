@@ -15,32 +15,32 @@ const routes: Routes = [
   },
   {
     path: 'switcher',
-    loadChildren: () => import('./switcher/switcher.module').then(m => m.SwitcherModule),
+    loadChildren: './switcher/switcher.module#SwitcherModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'topic',
-    loadChildren: () => import('./topic/topic.module').then(m => m.TopicModule),
+    loadChildren: './topic/topic.module#TopicModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'assessment',
-    loadChildren: () => import('./assessment/assessment.module').then(m => m.AssessmentModule),
+    loadChildren: './assessment/assessment.module#AssessmentModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'achievements',
-    loadChildren: () => import('./achievements/achievements.module').then(m => m.AchievementsModule),
+    loadChildren: './achievements/achievements.module#AchievementsModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'activity-task',
-    loadChildren: () => import('./tasks/tasks.module').then(m => m.TasksModule),
+    loadChildren: './tasks/tasks.module#TasksModule',
     canLoad: [AuthGuard]
   },
   {
     path: 'settings-embed',
-    loadChildren: () => import('./settings-embed/settings-embed.module').then(m => m.SettingsEmbedModule),
+    loadChildren: './settings-embed/settings-embed.module#SettingsEmbedModule',
     canLoad: [AuthGuard]
   },
   {
@@ -50,7 +50,7 @@ const routes: Routes = [
   },
   {
     path: 'chat',
-    loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule),
+    loadChildren: './chat/chat.module#ChatModule',
     canLoad: [AuthGuard]
   },
   {
@@ -59,7 +59,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
+    loadChildren: './tabs/tabs.module#TabsModule',
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
   },
