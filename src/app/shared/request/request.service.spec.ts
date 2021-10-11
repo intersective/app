@@ -74,6 +74,7 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
+  let apolloServiceSpy: ApolloService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -456,7 +457,7 @@ describe('RequestService', () => {
     }`;
 
     it('trigger GraphQL API to fetch record once', () => {
-      apolloServiceSpy.graphQLFetchquery = jasmine.createSpy('graphQLFetchquery').and.returnValue(of({ data: true }));
+      apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(apolloServiceSpy.query).toHaveBeenCalled();
     });
