@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLFetch', 'graphQLWatch'])
         },
         {
           provide: Router,
@@ -264,7 +264,7 @@ describe('AuthService', () => {
   describe('getUUID()', function () {
     it('should get user uuid in string', () => {
       const UUID = 'SAMPLE-UUID';
-      requestSpy.graphQLQuery.and.returnValue(of({
+      requestSpy.graphQLWatch.and.returnValue(of({
         data: {
           user: {
             uuid: UUID
@@ -277,7 +277,7 @@ describe('AuthService', () => {
     });
 
     it('should return null when data object is undefined', () => {
-      requestSpy.graphQLQuery.and.returnValue(of({
+      requestSpy.graphQLWatch.and.returnValue(of({
         data: undefined
       }));
       service.getUUID().subscribe(result => {
