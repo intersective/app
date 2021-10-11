@@ -9,6 +9,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { map } from 'rxjs/operators';
 
 export interface Profile {
   contact_number: string;
@@ -20,6 +21,9 @@ const api = {
   post: {
     profile: 'api/v2/user/enrolment/edit.json',
   },
+  get: {
+    teams: 'api/teams.json',
+  }
 };
 
 @Injectable({
@@ -78,6 +82,43 @@ export class SharedService {
         }
       });
     }
+  }
+
+  /**
+   * @name getTeamInfo
+   * @description pull team information which belongs to current user
+   *              (determined by header data in the api request)
+   *
+   * @return  {Observable<any>} non-strict return value, we won't use
+   *                            this return value anywhere.
+   */
+  getTeamInfo(): Observable<any> {
+    return this.request.graphQLFetch(
+      `query user {
+        teams {
+          uuid
+          name
+        }
+      }`,
+      {
+        noCache: true
+      }
+    ).pipe(map(response => {
+      if (response.data) {
+        if (!this.utils.has(response.data, 'teams') ||
+          !Array.isArray(response.data.teams) ||
+          !this.utils.has(response.data.teams[0], 'id')
+        ) {
+          return this.storage.setUser({
+            teamId: null
+          });
+        }
+        return this.storage.setUser({
+          teamId: response.data.Teams[0].id
+        });
+      }
+      return response;
+    }));
   }
 
   updateProfile(data: Profile) {

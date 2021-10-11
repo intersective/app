@@ -230,9 +230,9 @@ export class RequestService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
+  graphQLWatch(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apolloService.graphQLQuery(query, variables, options);
+    const watch = this.apolloService.graphQLWatch(query, variables, options);
     return watch.valueChanges
       .pipe(map(response => {
         this._refreshApikey(response);
@@ -244,6 +244,28 @@ export class RequestService {
   }
 
   /**
+   * fetch GraplQL api once
+   *
+   * @param   {string}           query
+   * @param   {any}              variables
+   * @param   {any<any>}         options
+   *
+   * @return  {Observable<any>}
+   */
+  graphQLFetch(query: string, variables?: any, options?: any): Observable<any> {
+    options = {...{ noCache: false }, ...options};
+    return this.apolloService.graphQLFetch(query, variables, options)
+      .pipe(map(response => {
+        this._refreshApikey(response);
+        return response;
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   *
    * @todo: graphQLMutate docsblocks
    */
   graphQLMutate(query: string, variables = {}): Observable<any> {

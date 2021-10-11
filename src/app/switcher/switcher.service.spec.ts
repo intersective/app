@@ -37,7 +37,7 @@ describe('SwitcherService', () => {
           PusherService,
           {
             provide: SharedService,
-            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
+            useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices', 'getTeamInfo']),
           },
           {
             provide: UtilsService,
@@ -49,7 +49,7 @@ describe('SwitcherService', () => {
           },
           {
             provide: RequestService,
-            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLQuery', 'apiResponseFormatError'])
+            useValue: jasmine.createSpyObj('RequestService', ['post', 'graphQLWatch', 'apiResponseFormatError'])
           },
           {
             provide: NotificationService,
@@ -315,7 +315,7 @@ describe('SwitcherService', () => {
   });
 
   it('getProgresses should return correct value', () => {
-    requestSpy.graphQLQuery.and.returnValue(of({
+    requestSpy.graphQLWatch.and.returnValue(of({
       data: {
         projects: [
           {
@@ -370,7 +370,6 @@ describe('SwitcherService', () => {
   describe('switchProgram()', () => {
     beforeEach(() => {
       spyOn(service, 'getNewJwt').and.returnValue(of());
-      spyOn(service, 'getTeamInfo').and.returnValue(of());
       spyOn(service, 'getMyInfo').and.returnValue(of());
       spyOn(service, 'getReviews').and.returnValue(of());
       spyOn(service, 'getEvents').and.returnValue(of());
@@ -381,7 +380,7 @@ describe('SwitcherService', () => {
       expect(storageSpy.setUser).toHaveBeenCalled();
       expect(sharedSpy.onPageLoad).toHaveBeenCalled();
       expect(service.getNewJwt).toHaveBeenCalled();
-      expect(service.getTeamInfo).toHaveBeenCalled();
+      expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
       expect(service.getMyInfo).toHaveBeenCalled();
       expect(service.getReviews).toHaveBeenCalled();
       expect(service.getEvents).toHaveBeenCalled();
@@ -452,22 +451,6 @@ describe('SwitcherService', () => {
         hasEvents: false,
         hasReviews: false
       });
-    });
-  });
-
-  describe('getTeamInfo()', () => {
-    it('should make API request to `api/teams.json`', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: {
-          Teams: [
-            { id: 1 }
-          ]
-        }
-      }));
-
-      service.getTeamInfo().subscribe();
-      expect(requestSpy.get).toHaveBeenCalledWith('api/teams.json');
     });
   });
 

@@ -6,7 +6,7 @@ import { RequestService } from '@app/shared/request/request.service';
 import { TopicService } from '@app/topic/topic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
@@ -16,6 +16,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 describe('SharedService', () => {
   let service: SharedService;
   let httpSpy: HttpClient;
+  let requestSpy: jasmine.SpyObj<RequestService>;
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
   let pusherServiceSpy: PusherService;
@@ -46,10 +47,6 @@ describe('SharedService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post']),
-        },
-        {
           provide: HttpClient,
           useValue: jasmine.createSpyObj('HttpClient', {
             get: of(true),
@@ -69,10 +66,24 @@ describe('SharedService', () => {
             })
           }),
         },
+        {
+          provide: PusherService,
+          useValue: jasmine.createSpyObj('PusherService', ['initialise']),
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', [
+            'post',
+            'graphQLWatch',
+            'apiResponseFormatError',
+            'graphQLFetch',
+          ])
+        },
       ]
     });
     service = TestBed.inject(SharedService);
     httpSpy = TestBed.inject(HttpClient);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
@@ -81,6 +92,22 @@ describe('SharedService', () => {
 
   it('should created', () => {
     expect(service).toBeTruthy();
+  });
+
+
+  describe('getTeamInfo()', () => {
+    it('should make GraphQL API request to retrieve team info', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          Teams: [
+            { id: 1 }
+          ]
+        }
+      }));
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+    });
   });
 
   describe('onPageLoad()', () => {

@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { OverviewComponent } from './overview.component';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { UtilsService } from '@services/utils.service';
@@ -8,6 +8,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
+import { SharedService } from '@app/services/shared.service';
 
 describe('OverviewComponent', () => {
   const PROGRAM_NAME = 'Dummy Program name';
@@ -17,6 +18,7 @@ describe('OverviewComponent', () => {
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
+  let sharedSpy: jasmine.SpyObj<SharedService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,6 +49,12 @@ describe('OverviewComponent', () => {
           provide: FastFeedbackService,
           useValue: jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback'])
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', {
+            getTeamInfo: of(true)
+          })
+        }
       ]
     });
   });
@@ -55,6 +63,7 @@ describe('OverviewComponent', () => {
     fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;
     routeSpy = TestBed.inject(ActivatedRoute);
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
     utils = TestBed.inject(UtilsService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
@@ -66,10 +75,13 @@ describe('OverviewComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should get program name and pull fastfeedback', () => {
+    it('should get program name and pull fastfeedback', fakeAsync(() => {
       component.ngOnInit();
+
+      flushMicrotasks();
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
-    });
+      expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
+    }));
   });
 });

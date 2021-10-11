@@ -115,12 +115,25 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLQuery(query: string, variables?: any, options?: any) {
+  graphQLWatch(query: string, variables?: any, options?: any) {
     options = { ...{ noCache: false }, ...options };
     const watch = this.apollo.watchQuery({
       query: gql(query),
       variables: variables || {},
       fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+    });
+    return watch;
+  }
+
+  /**
+   * single fetch no-cache is only option
+   */
+  graphQLFetch(query: string, variables?: any, options?: any) {
+    options = { ...{ noCache: false }, ...options };
+    const watch = this.apollo.query({
+      query: gql(query),
+      variables: variables || {},
+      fetchPolicy: 'no-cache'
     });
     return watch;
   }
