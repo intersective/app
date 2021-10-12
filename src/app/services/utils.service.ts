@@ -8,6 +8,9 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from '@services/storage.service';
 
+import { Plugins } from '@capacitor/core';
+const { CustomNativePlugin } = Plugins;
+
 export enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
@@ -491,5 +494,14 @@ export class UtilsService {
       return 'Overdue ' + this.utcToLocal(dueDate);
     }
     return 'Due ' + this.utcToLocal(dueDate);
+  }
+
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goSettingStatus = await CustomNativePlugin.goToAppSetting();
+    return goSettingStatus;
   }
 }
