@@ -6,7 +6,7 @@ import { RequestService } from '@app/shared/request/request.service';
 import { TopicService } from '@app/topic/topic.service';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { TestUtils } from '@testing/utils';
-import { of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
@@ -16,6 +16,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
 describe('SharedService', () => {
   let service: SharedService;
   let httpSpy: HttpClient;
+  let requestSpy: jasmine.SpyObj<RequestService>;
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
   let pusherServiceSpy: PusherService;
@@ -46,10 +47,6 @@ describe('SharedService', () => {
           useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['post']),
-        },
-        {
           provide: HttpClient,
           useValue: jasmine.createSpyObj('HttpClient', {
             get: of(true),
@@ -69,10 +66,24 @@ describe('SharedService', () => {
             })
           }),
         },
+        {
+          provide: PusherService,
+          useValue: jasmine.createSpyObj('PusherService', ['initialise']),
+        },
+        {
+          provide: RequestService,
+          useValue: jasmine.createSpyObj('RequestService', [
+            'post',
+            'graphQLWatch',
+            'apiResponseFormatError',
+            'graphQLFetch',
+          ])
+        },
       ]
     });
     service = TestBed.inject(SharedService);
     httpSpy = TestBed.inject(HttpClient);
+    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
@@ -81,6 +92,64 @@ describe('SharedService', () => {
 
   it('should created', () => {
     expect(service).toBeTruthy();
+  });
+
+
+  describe('getTeamInfo()', () => {
+    it('should make GraphQL API request to retrieve team info', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          teams: [
+            {
+              id: 1,
+              uuid: 'f310125a-2a7c-11ec-8d3d-0242ac130003',
+              name: 'Team 1',
+            },
+            {
+              id: 2,
+              uuid: '13b937b6-2a7d-11ec-8d3d-0242ac130003',
+              name: 'Team 2',
+            },
+            {
+              id: 3,
+              uuid: '184f5b5c-2a7c-11ec-8d3d-0242ac130003',
+              name: 'Team 3',
+            },
+          ]
+        }
+      }));
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+    });
+
+    it('should set teamId as null when no teams retrieved from API', () => {
+      requestSpy.graphQLFetch.and.returnValue(of({
+        data: {
+          teams: []
+        }
+      }));
+      utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
+
+      service.getTeamInfo().subscribe();
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).toHaveBeenCalledWith({
+        teamId: null
+      });
+    });
+
+    it('should just forward response when no "data" object available in the response', () => {
+      const SAMPLE_RESULT = {
+        nodata: {}
+      };
+      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
+
+      let result;
+      service.getTeamInfo().subscribe(res => result = res);
+      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(storageSpy.setUser).not.toHaveBeenCalled();
+      expect(result).toEqual(SAMPLE_RESULT);
+    });
   });
 
   describe('onPageLoad()', () => {

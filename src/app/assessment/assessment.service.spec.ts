@@ -27,7 +27,7 @@ describe('AssessmentService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLQuery', 'graphQLMutate', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch', 'graphQLMutate', 'apiResponseFormatError'])
         },
         {
           provide: BrowserStorageService,
@@ -424,7 +424,7 @@ describe('AssessmentService', () => {
     });
 
     afterEach(() => {
-      requestSpy.graphQLQuery.and.returnValue(of(requestResponse));
+      requestSpy.graphQLWatch.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment', 2, 3).subscribe(
         result => {
           expect(result.assessment).toEqual(expectedAssessment);
@@ -432,7 +432,7 @@ describe('AssessmentService', () => {
           expect(result.review).toEqual(expectedReview);
         }
       );
-      expect(requestSpy.graphQLQuery.calls.count()).toBe(1);
+      expect(requestSpy.graphQLWatch.calls.count()).toBe(1);
     });
 
     it('should get correct assessment data', () => {});
