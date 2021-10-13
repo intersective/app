@@ -126,8 +126,7 @@ export class ApolloService {
   /**
    * single fetch no-cache is only option
    */
-  graphQLFetch(query: string, variables?: any, options?: any) {
-    options = { ...{ noCache: false }, ...options };
+  graphQLFetch(query: string, variables?: any) {
     const watch = this.apollo.query({
       query: gql(query),
       variables: variables || {},
