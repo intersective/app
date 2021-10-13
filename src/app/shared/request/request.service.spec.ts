@@ -18,6 +18,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { ApolloService } from '../apollo/apollo.service';
 import { UtilsService } from '@app/services/utils.service';
+import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -73,6 +74,7 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
+  let apolloSpy: ApolloService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -81,7 +83,8 @@ describe('RequestService', () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', [
-            'graphQLQuery',
+            'graphQLFetch',
+            'graphQLWatch',
             'graphQLMutate',
             'chatGraphQLQuery',
             'chatGraphQLMutate',
@@ -117,6 +120,7 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    apolloSpy = TestBed.inject(ApolloService);
   });
 
   it('should be created', () => {
@@ -441,6 +445,29 @@ describe('RequestService', () => {
 
       service.apiResponseFormatError('testing error');
       expect(console.error).toHaveBeenCalledWith('API response format error.\ntesting error');
+    });
+  });
+
+  describe('graphQLFetch()', () => {
+    const SAMPLE_QUERY = `query user {
+      teams {
+        sample
+        format
+      }
+    }`;
+
+    it('trigger GraphQL API to fetch record once', () => {
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
+    });
+
+    it('should handle throwed error at error occur', () => {
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
+      service['handleError'] = jasmine.createSpy('handleError');
+
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(service['handleError']).toHaveBeenCalled();
     });
   });
 
