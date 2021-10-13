@@ -83,7 +83,8 @@ describe('RequestService', () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', [
-            'graphQLQuery',
+            'graphQLFetch',
+            'graphQLWatch',
             'graphQLMutate',
             'chatGraphQLQuery',
             'chatGraphQLMutate',
@@ -456,13 +457,13 @@ describe('RequestService', () => {
     }`;
 
     it('trigger GraphQL API to fetch record once', () => {
-      apolloSpy.query = jasmine.createSpy('query').and.returnValue(of({ data: true }));
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
-      expect(apolloSpy.query).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
     });
 
     it('should handle throwed error at error occur', () => {
-      apolloSpy.query = jasmine.createSpy('query').and.returnValue(throwError('error'));
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
       service['handleError'] = jasmine.createSpy('handleError');
 
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
