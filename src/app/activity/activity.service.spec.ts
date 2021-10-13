@@ -31,7 +31,7 @@ describe('ActivityService', () => {
             'get',
             'post',
             'graphQLWatch',
-            'graphQLQuery',
+            'graphQLFetch',
           ])
         },
         {

@@ -87,7 +87,6 @@ describe('SharedService', () => {
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
-    requestSpy.get = jasmine.createSpy('get').and.returnValue(new Observable());
     apolloServiceSpy = TestBed.inject(ApolloService);
   });
 

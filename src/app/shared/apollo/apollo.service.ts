@@ -126,8 +126,7 @@ export class ApolloService {
   }
 
   /**
-   * Valid options:
-   * noCache: Boolean default false. If set to false, will not cache the result
+   * single fetch no-cache is only option
    */
   graphQLFetch(query: string, variables?: any, options?: any) {
     options = { ...{ noCache: false }, ...options };
