@@ -252,9 +252,8 @@ export class RequestService {
    *
    * @return  {Observable<any>}
    */
-  graphQLFetch(query: string, variables?: any, options?: any): Observable<any> {
-    options = {...{ noCache: false }, ...options};
-    return this.apolloService.graphQLFetch(query, variables, options)
+  graphQLFetch(query: string, variables?: any): Observable<any> {
+    return this.apolloService.graphQLFetch(query, variables)
       .pipe(map(response => {
         this._refreshApikey(response);
         return response;
