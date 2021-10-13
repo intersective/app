@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { UtilsService } from '@services/utils.service';
+import { MockStacks } from '@testing/fixtures/stacks';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -16,7 +17,6 @@ describe('AuthService', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
-  const testUtils = new TestUtils();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'graphQLQuery'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLFetch', 'graphQLWatch'])
         },
         {
           provide: Router,
@@ -60,33 +60,39 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
+  const mockStacks = MockStacks;
+
+  const mockOneStack = {
+    uuid: 'b0f6328e-379c-4cd2-9e96-1363a49ab001',
+    name: 'Practera Classic App - Stage',
+    description: 'Participate in an experience as a learner or reviewer - Testing',
+    image: 'https://media.intersective.com/img/learners_reviewers.png',
+    url: 'https://app.p1-stage.practera.com',
+    type: 'app',
+    coreApi: 'https://admin.p1-stage.practera.com',
+    coreGraphQLApi: 'https://core-graphql-api.p1-stage.practera.com',
+    chatApi: 'https://chat-api.p1-stage.practera.com',
+    filestack: {
+      s3Config: {
+        container: 'files.p1-stage.practera.com',
+        region: 'ap-southeast-2'
+      },
+    },
+    defaultCountryModel: 'AUS',
+    lastLogin: 1619660600368
+  };
+
   it('when testing login(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
-      success: true,
-      data: {
-        tutorial: null,
-        apikey: '123456',
-        Timelines: [
-          {
-            Program: {
-              config: {
-                theme_color: 'abc'
-              }
-            },
-            Enrolment: {},
-            Project: {},
-            Timeline: {}
-          }
-        ]
-      }
+      apikey: '123456',
+      stacks: mockStacks
     }));
-    storageSpy.getConfig.and.returnValue(true);
-    utilsSpy.has.and.returnValue(true);
-    service.login({ email: 'test@test.com', password: '123' }).subscribe();
+    storageSpy.set.and.returnValue(true);
+    service.login({ username: 'test@test.com', password: '123' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('test%40test.com');
-    expect(requestSpy.post.calls.first().args[1]).toContain('123');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
+    expect(requestSpy.post.calls.first().args[0].data.username).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[0].data.password).toEqual('123');
+    expect(requestSpy.post.calls.first().args[0].data.from).toEqual('App');
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -112,11 +118,11 @@ describe('AuthService', () => {
     storageSpy.getConfig.and.returnValue(true);
     service.directLogin({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
-  it('when testing globalLogin(), it should pass the correct data to API', () => {
+  it('when testing directLoginWithApikey(), it should pass the correct data to API', () => {
     requestSpy.post.and.returnValue(of({
       success: true,
       data: {
@@ -137,9 +143,9 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
+    service.directLoginWithApikey({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1]).toContain('abcd');
+    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({apikey: '123456'});
   });
 
@@ -184,13 +190,13 @@ describe('AuthService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.forgotPassword('test@test.com').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[1].email).toEqual('test@test.com');
+    expect(requestSpy.post.calls.first().args[0].data.email).toEqual('test@test.com');
   });
 
   it('when testing resetPassword()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.resetPassword({}).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
+    requestSpy.put.and.returnValue(of(''));
+    service.resetPassword({ password: 'abc' }, { apikey: '1234' }).subscribe();
+    expect(requestSpy.put.calls.count()).toBe(1);
   });
 
   describe('when testing linkedinAuthenticated()', () => {
@@ -257,16 +263,10 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
-  it('when testing verifyResetPassword()', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.verifyResetPassword({ email: 'test@test.com', key: 'key' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-  });
-
   describe('getUUID()', function () {
     it('should get user uuid in string', () => {
       const UUID = 'SAMPLE-UUID';
-      requestSpy.graphQLQuery.and.returnValue(of({
+      requestSpy.graphQLWatch.and.returnValue(of({
         data: {
           user: {
             uuid: UUID
@@ -279,11 +279,40 @@ describe('AuthService', () => {
     });
 
     it('should return null when data object is undefined', () => {
-      requestSpy.graphQLQuery.and.returnValue(of({
+      requestSpy.graphQLWatch.and.returnValue(of({
         data: undefined
       }));
       service.getUUID().subscribe(result => {
         expect(result).toBeNull();
+      });
+    });
+  });
+
+  describe('getStackConfig()', () => {
+    const sample_uuid = 'abcdefg_hijklmn_opqrstu_vwxyz';
+    it('should make GET request to LoginAPI', () => {
+      const sample_result: any = {
+        data: {
+          sample_result: sample_uuid
+        }
+      };
+      requestSpy.get.and.returnValue(of(sample_result));
+      service.getStackConfig(sample_uuid).subscribe(result => {
+
+        expect(result).toEqual(sample_result);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {
+          params: {
+            uuid: sample_uuid
+          }
+        },                                          true);
+      });
+    });
+
+    it('should fail with returning null', () => {
+      requestSpy.get.and.returnValue(of(null));
+      service.getStackConfig(sample_uuid).subscribe(result => {
+        expect(result).toBeFalsy();
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
       });
     });
   });

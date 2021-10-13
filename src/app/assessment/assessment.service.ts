@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -116,7 +116,7 @@ export class AssessmentService {
   ) {}
 
   getAssessment(id, action, activityId, contextId, submissionId?) {
-    return this.request.graphQLQuery(
+    return this.request.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId) {
           name type description dueDate isTeam pulseCheck
@@ -418,7 +418,11 @@ export class AssessmentService {
       identifier: 'AssessmentSubmission-' + submissionId,
       is_done: true
     };
-    return this.request.post(api.post.todoitem, postData);
+    return this.request.post(
+      {
+        endPoint: api.post.todoitem,
+        data: postData
+      });
   }
 
   /**

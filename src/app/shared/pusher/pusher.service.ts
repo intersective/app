@@ -16,11 +16,10 @@ const api = {
 
 export class PusherConfig {
   pusherKey = '';
-  apiurl = '';
 }
 
 export interface SendMessageParam {
-  channelUuid:  string;
+  channelUuid: string;
   uuid: string;
   message: string;
   file: string;
@@ -43,7 +42,6 @@ class PusherChannel {
 
 export class PusherService {
   private pusherKey: string;
-  private apiurl: string;
   private pusher: Pusher;
   private channels: {
     notification: PusherChannel;
@@ -63,7 +61,6 @@ export class PusherService {
   ) {
     if (config) {
       this.pusherKey = config.pusherKey;
-      this.apiurl = config.apiurl;
     }
   }
 
@@ -139,7 +136,7 @@ export class PusherService {
       const config: Config = {
         cluster: 'mt1',
         forceTLS: true,
-        authEndpoint: this.apiurl + api.pusherAuth,
+        authEndpoint: this.utils.urlFormatter(this.storage.stackConfig.coreApi, api.pusherAuth),
         auth: {
           headers: {
             'Authorization': 'pusherKey=' + this.pusherKey,

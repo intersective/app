@@ -8,7 +8,6 @@ import { MockRouter } from '@testing/mocked.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
-import { Apollo } from 'apollo-angular';
 import { SharedService } from '@app/services/shared.service';
 
 describe('OverviewComponent', () => {
@@ -26,8 +25,10 @@ describe('OverviewComponent', () => {
       declarations: [ OverviewComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
