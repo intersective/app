@@ -18,6 +18,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { ApolloService } from '../apollo/apollo.service';
 import { UtilsService } from '@app/services/utils.service';
+import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';
@@ -441,6 +442,29 @@ describe('RequestService', () => {
 
       service.apiResponseFormatError('testing error');
       expect(console.error).toHaveBeenCalledWith('API response format error.\ntesting error');
+    });
+  });
+
+  describe('graphQLFetch()', () => {
+    const SAMPLE_QUERY = `query user {
+      teams {
+        sample
+        format
+      }
+    }`;
+
+    it('trigger GraphQL API to fetch record once', () => {
+      apolloSpy.query = jasmine.createSpy('query').and.returnValue(of({ data: true }));
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(apolloSpy.query).toHaveBeenCalled();
+    });
+
+    it('should handle throwed error at error occur', () => {
+      apolloSpy.query = jasmine.createSpy('query').and.returnValue(throwError('error'));
+      service['handleError'] = jasmine.createSpy('handleError');
+
+      service.graphQLFetch(SAMPLE_QUERY).subscribe();
+      expect(service['handleError']).toHaveBeenCalled();
     });
   });
 
