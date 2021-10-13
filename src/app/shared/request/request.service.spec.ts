@@ -74,6 +74,7 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
+  let apolloSpy: ApolloService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -118,6 +119,7 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    apolloSpy = TestBed.inject(ApolloService);
   });
 
   it('should be created', () => {
