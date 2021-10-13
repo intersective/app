@@ -18,9 +18,8 @@ import { HttpParams } from '@angular/common/http';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json',
   jwt: 'api/v2/users/jwt/refresh.json',
-  login: 'api/auths.json'
+  login: 'api/auths.json',
 };
 
 export interface ProgramObj {
