@@ -213,13 +213,12 @@ export class UtilsService {
   // }
 
   // need to clear all Subject for cache
-  async clearCache(): Promise<any> {
+  async clearCache(): Promise<void> {
     const apolloClient = this.apolloService.getClient();
     // clear cache before initialised
     if (apolloClient) {
-      await apolloClient.clearStore();
+      apolloClient.clearStore();
     }
-    return;
   //   // initialise the Subject for caches
   //   this.projectSubject.next(null);
   //   this.each(this.activitySubjects, (subject, key) => {
