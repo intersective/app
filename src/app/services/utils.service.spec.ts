@@ -288,14 +288,14 @@ describe('UtilsService', () => {
     // });
 
     it('should clear caches that covered in this function', fakeAsync(() => {
-      service['apollo'].getClient = jasmine.createSpy('getClient').and.returnValue({
+      service['apolloService'].getClient = jasmine.createSpy('getClient').and.returnValue({
         clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true))
       });
 
       service.clearCache();
       flushMicrotasks();
-      expect(service['apollo'].getClient).toHaveBeenCalled();
-      expect(service['apollo'].getClient().clearStore).toHaveBeenCalled();
+      expect(service['apolloService'].getClient).toHaveBeenCalled();
+      expect(service['apolloService'].getClient().clearStore).toHaveBeenCalled();
     }));
   });
 
