@@ -14,6 +14,7 @@ enum ClientType {
   providedIn: 'root'
 })
 export class ApolloService {
+  private apolloInstance: Apollo;
   private _url = {
     core: '',
     chat: '',
@@ -23,11 +24,11 @@ export class ApolloService {
     private storage: BrowserStorageService,
     private apollo: Apollo,
     private httpLink: HttpLink,
-  ) { }
+  ) {}
 
-  initiateCoreClient() {
+  initiateCoreClient(): Apollo {
     if (this._hasInitiated(this.storage.stackConfig.coreGraphQLApi, ClientType.core)) {
-      return;
+      return this.apolloInstance;
     }
 
     this.apollo.create({
@@ -46,7 +47,10 @@ export class ApolloService {
       })
     });
 
+    this.apolloInstance = this.apollo;
     this._url.core = this.storage.stackConfig.coreGraphQLApi;
+
+    return this.apolloInstance;
   }
 
   /**
@@ -61,7 +65,7 @@ export class ApolloService {
    */
   private _hasInitiated(url: string, type: ClientType = ClientType.core): boolean {
     if (type === ClientType.core
-      && this.apollo.getClient()
+      && this.apollo.client
       && this._url.core === this.storage.stackConfig.coreGraphQLApi) {
       return true;
     } else if (type === ClientType.chat
@@ -127,7 +131,14 @@ export class ApolloService {
    * single fetch no-cache is only option
    */
   graphQLFetch(query: string, variables?: any) {
-    const watch = this.apollo.query({
+    // Direct login is using GraphQL before landing on AppComponent,
+    // so need force instantiation beforehand
+    let apollo: Apollo = this.apollo;
+    if (!!(this.apolloInstance || this.apollo).client) {
+      apollo = this.initiateCoreClient();
+    }
+
+    const watch = apollo.query({
       query: gql(query),
       variables: variables || {},
       fetchPolicy: 'no-cache'
