@@ -213,11 +213,11 @@ export class UtilsService {
   // }
 
   // need to clear all Subject for cache
-  clearCache() {
+  async clearCache(): Promise<void> {
     const apolloClient = this.apolloService.getClient();
     // clear cache before initialised
     if (apolloClient) {
-      apolloClient.clearStore();
+      await apolloClient.clearStore();
     }
   //   // initialise the Subject for caches
   //   this.projectSubject.next(null);
@@ -469,6 +469,9 @@ export class UtilsService {
       queryString = window.location.search.substring(1);
     } else if (window.location.hash) {
       queryString = window.location.hash.substring(2);
+    } else if (window.location.href.includes(';')) {
+      const url = window.location.href;
+      window.location.href = url.replace(/;/, '?').replace(/;/g, '&');
     }
     return new URLSearchParams(queryString);
   }
