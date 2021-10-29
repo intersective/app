@@ -10,7 +10,8 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'global-appv2-ng12' ]
+    branches: [ 'develop' ]
+
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -58,7 +59,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14'
 
 
 ################################################
@@ -187,6 +188,7 @@ jobs:
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
           CUSTOM_PATH_ANY: /appv2/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
