@@ -107,10 +107,15 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
+  private getEndpointUrl(endpoint, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }) {
     let endpointUrl = '';
-    if (isLoginAPI) {
+    if (options && options.isLoginAPI) {
       endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
+    } else if (options && options.isFullURL) {
+      endpointUrl = endpoint;
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
     } else {
@@ -126,7 +131,10 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -140,8 +148,10 @@ export class RequestService {
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
-    if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    if (options && options.isFullURL) {
+      apiEndpoint = this.getEndpointUrl(endPoint, { isFullURL: true });
+    } else if (options && options.isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, { isLoginAPI: true });
     } else {
       apiEndpoint = this.getEndpointUrl(endPoint);
     }
@@ -175,7 +185,7 @@ export class RequestService {
     if (params.isFullUrl) {
       apiEndpoint = params.endPoint;
     } else if (params.isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(params.endPoint, true);
+      apiEndpoint = this.getEndpointUrl(params.endPoint, { isLoginAPI: true });
     } else {
       apiEndpoint = this.getEndpointUrl(params.endPoint);
     }
@@ -208,7 +218,7 @@ export class RequestService {
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
     if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
+      apiEndpoint = this.getEndpointUrl(endPoint, { isLoginAPI: true });
     } else {
       apiEndpoint = this.getEndpointUrl(endPoint);
     }

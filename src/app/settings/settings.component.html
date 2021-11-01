@@ -114,6 +114,14 @@
   </ng-template>
 </ion-content>
 
+<ng-template #nativeFeatures>
+  <ion-item class="no-bg" [lines]="none" (click)="goToSystemSetting()">
+    <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
+    Settings
+    <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+  </ion-item>
+</ng-template>
+
 <ng-template #supportContentTpl>
   <ion-label class="subtitle-2 gray-2">Support</ion-label>
 

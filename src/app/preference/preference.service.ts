@@ -45,7 +45,7 @@ export class PreferenceService {
   ) { }
 
   getPreference(): Subscription {
-    return this.request.get(APIs.preference, {}).pipe(
+    return this.request.get(APIs.preference, {}, { isLoginAPI: false }).pipe(
       distinctUntilChanged(),
       tap(res => {
         this._preferences$.next(res);

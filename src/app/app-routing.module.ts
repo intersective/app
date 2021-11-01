@@ -55,7 +55,7 @@ const routes: Routes = [
   },
   {
     path: 'preferences',
-    loadChildren: () => import('./preference/preference.module').then(m=> m.PreferenceModule),
+    loadChildren: () => import('./preference/preference.module').then(m => m.PreferenceModule),
     canLoad: [AuthGuard],
   },
   {

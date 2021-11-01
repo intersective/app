@@ -184,4 +184,12 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goToSetting = await this.utils.goToSystemSetting();
+    return goToSetting;
+  }
 }
