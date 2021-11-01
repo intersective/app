@@ -158,7 +158,8 @@ export class EventDetailComponent implements OnInit {
       if (this.event.remainingCapacity === 0) {
         return 'Fully Booked';
       }
-      if (this.event.remainingCapacity > 0 && this.event.canBook) {
+      // According to new event logic (CORE-4942) - capacity null means allowing unlimited booking.
+      if ((this.event.remainingCapacity > 0 && this.event.canBook) || (this.event.capacity === null && this.event.canBook)) {
         return 'Book';
       }
       return false;
