@@ -7,7 +7,7 @@ import { environment } from '@environments/environment';
 import { Capacitor } from '@capacitor/core';
 
 export const APIs = {
-  preference: `${environment.lambdaServices.preferences}preferences`,
+  preference: `${environment.lambdaServices.preferences}`,
 };
 
 export interface PreferenceOption {
@@ -45,7 +45,10 @@ export class PreferenceService {
   ) { }
 
   getPreference(): Subscription {
-    return this.request.get(APIs.preference, {}, { isLoginAPI: false }).pipe(
+    return this.request.get(APIs.preference, {}, {
+      isLoginAPI: false,
+      isFullURL: true,
+    }).pipe(
       distinctUntilChanged(),
       tap(res => {
         this._preferences$.next(res);
