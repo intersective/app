@@ -444,7 +444,7 @@ export class AuthService {
    * @return  {Observable<Stack>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<Stack> {
-    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, true).pipe(map(res => {
+    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, { isLoginAPI: true }).pipe(map(res => {
       if (res) {
         return res;
       }
@@ -478,7 +478,7 @@ export class AuthService {
       };
     }
 
-    return this.request.get(LOGIN_API.multipleStacks, parameters, true).pipe(
+    return this.request.get(LOGIN_API.multipleStacks, parameters, { isLoginAPI: true }).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

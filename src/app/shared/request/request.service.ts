@@ -131,7 +131,10 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean, isFullURL?: boolean): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -145,9 +148,9 @@ export class RequestService {
 
     let apiEndpoint = '';
     // get login API endpoint if need to call login API.
-    if (isFullURL) {
+    if (options && options.isFullURL) {
       apiEndpoint = this.getEndpointUrl(endPoint, { isFullURL: true });
-    } else if (isLoginAPI) {
+    } else if (options && options.isLoginAPI) {
       apiEndpoint = this.getEndpointUrl(endPoint, { isLoginAPI: true });
     } else {
       apiEndpoint = this.getEndpointUrl(endPoint);
