@@ -45,7 +45,11 @@ export class PreferenceService {
   ) { }
 
   getPreference(): Subscription {
-    return this.request.get(APIs.preference, {}, {
+    return this.request.get(APIs.preference, {
+      headers: {
+        // service: 'APPNOTIFICATIONS',
+      }
+    }, {
       isLoginAPI: false,
       isFullURL: true,
     }).pipe(
