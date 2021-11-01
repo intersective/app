@@ -42,6 +42,7 @@
     "@capacitor/app": "^1.0.3",
     "@capacitor/core": "3.2.3",
     "@capacitor/haptics": "^1.0.3",
+    "@capacitor/ios": "^3.2.5",
     "@capacitor/keyboard": "^1.0.3",
     "@capacitor/push-notifications": "^1.0.4",
     "@capacitor/status-bar": "^1.0.3",
@@ -72,8 +73,8 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/core": "^12.2.8",
     "@angular-devkit/build-angular": "~12.1.1",
+    "@angular-devkit/core": "^12.2.8",
     "@angular/cli": "~12.1.1",
     "@angular/compiler": "~12.1.1",
     "@angular/compiler-cli": "~12.1.1",

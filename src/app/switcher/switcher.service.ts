@@ -18,9 +18,8 @@ import { HttpParams } from '@angular/common/http';
  */
 const api = {
   me: 'api/users.json',
-  teams: 'api/teams.json',
   jwt: 'api/v2/users/jwt/refresh.json',
-  login: 'api/auths.json'
+  login: 'api/auths.json',
 };
 
 export interface ProgramObj {
@@ -358,7 +357,7 @@ export class SwitcherService {
 
         await this.pusherService.initialise({ unsubscribe: true });
         // clear the cached data
-        this.utils.clearCache();
+        await this.utils.clearCache();
         if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
           || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             if (this.storage.get('directLinkRoute')) {
