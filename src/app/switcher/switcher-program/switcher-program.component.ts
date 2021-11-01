@@ -76,9 +76,7 @@ export class SwitcherProgramComponent extends RouterEnter implements AfterConten
           this.isProgramsLoading = false;
         }
       },
-      error => {
-        this.isProgramsLoading = false;
-      });
+      _completed => this.isProgramsLoading = false);
   }
 
   ngAfterContentChecked() {

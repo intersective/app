@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { RequestService, DevModeService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
@@ -113,14 +113,22 @@ export class SwitcherService {
 
           res.stack = stack;
           return res;
-        })));
+        })
+      ).toPromise());
     });
-    return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
+
+    return forkJoin(stackRequests).pipe(
+      map(res => this._normaliseAuthResults(res))
+    );
   }
 
   private _normaliseAuthResults(apiResults: any[]): any {
     const programsList = [];
     apiResults.forEach(result => {
+      if (this.utils.isEmpty(result)) {
+        return;
+      }
+
       const data = result.data;
       if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
         data.Timelines.map(

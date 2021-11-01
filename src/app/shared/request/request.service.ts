@@ -130,7 +130,11 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions, options?): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
+    isLoginAPI: boolean;
+    customErrorHandler?: Function;
+  }): Observable<any> {
+
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -147,14 +151,18 @@ export class RequestService {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-
-    return request.pipe(concatMap(response => {
+    .pipe(concatMap(response => {
       this._refreshApikey(response);
       return of(response);
-    }))
-    .pipe(
-      catchError((error) => this.handleError(error))
-    );
+    }));
+
+    if (options && typeof options.customErrorHandler == "function") {
+      request.pipe(catchError((error) => options.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
   }
 
   post(params: POSTParams): Observable<any> {
@@ -174,17 +182,22 @@ export class RequestService {
       isLoginAPI: params.isLoginAPI,
     });
 
-    return this.http.post<any>(apiEndpoint, params.data, {
+    const request = this.http.post<any>(apiEndpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    .pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }));
+
+    if (typeof params.customErrorHandler == "function") {
+      request.pipe(catchError((error) => params.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
   }
 
   put(endPoint: string, data, httpOptions?: any, options?: {
