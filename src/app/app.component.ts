@@ -135,7 +135,7 @@ export class AppComponent implements OnInit {
     if (queryParams.has('stack_uuid') || this.storage.stackConfig) {
       const domain = window.location.hostname;
       this.authService.getConfig({domain}).subscribe(
-        (response: any) => {
+        (response) => {
           if (response !== null) {
             const expConfig = response.data;
             const numOfConfigs = expConfig.length;
