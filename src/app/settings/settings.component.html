@@ -104,21 +104,12 @@
       </ion-row>
     </ion-grid>
   </ng-container>
-
-  <ng-template #nativeFeatures>
-    <ion-item class="no-bg" (click)="goToSystemSetting()" lines="none">
-      <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
-      Settings
-      <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
-    </ion-item>
-  </ng-template>
 </ion-content>
 
 <ng-template #nativeFeatures>
   <ion-item class="no-bg" [lines]="none" (click)="goToSystemSetting()">
     <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
-    Settings
-    <ion-icon name="arrow-forward" color="medium" slot="end"></ion-icon>
+    <ion-label class="subtitle-1">Settings</ion-label>
   </ion-item>
 </ng-template>
 
@@ -129,7 +120,7 @@
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Notification Preferences" tabindex="0"
       (click)="router.navigate(['/preferences'])" (keydown)="router.navigate(['preferences'])">
       <ion-icon class="ion-padding-end" color="primary" name="notifications"></ion-icon>
-      Notifications
+      <ion-label class="subtitle-1">Notifications</ion-label>
     </ion-item>
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
       <ion-icon class="" slot="start" color="primary" name="mail-outline"></ion-icon>
