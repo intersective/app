@@ -59,7 +59,11 @@ export class PreferenceService {
   }
 
   update(data) {
-    return this.request.put(APIs.preference, data, {}, { isFullURL: true });
+    return this.request.put(APIs.preference, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }, { isFullURL: true });
   }
 
   remove() {
