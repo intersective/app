@@ -54,7 +54,8 @@ interface POSTParams {
   data: any;
   httpOptions?: any;
   isLoginAPI?: boolean;
-  isFullUrl?: boolean;
+  isFullURL?: boolean;
+  customErrorHandler?: Function; // flag to indicate whether to handle error in different way
 }
 
 @Injectable({
@@ -107,9 +108,12 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
+  private getEndpointUrl(endpoint: string, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): string {
     let endpointUrl = '';
-    if (isLoginAPI) {
+    if (options.isLoginAPI) {
       endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
@@ -126,7 +130,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, options?): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -138,24 +142,19 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = '';
-    // get login API endpoint if need to call login API.
-    if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
-    } else {
-      apiEndpoint = this.getEndpointUrl(endPoint);
-    }
-    return this.http.get<any>(apiEndpoint, {
+    const apiEndpoint = this.getEndpointUrl(endPoint, options);
+    const request = this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+
+    return request.pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }))
+    .pipe(
+      catchError((error) => this.handleError(error))
+    );
   }
 
   post(params: POSTParams): Observable<any> {
@@ -170,15 +169,10 @@ export class RequestService {
       params.httpOptions.params = '';
     }
 
-    let apiEndpoint = '';
-    // get login API endpoint if need to call login API.
-    if (params.isFullUrl) {
-      apiEndpoint = params.endPoint;
-    } else if (params.isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(params.endPoint, true);
-    } else {
-      apiEndpoint = this.getEndpointUrl(params.endPoint);
-    }
+    let apiEndpoint = this.getEndpointUrl(params.endPoint, {
+      isFullURL: params.isFullURL,
+      isLoginAPI: params.isLoginAPI,
+    });
 
     return this.http.post<any>(apiEndpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
@@ -193,7 +187,10 @@ export class RequestService {
       );
   }
 
-  put(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
+  put(endPoint: string, data, httpOptions?: any, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -205,14 +202,7 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    let apiEndpoint = '';
-    // get login API endpoint if need to call login API.
-    if (isLoginAPI) {
-      apiEndpoint = this.getEndpointUrl(endPoint, true);
-    } else {
-      apiEndpoint = this.getEndpointUrl(endPoint);
-    }
-
+    const apiEndpoint = this.getEndpointUrl(endPoint, options);
     return this.http.put<any>(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
@@ -310,17 +300,17 @@ export class RequestService {
   /**
    *
    */
-  delete(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
+  delete(endPoint: string, httpOptions: RequestOptions = {}, options?: {
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
+
+    return this.http.delete<any>(this.getEndpointUrl(endPoint, options), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
