@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { PushNotificationService } from '@app/services/push-notification.service';
 import { SharedService } from '@app/services/shared.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { combineLatest, Observable, of } from 'rxjs';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 
 @Component({
@@ -22,11 +22,15 @@ export class OverviewComponent implements OnInit {
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
     readonly sharedService: SharedService,
+    readonly pushNotificationService: PushNotificationService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
+    this.pushNotificationService.initiatePushNotification().then(() => {
+      console.log('Push notification ready');
+    });
     this.initiator$.subscribe(async () => {
       await this.sharedService.getTeamInfo().toPromise(); // update team info
       this.programName = this.storage.getUser().programName;

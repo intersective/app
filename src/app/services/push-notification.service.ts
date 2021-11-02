@@ -1,7 +1,7 @@
 import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
 import { Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, interval, pipe } from 'rxjs';
-import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
+// import { Observable, interval, pipe } from 'rxjs';
+// import { switchMap, concatMap, tap, retryWhen, take, delay } from 'rxjs/operators';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { environment } from '@environments/environment';
@@ -12,11 +12,12 @@ import {
   Capacitor,
 } from '@capacitor/core';
 import { App } from '@capacitor/app';
-import { PushNotifications } from '@capacitor/push-notifications';
-import 'capacitor-pusher-beams';
-
-// const { PushNotifications, LocalNotifications, Permissions } = Plugins;
-// const { Notifications } = PermissionType;
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications';
 
 export enum PermissionTypes {
   firstVisit = 'isFirstVisit',
@@ -27,7 +28,7 @@ export enum PermissionTypes {
 })
 
 export class PushNotificationService {
-  // private pushNotificationPlugin: Partial<PushNotificationsPlugin> = PushNotifications;
+  private pushNotificationPlugin = PushNotifications;
   private pusherBeams = PusherBeams;
 
   constructor(
@@ -43,11 +44,11 @@ export class PushNotificationService {
   }
 
   async initiatePushNotification(): Promise<void> {
-    // await this.requestPermission();
-    // await this.registerToServer();
-    // await this.listenToError();
-    // await this.listenToReceiver();
-    // await this.listenToActionPerformed();
+    await this.requestPermission();
+    await this.registerToServer();
+    await this.listenToError();
+    await this.listenToReceiver();
+    await this.listenToActionPerformed();
     // await this.listenToStateChangeToActive();
   }
 
@@ -65,47 +66,50 @@ export class PushNotificationService {
     return false;
   } */
 
-  /* async requestPermission(): Promise<void> {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    const result = await this.pushNotificationPlugin.requestPermission();
-    this.storage.set('pushnotifications', result);
-    if (result.granted) {
-      // Register with Apple / Google to receive push via APNS/FCM
-      return this.pushNotificationPlugin.register();
-    } else {
-      // Show some error
+  async requestPermission(): Promise<void> {
+    try {
+      // Request permission to use push notifications
+      // iOS will prompt user and return if they granted permission or not
+      // Android will just grant without prompting
+      const result = await this.pushNotificationPlugin.requestPermissions();
+      this.storage.set('pushnotifications', result);
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        return this.pushNotificationPlugin.register();
+      } else {
+        console.log('Unable get permission, prompt user again in future');
+        return;
+      }
+    } catch (err) {
       console.log('Unable get permission, prompt user again in future');
-      return;
+      throw err;
     }
-  } */
+  }
 
-/*   registerToServer(): any {
-    return this.pushNotificationPlugin.addListener('registration', (token: PushNotificationToken) => {
-      console.log('Token:', token.value);
+  registerToServer(): any {
+    return this.pushNotificationPlugin.addListener('registration', (token: Token) => {
+      console.log('PN-Token:', token.value);
       return token;
     });
-  } */
+  }
 
-/*   listenToError(): void {
+  listenToError(): void {
     this.pushNotificationPlugin.addListener('registrationError', (error: any) => {
-      console.log('Error on registration: ' + JSON.stringify(error));
+      console.log('Error on PN registration: ' + JSON.stringify(error));
     });
   }
- */
-/*   listenToReceiver() {
-    this.pushNotificationPlugin.addListener('pushNotificationReceived', (notification: PushNotification) => {
+
+  listenToReceiver() {
+    this.pushNotificationPlugin.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
       console.log('Push received: ' + JSON.stringify(notification));
     });
-  } */
+  }
 
-/*   listenToActionPerformed() {
-    this.pushNotificationPlugin.addListener('pushNotificationActionPerformed', (notification: PushNotificationActionPerformed) => {
+  listenToActionPerformed() {
+    this.pushNotificationPlugin.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
       console.log('Push action performed: ' + JSON.stringify(notification));
-    }
-    );
-  } */
+    });
+  }
 
   /* listenToStateChangeToActive(): any {
     App.addListener('appStateChange', async (state) => {
