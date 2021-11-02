@@ -302,7 +302,9 @@ describe('AuthService', () => {
           params: {
             uuid: sample_uuid
           }
-        },                                          true);
+        }, {
+          isLoginAPI: true
+        });
       });
     });
 
@@ -310,7 +312,7 @@ describe('AuthService', () => {
       requestSpy.get.and.returnValue(of(null));
       service.getStackConfig(sample_uuid).subscribe(result => {
         expect(result).toBeFalsy();
-        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, true);
+        expect(requestSpy.get).toHaveBeenCalledWith('stack', {params: {uuid: sample_uuid}}, { isLoginAPI: true });
       });
     });
   });

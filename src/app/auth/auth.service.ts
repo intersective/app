@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -57,7 +57,7 @@ interface UserProfile {
   contactNumber: string;
 }
 
-interface ExperienceConfig {
+interface RawTimeline {
   name: string;
   config?: {
     theme_color?: string;
@@ -71,10 +71,29 @@ interface ExperienceConfig {
   logo: string;
 }
 
+interface NormalisedTimeline {
+  success: boolean;
+  tutorial: boolean;
+  apikey: string;
+  programs: any;
+  config: any;
+  _raw: any;
+}
+
 interface LoginRequParams {
   username?: string;
   password?: string;
   from?: string;
+}
+
+interface ExperienceConfig {
+  logo: string;
+  config ?: {
+    theme_color: string;
+    html_branding?: {
+      header?: string;
+    } | any;
+  } | any;
 }
 
 @Injectable({
@@ -129,8 +148,14 @@ export class AuthService {
         data: body.toString(),
         httpOptions: {
           headers
+        },
+        customErrorHandler: (err: any) => {
+          console.log('catchError::', err);
+          return of(err);
         }
-      }).pipe(map(res => this._handleLoginResponse(res)));
+      }).pipe(
+        map(res => this._handleLoginResponse(res)),
+      );
   }
 
   /**
@@ -193,35 +218,37 @@ export class AuthService {
     return this._loginFromCore(body, service);
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private _handleLoginResponse(response: any): Observable<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
-    return norm;
+    return of(norm);
   }
 
-  private _normaliseAuth(rawData): any {
+  private _normaliseAuth(rawData: { data: any; success: any; }): NormalisedTimeline {
     const data = rawData.data;
+
     return {
       success: rawData.success,
       tutorial: data.tutorial,
       apikey: data.apikey,
-      programs: data.Timelines.map(
-        timeline => {
+      programs: data.Timelines.map((timeline: any) => {
+          const rawTimeline: RawTimeline = timeline.Program;
+
           // make sure 'Program.config.theme_color' exist
           if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-            if (!this.utils.has(timeline.Program, 'config')) {
-              timeline.Program.config = {
+            if (!this.utils.has(rawTimeline, 'config')) {
+              rawTimeline.config = {
                 theme_color: 'var(--ion-color-primary)'
               };
             } else {
-              timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+              rawTimeline.config.theme_color = 'var(--ion-color-primary)';
             }
           }
           return {
             enrolment: timeline.Enrolment,
-            program: timeline.Program,
+            program: rawTimeline,
             project: timeline.Project,
             timeline: timeline.Timeline,
             experience: timeline.Experience,
@@ -294,7 +321,7 @@ export class AuthService {
    * @param type string - 'direct' to create direct link or 'reset' for password reset link
    * @returns string
    */
-  private _createLinks(type?) {
+  private _createLinks(type?: string) {
     switch (type) {
       case 'reset':
         return `${this.getDomain()}?do=resetpassword&apikey=`;
@@ -376,7 +403,7 @@ export class AuthService {
    * @description enforced domain checking before experience config API call
    * @param {[type]} data [description]
    */
-  checkDomain(data): Observable<any> {
+  checkDomain(data: ConfigParams): Observable<any> {
     if (!data.domain) {
       throw new Error('Tech Error: Domain is compulsory!');
     }
@@ -444,7 +471,7 @@ export class AuthService {
    * @return  {Observable<Stack>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<Stack> {
-    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, { isLoginAPI: true }).pipe(map(res => {
+    return this.request.get(LOGIN_API.stackInfo, { params: { uuid } }, { isLoginAPI: true }).pipe(map(res => {
       if (res) {
         return res;
       }
@@ -478,7 +505,9 @@ export class AuthService {
       };
     }
 
-    return this.request.get(LOGIN_API.multipleStacks, parameters, { isLoginAPI: true }).pipe(
+    return this.request.get(LOGIN_API.multipleStacks, parameters, {
+      isLoginAPI: true
+    }).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;

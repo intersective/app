@@ -1,5 +1,3 @@
-import { isDevMode, enableProdMode } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import {
   fakeAsync,
   tick,
@@ -8,10 +6,11 @@ import {
 
 import {
   HttpTestingController,
-  HttpClientTestingModule
+  HttpClientTestingModule,
 } from '@angular/common/http/testing';
 
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
@@ -75,10 +74,11 @@ describe('RequestService', () => {
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
   let apolloServiceSpy: ApolloService;
+  let httpClient: HttpClient;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [ HttpClientTestingModule ],
       providers: [
         {
           provide: ApolloService,
@@ -117,6 +117,7 @@ describe('RequestService', () => {
 
     service = TestBed.inject(RequestService);
     mockBackend = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
@@ -161,7 +162,7 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(null, {params: {justFor: 'test'}}, true).subscribe(_res => {
+      service.get(null, {params: {justFor: 'test'}}, { isLoginAPI: true }).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -178,7 +179,7 @@ describe('RequestService', () => {
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
-      service.get('', {params: {justFor: 'test'}}, true).subscribe(_res => {
+      service.get('', {params: {justFor: 'test'}}, { isLoginAPI: true }).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -202,6 +203,7 @@ describe('RequestService', () => {
       req.flush(res);
 
       expect(storageSpy.setUser).toHaveBeenCalledWith({apikey: res.apikey});
+      mockBackend.verify();
     });
 
     it('should perform error handling when fail', fakeAsync(() => {
@@ -211,7 +213,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.get(null, {}, true).subscribe(
+      service.get(null, {}, { isLoginAPI: true }).subscribe(
         _res => {
           res = _res;
         },
@@ -222,7 +224,9 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: testURL, method: 'GET'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
+      expect(errRes.error).toEqual(ERR_MESSAGE);
+      mockBackend.verify();
+
     }));
   });
 
@@ -305,7 +309,8 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'POST'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
+      expect(errRes.error).toEqual(ERR_MESSAGE);
+      mockBackend.verify();
     }));
   });
 
@@ -372,6 +377,7 @@ describe('RequestService', () => {
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
+      mockBackend.verify();
     }));
   });
 
@@ -417,6 +423,7 @@ describe('RequestService', () => {
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
       expect(errRes).toEqual(ERR_MESSAGE);
+      mockBackend.verify();
     }));
   });
 
@@ -460,6 +467,7 @@ describe('RequestService', () => {
       apolloServiceSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(apolloServiceSpy.graphQLFetch).toHaveBeenCalled();
+      mockBackend.verify();
     });
 
     it('should handle throwed error at error occur', () => {
@@ -468,6 +476,7 @@ describe('RequestService', () => {
 
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
       expect(service['handleError']).toHaveBeenCalled();
+      mockBackend.verify();
     });
   });
 
@@ -476,38 +485,48 @@ describe('RequestService', () => {
     const err = { success: false, status: 400, statusText: 'Bad Request' };
     let errRes: any;
     let request: any;
-    beforeEach(fakeAsync(() => {
+
+    it('should only run console.error on dev mode', () => {
+      service.get(null, { params: { justFor: 'test' } }, { isLoginAPI: true }).subscribe(
+        _res => {
+          expect(_res).toBeFalsy();
+        },
+        _err => {
+          errRes = _err;
+          expect(errRes.error).toEqual(ERR_MESSAGE);
+        }
+      );
+
+      mockBackend.expectOne({ method: 'GET' }).flush(ERR_MESSAGE, err);
+      mockBackend.verify();
+    });
+
+    it('should logout user on bad apikey', () => {
+      const badKey = 'Expired apikey';
+
+      service.get(null, { params: { justFor: 'test' } }).subscribe(
+        _res => _res,
+        _err => {
+          errRes = _err;
+          expect(errRes.error.message).toEqual(badKey);
+        }
+      );
+
+      request = mockBackend.expectOne({ method: 'GET' }).flush({ message: badKey }, err);
+      mockBackend.verify();
+    });
+
+    it('should throw error if static file retrival fail', fakeAsync(() => {
       request = service.get().subscribe(
         _res => _res,
         _err => {
           errRes = _err;
         }
       );
-    }));
 
-    it('should only run console.error on dev mode', () => {
-      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(true);
-      spyOn(console, 'error');
-
-      mockBackend.expectOne({ method: 'GET'}).flush(ERR_MESSAGE, err);
-      expect(devModeServiceSpy.isDevMode).toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalled();
-      expect(devModeServiceSpy.isDevMode()).toBeTruthy();
-      expect(errRes).toEqual(ERR_MESSAGE);
-    });
-
-    it('should logout user on bad apikey', fakeAsync(() => {
-      const badKey = 'Expired apikey';
-      mockBackend.expectOne({ method: 'GET'}).flush({message: badKey}, err);
-      expect(service['loggedOut']).toBeTruthy();
-      tick(2000);
-      expect(service['loggedOut']).toEqual(false);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['logout']);
-    }));
-
-    it('should throw error if static file retrival fail', fakeAsync(() => {
       mockBackend.expectOne({ method: 'GET'}).flush('<!DOCTYPE html>', err);
-      expect(errRes).toEqual('Http failure response for https://test.com: 400 Bad Request');
+      expect(errRes.message).toEqual('Http failure response for https://test.com: 400 Bad Request');
+      mockBackend.verify();
     }));
   });
 });

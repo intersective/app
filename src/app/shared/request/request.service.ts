@@ -55,6 +55,7 @@ interface POSTParams {
   httpOptions?: any;
   isLoginAPI?: boolean;
   isFullUrl?: boolean;
+  customErrorHandler?: Function; // flag to indicate whether to handle error in different way
 }
 
 @Injectable({
@@ -134,6 +135,7 @@ export class RequestService {
   get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
     isLoginAPI?: boolean;
     isFullURL?: boolean;
+    customErrorHandler?: Function;
   }): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
@@ -155,17 +157,22 @@ export class RequestService {
     } else {
       apiEndpoint = this.getEndpointUrl(endPoint);
     }
-    return this.http.get<any>(apiEndpoint, {
+    const request = this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    .pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }));
+
+    if (options && typeof options.customErrorHandler == "function") {
+      request.pipe(catchError((error) => options.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
   }
 
   post(params: POSTParams): Observable<any> {
@@ -190,17 +197,22 @@ export class RequestService {
       apiEndpoint = this.getEndpointUrl(params.endPoint);
     }
 
-    return this.http.post<any>(apiEndpoint, params.data, {
+    const request = this.http.post<any>(apiEndpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    .pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }));
+
+    if (typeof params.customErrorHandler == "function") {
+      request.pipe(catchError((error) => params.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
   }
 
   put(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
