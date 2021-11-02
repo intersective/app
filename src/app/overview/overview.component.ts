@@ -29,7 +29,9 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit() {
     this.pushNotificationService.initiatePushNotification().then(() => {
-      console.log('Push notification ready');
+      this.pushNotificationService.getSubscribedInterests().then(subscription => {
+        console.log('Push notification subscriptions::', subscription);
+      });
     });
     this.initiator$.subscribe(async () => {
       await this.sharedService.getTeamInfo().toPromise(); // update team info

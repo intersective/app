@@ -36,7 +36,6 @@
 
       <div class="ion-margin-top support-mobile subtitle-1">
         <ng-container *ngTemplateOutlet="supportContentTpl"></ng-container>
-        <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
       </div>
     </ng-container>
   </ng-container>
@@ -107,7 +106,7 @@
 </ion-content>
 
 <ng-template #nativeFeatures>
-  <ion-item class="no-bg" [lines]="none" (click)="goToSystemSetting()">
+  <ion-item color="none" [lines]="none" role="button" (click)="goToSystemSetting()">
     <ion-icon class="ion-padding-end" color="primary" name="cog-outline"></ion-icon>
     <ion-label class="subtitle-1">Settings</ion-label>
   </ion-item>
@@ -117,9 +116,10 @@
   <ion-label class="subtitle-2 gray-2">Support</ion-label>
 
   <ion-list>
+    <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Notification Preferences" tabindex="0"
       (click)="router.navigate(['/preferences'])" (keydown)="router.navigate(['preferences'])">
-      <ion-icon class="ion-padding-end" color="primary" name="notifications"></ion-icon>
+      <ion-icon class="ion-padding-end" color="primary" name="notifications-outline"></ion-icon>
       <ion-label class="subtitle-1">Notifications</ion-label>
     </ion-item>
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">

@@ -3,6 +3,7 @@ import { UtilsService } from '@services/utils.service';
 import { PreferenceService, Category } from '../preference.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { IonToggle } from '@ionic/angular';
 
 @Component({
   selector: 'app-preference-update',
@@ -16,8 +17,13 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   };
 
   preferenceSubject$: Subscription;
-  currentPreference;
-  private key: string;
+  currentPreference: {
+    name: string;
+    description: string;
+    options: string;
+    remarks: string;
+    key: string;
+  };
   private newUpdates: {
     [propName: string]: {
       [propName: string]: boolean;
@@ -31,7 +37,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
   ) {
     preferenceService.getPreference();
-    const key = activatedRoute.snapshot.params.key;
+    const key = this.activatedRoute.snapshot.params.key;
     this.preferenceSubject$ = preferenceService.preference$.subscribe(res => {
       this.preferences = res;
       if (this.preferences && key) {
@@ -46,6 +52,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
       description: '',
       options: '',
       remarks: '',
+      key: '',
     };
   }
 
@@ -81,8 +88,10 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
    * @description prepare new data changes for PUT request to preference API (with @func back())
    * @param {string, checked } changes medium in string, event is ionic ion-toggle event object
    */
-  updatePreference(changes: { medium: string; checked: boolean; }) {
-    const { medium, checked } = changes;
+  updatePreference(changes: { medium: string; event: IonToggle; }) {
+    const { medium, event } = changes;
+    const checked = event.checked;
+
     if (!this.newUpdates) {
       this.newUpdates = {};
     }
@@ -104,7 +113,9 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   private async pushPreferenceUpdate(): Promise<void> {
     try {
       if (!this.utils.isEmpty(this.newUpdates)) {
-        await this.preferenceService.update(this.newUpdates).toPromise();
+        // data format: https://github.com/intersective/preferences-api/tree/develop/docs
+        const data = { app: this.newUpdates };
+        await this.preferenceService.update(data).toPromise();
       }
     } catch (err) {
       console.log(err);
