@@ -119,7 +119,7 @@
     <ng-container *ngIf="!isNativeApp; else nativeFeatures"></ng-container>
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Notification Preferences" tabindex="0"
       (click)="router.navigate(['/preferences'])" (keydown)="router.navigate(['preferences'])">
-      <ion-icon class="ion-padding-end" color="primary" name="notifications-outline"></ion-icon>
+      <ion-icon class="" slot="start" color="primary" name="notifications-outline"></ion-icon>
       <ion-label class="subtitle-1">Notifications</ion-label>
     </ion-item>
     <ion-item color="none" [lines]="'none'" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
