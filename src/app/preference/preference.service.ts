@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { tap, distinctUntilChanged } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
-import { of, BehaviorSubject, Subscription, from } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { environment } from '@environments/environment';
-import { Capacitor } from '@capacitor/core';
 
 export const APIs = {
   preference: `${environment.lambdaServices.preferences}`,

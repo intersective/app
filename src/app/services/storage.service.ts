@@ -33,6 +33,7 @@ export interface User {
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;
+  uuid?: string;
 }
 
 export interface Referrer {

@@ -6,6 +6,7 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ProgramSelectedGuard } from './auth/program-selected.guard';
+import { UserResolverService } from './services/user-resolver.service';
 
 const routes: Routes = [
   {
@@ -67,6 +68,7 @@ const routes: Routes = [
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
+    resolve: { user: UserResolverService },
   },
   {
     path: '',

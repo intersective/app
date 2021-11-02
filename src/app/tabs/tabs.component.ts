@@ -4,11 +4,13 @@ import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SharedService } from '@services/shared.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ChatService } from '@app/chat/chat.service';
+import { AuthService } from '@app/auth/auth.service';
+import { PushNotificationService } from '@app/services/push-notification.service';
 
 @Component({
   selector: 'app-tabs',
@@ -34,6 +36,9 @@ export class TabsComponent extends RouterEnter {
     private eventsService: EventListService,
     private newRelic: NewRelicService,
     readonly chatService: ChatService,
+    private routes: ActivatedRoute,
+    readonly authService: AuthService,
+    private pushNotificationService: PushNotificationService,
   ) {
     super(router);
     this.newRelic.setPageViewName('tab');
@@ -56,6 +61,24 @@ export class TabsComponent extends RouterEnter {
         });
       });
     }
+
+    this.routes.data.subscribe(data => {
+      const { user } = data;
+
+      // enforced inside tabComponent to guarantee successful retrieval of uuid
+      if (!user.uuid) {
+        this.authService.getUUID().subscribe(uuid => {
+          if (uuid) {
+            this.storage.setUser({ uuid });
+            this.pushNotificationService.subscribeToInterests(uuid).then(res => {
+              console.log('interests::', res);
+            });
+          } else {
+            console.error('Failed UUID retrieval::', uuid);
+          }
+        });
+      }
+    });
   }
 
   get restrictedAccess() {
