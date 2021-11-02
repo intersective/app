@@ -97,22 +97,12 @@ export class SwitcherService {
       service: 'LOGIN'
     };
 
-    /* this.request.post({
-      endPoint: this.utils.urlFormatter(stackList[0].coreApi, api.login),
-      data: body,
-      httpOptions: { headers },
-      isFullUrl: true
-    }).pipe(map(res => {
-      res.stack = stackList[0];
-      return res;
-    })).toPromise(); */
-
     stackList.forEach(stack => {
       stackRequests.push(this.request.post({
         endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
         data: body,
         httpOptions: { headers },
-        isFullUrl: true
+        isFullURL: true
       }).pipe(
         catchError(err => {
           console.log('err:', err);

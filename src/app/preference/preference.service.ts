@@ -59,10 +59,10 @@ export class PreferenceService {
   }
 
   update(data) {
-    return this.request.put(`${APIs.preference}`, data);
+    return this.request.put(APIs.preference, data, {}, { isFullURL: true });
   }
 
   remove() {
-    return this.request.delete(`${APIs.preference}`);
+    return this.request.delete(APIs.preference, {}, { isFullURL: true });
   }
 }

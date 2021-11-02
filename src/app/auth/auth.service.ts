@@ -347,7 +347,9 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   resetPassword(data: { password: string }, header: { apikey: string } ): Observable<any> {
-    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, true);
+    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, {
+      isLoginAPI: true
+    });
   }
 
   /**

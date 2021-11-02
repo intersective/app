@@ -44,19 +44,25 @@ export class RequestInterceptor implements HttpInterceptor {
     }
 
     // do not need to pass team id for teams.json/chat api
-    if (teamId && !req.url.includes('/teams.json') &&
-    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
-    !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
+    if (teamId &&
+      !req.url.includes('/teams.json') &&
+      !req.url.includes('/message/chat/list.json') &&
+      !req.url.includes('/message/chat/create_message') &&
+      !req.url.includes('/message/chat/edit_message') &&
+      !req.url.includes('/message/chat/list_messages.json')
+    ) {
       headers['teamId'] = teamId.toString();
     }
 
     // no need to send apikey in hrader for auth.json.
     // in normal login process we didn't have apikey before login.
     // in direct login/ login with apikey we send apikey in request body.
-    if (
-      req.url.includes('/auths.json')
-    ) {
+    if (req.url.includes('/auths.json')) {
       delete headers['apikey'];
+    }
+
+    if (req.url.includes('preferences-api')) {
+      delete headers['teamId'];
     }
 
     return next.handle(req.clone({
