@@ -29,7 +29,8 @@ export class RequestInterceptor implements HttpInterceptor {
     const paramsInject = req.params;
 
     // inject appkey
-    if (!this.isLoginAPIURL(req) && this.currenConfig.appkey) {
+    if (!this.isLoginAPIURL(req)
+      && this.currenConfig.appkey) {
       const appkey = this.currenConfig.appkey;
       headers['appkey'] = appkey;
     }
@@ -37,13 +38,12 @@ export class RequestInterceptor implements HttpInterceptor {
     if (apikey && !headers['apikey']) {
       headers['apikey'] = apikey;
     }
-    if (timelineId) {
+    if (timelineId && !req.url.includes('preferences-api')) {
       // header value must be string [ES6]
       headers['timelineId'] = timelineId.toString();
     }
 
-    // do not need to pass team id for teams.json
-    // do not need to pass team id for chat api calls
+    // do not need to pass team id for teams.json/chat api
     if (teamId && !req.url.includes('/teams.json') &&
     !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
     !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
@@ -53,7 +53,9 @@ export class RequestInterceptor implements HttpInterceptor {
     // no need to send apikey in hrader for auth.json.
     // in normal login process we didn't have apikey before login.
     // in direct login/ login with apikey we send apikey in request body.
-    if (req.url.includes('/auths.json')) {
+    if (
+      req.url.includes('/auths.json')
+    ) {
       delete headers['apikey'];
     }
 
@@ -66,9 +68,9 @@ export class RequestInterceptor implements HttpInterceptor {
   /**
    * sometimes we don't need the automated injected headers/params in the
    *
-   * @param   {HttpRequest<any>}  req  [req description]
+   * @param   {HttpRequest<any>}  req
    *
-   * @return  {<any>}                  [return description]
+   * @return  {<any>}
    */
   isLoginAPIURL(req: HttpRequest<any>) {
     if (req.url.includes(environment.loginAPIUrl)) {

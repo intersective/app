@@ -9,6 +9,7 @@ import { RouterEnter } from '@services/router-enter.service';
 import { FastFeedbackService } from '../fast-feedback/fast-feedback.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-settings',
@@ -17,6 +18,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 })
 
 export class SettingsComponent extends RouterEnter {
+  isNativeApp = Capacitor.isNative;
 
   routeUrl = '/settings';
   mode: string;
@@ -182,4 +184,12 @@ export class SettingsComponent extends RouterEnter {
     }
   }
 
+  /**
+   * redirect user to system setting page (iOS and android only)
+   * This is not supported on web-based app (no web implementation)
+   */
+  async goToSystemSetting() {
+    const goToSetting = await this.utils.goToSystemSetting();
+    return goToSetting;
+  }
 }
