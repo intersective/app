@@ -9,6 +9,7 @@ import { VersionCheckService } from '@services/version-check.service';
 import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { PushNotificationService } from './services/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit {
     private versionCheckService: VersionCheckService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    readonly pushNotificationService: PushNotificationService,
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -62,6 +64,13 @@ export class AppComponent implements OnInit {
 
       // initialise Pusher/ apollo when app loading if there stack info in storage
       this.sharedService.initWebServices();
+
+
+      this.pushNotificationService.initiatePushNotification().then(() => {
+        this.pushNotificationService.getSubscribedInterests().then(subscription => {
+          console.log('Push notification subscriptions::', subscription);
+        });
+      });
     });
   }
 

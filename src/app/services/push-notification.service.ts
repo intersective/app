@@ -8,9 +8,6 @@ import { environment } from '@environments/environment';
 import { NotificationService } from '@shared/notification/notification.service';
 import { PusherBeams } from 'capacitor-pusher-beams';
 
-import {
-  Capacitor,
-} from '@capacitor/core';
 import { App } from '@capacitor/app';
 import {
   ActionPerformed,
@@ -33,7 +30,7 @@ export class PushNotificationService {
 
   constructor(
     private storage: BrowserStorageService,
-    private notificationService: NotificationService,
+    // private notificationService: NotificationService,
   ) {
     // const hasPlugin = Capacitor.isPluginAvailable('PushNotifications');
     /* if (!hasPlugin) {

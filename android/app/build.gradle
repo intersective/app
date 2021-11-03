@@ -33,13 +33,16 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation project(':capacitor-android')
-    testImplementation "junit:junit:$junitVersion"
+    implementation project(path: ':capacitor-pusher-beams')
+  implementation project(path: ':capacitor-pusher-beams')
+  implementation project(path: ':capacitor-pusher-beams')
+  testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
     implementation 'com.google.firebase:firebase-core:17.4.4'
-    implementation 'com.google.firebase:firebase-messaging:20.2.3'
-    implementation 'com.pusher:push-notifications-android:1.6.2'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.pusher:push-notifications-android:1.7.0'
     testImplementation 'junit:junit:4.12'
 }
 

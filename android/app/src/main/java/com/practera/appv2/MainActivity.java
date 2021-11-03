@@ -4,14 +4,11 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.getcapacitor.BridgeActivity;
-import com.getcapacitor.Plugin;
 import com.google.firebase.messaging.RemoteMessage;
 import com.practera.capacitor.custom.CustomNativePlugin;
 import com.practera.capacitor.pusherbeams.PusherBeamsPlugin;
 import com.pusher.pushnotifications.PushNotificationReceivedListener;
 import com.pusher.pushnotifications.PushNotifications;
-
-import java.util.ArrayList;
 
 public class MainActivity extends BridgeActivity {
   @Override
