@@ -242,9 +242,9 @@ export class SwitcherService {
     };
   }
 
-  switchProgram(programObj: ProgramObj): Observable<any> {
+  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     // initialise Pusher and apollo here if there stack info in storage
-    this.sharedService.initWebServices();
+    await this.sharedService.initWebServices();
 
     const colors = this.extractColors(programObj);
 
@@ -366,10 +366,10 @@ export class SwitcherService {
           return ['switcher', 'switcher-program'];
         // Array with one program object -> [{}]
         } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-          await this.switchProgram(programs[0]).toPromise();
+          await (await this.switchProgram(programs[0])).toPromise();
         } else {
           // one program object -> {}
-          await this.switchProgram(programs).toPromise();
+          await (await this.switchProgram(programs)).toPromise();
         }
 
         await this.pusherService.initialise({ unsubscribe: true });
