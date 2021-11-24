@@ -160,6 +160,7 @@ describe('PreferenceUpdateComponent', () => {
   it('should init with empty currentPreference', () => {
     component.ngOnInit();
     expect(component.currentPreference).toEqual({
+      key: '',
       name: '',
       description: '',
       options: '',
