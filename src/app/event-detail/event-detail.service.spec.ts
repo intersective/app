@@ -42,7 +42,8 @@ describe('EventDetailService', () => {
     singleBooking: true,
     canBook: true,
     isPast: true,
-    assessment: null
+    assessment: null,
+    allDay: false
   };
 
   it('should pass correct parameter to bookEvent()', () => {

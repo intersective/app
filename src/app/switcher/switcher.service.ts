@@ -17,9 +17,8 @@ import { HttpParams } from '@angular/common/http';
  * @type {Object}
  */
 const api = {
-  me: 'api/users.json',
-  jwt: 'api/v2/users/jwt/refresh.json',
   login: 'api/auths.json',
+  jwt: 'api/v2/users/jwt/refresh.json'
 };
 
 export interface ProgramObj {
@@ -275,22 +274,31 @@ export class SwitcherService {
    * @description get user info
    */
   getMyInfo():  Observable<any> {
-    return this.request.get(api.me).pipe(map(response => {
-      if (response.data) {
-        if (!this.utils.has(response, 'data.User')) {
-          return this.request.apiResponseFormatError('User format error');
+    return this.request.graphQLFetch(
+      `query user {
+        user {
+          name
+          email
+          image
+          role
+          contactNumber
+          userHash
         }
-        const apiData = response.data.User;
+      }`,
+      {
+        noCache: true
+      }
+    ).pipe(map(response => {
+      if (response.data && response.data.user) {
+        const thisUser = response.data.user;
+
         this.storage.setUser({
-          name: apiData.name,
-          contactNumber: apiData.contact_number,
-          email: apiData.email,
-          role: apiData.role,
-          image: apiData.image,
-          linkedinConnected: apiData.linkedinConnected,
-          linkedinUrl: apiData.linkedin_url,
-          userHash: apiData.userhash,
-          maxAchievablePoints: this.utils.has(apiData, 'max_achievable_points') ? apiData.max_achievable_points : null
+          name: thisUser.name,
+          email: thisUser.email,
+          image: thisUser.image,
+          role: thisUser.role,
+          contactNumber: thisUser.contactNumber,
+          userHash: thisUser.userHash
         });
       }
       return response;

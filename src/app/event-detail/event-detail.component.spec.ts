@@ -139,7 +139,8 @@ describe('EventDetailComponent', () => {
     singleBooking: true,
     canBook: true,
     isPast: true,
-    assessment: null
+    assessment: null,
+    allDay: false
   };
 
   it('should create', () => {
@@ -165,8 +166,8 @@ describe('EventDetailComponent', () => {
       } else {
         expect(page.expired).toBeFalsy();
       }
-      expect(page.date.innerHTML).toEqual(utils.utcToLocal(tmpEvent.startTime, 'date'));
-      expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      expect(page.date.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      // expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
       expect(page.location.innerHTML).toEqual(tmpEvent.location);
       expect(page.capacity.innerHTML).toEqual(`${tmpEvent.remainingCapacity} Seats Available Out of ${tmpEvent.capacity}`);
       if (expected) {
@@ -229,12 +230,12 @@ describe('EventDetailComponent', () => {
       });
     });
 
-    it(`should return false if the event capacity is full`, () => {
+    it(`should return 'Fully Booked' if the event capacity is full`, () => {
       tmpEvent.isBooked = false;
       tmpEvent.isPast = false;
       tmpEvent.remainingCapacity = 0;
       tmpEvent.canBook = true;
-      expected = false;
+      expected = 'Fully Booked';
     });
 
     describe(`should return 'Cancel Booking' if the event is booked and is not started`, () => {
@@ -323,6 +324,48 @@ describe('EventDetailComponent', () => {
     component.confirmed(keyEvent);
     expect(routerSpy.navigate).not.toHaveBeenCalled();
     expect(notificationSpy.alert).not.toHaveBeenCalled();
+  });
+
+  describe(`getEventDate()`, () => {
+    let tmpEvent;
+    let expected;
+    beforeEach(() => {
+      tmpEvent = JSON.parse(JSON.stringify(mockEvent));
+    });
+    it(`should return date and 'All Day' as time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-2, 0);
+      tmpEvent.allDay = true;
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, All Day`;
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+
+    it(`should return date with start and end time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-2, 0);
+      tmpEvent.allDay = false;
+      component.event = tmpEvent;
+      fixture.detectChanges();
+      expected = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`;
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
+
+    it(`should return start and end date with start and end time`, () => {
+      tmpEvent.startTime = testUtils.getDateString(-2, 0);
+      tmpEvent.endTime = testUtils.getDateString(-4, 0);
+      tmpEvent.allDay = false;
+      component.event = tmpEvent;
+      const startDayTime = `${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')}`;
+      const endDayTime = `${utils.utcToLocal(tmpEvent.endTime, 'date')}, ${utils.utcToLocal(tmpEvent.endTime, 'time')}`;
+      expected = `${startDayTime} - ${endDayTime}`;
+      fixture.detectChanges();
+      const result = component.getEventDate();
+      expect(result).toBe(expected);
+    });
   });
 
 });

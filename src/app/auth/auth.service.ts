@@ -323,14 +323,6 @@ export class AuthService {
     return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, true);
   }
 
-  /**
-   * check user linkedIn connection status
-   * @return {Boolean}
-   */
-  linkedinAuthenticated () {
-      return this.storage.getUser().linkedinConnected || false;
-  }
-
   // Activity ID is no longer used as a parameter,
   // but needs to be there so just pass in a 1
   connectToLinkedIn () {
