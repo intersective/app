@@ -47,6 +47,15 @@ export interface Event {
     password: string
   };
   type?: string;
+  allDay: boolean;
+  isMultiDay?: boolean;
+  multiDayInfo?: {
+    startTime: string;
+    endTime: string;
+    dayCount: string;
+    id: string;
+    isMiddleDay: boolean;
+  };
 }
 
 export interface EventGroup {
@@ -98,7 +107,7 @@ export class EventListService {
       this.request.apiResponseFormatError('Event format error');
       return [];
     }
-    const events: Array<Event> = [];
+    let events: Array<Event> = [];
     this.storage.initBookedEventActivityIds();
     data.forEach(event => {
       if (!this.utils.has(event, 'id') ||
@@ -117,7 +126,7 @@ export class EventListService {
         // API respond format inconsistency error
         return this.request.apiResponseFormatError('Event object format error');
       }
-      events.push({
+      const eventObj = {
         id: event.id,
         name: event.title,
         description: event.description,
@@ -144,7 +153,13 @@ export class EventListService {
           password: event.video_conference.password
         } : null,
         type: event.type,
-      });
+        allDay: event.all_day ? event.all_day : false
+      };
+      if (!this._checkIsSingleDay(eventObj) && (this.utils.timeComparer(eventObj.startTime) >= 0)) {
+        events = events.concat(this._getMultiDayEvent(eventObj));
+      } else {
+        events.push(eventObj);
+      }
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
         this.storage.setBookedEventActivityIds(event.activity_id);
@@ -167,8 +182,8 @@ export class EventListService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      const dateA = new Date(a.startTime + 'Z');
-      const dateB = new Date(b.startTime + 'Z');
+      const dateA = new Date((a.isMultiDay ? a.multiDayInfo.startTime : a.startTime) + 'Z');
+      const dateB = new Date((b.isMultiDay ? b.multiDayInfo.startTime : b.startTime) + 'Z');
       const now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
@@ -238,8 +253,31 @@ export class EventListService {
     if (this.utils.timeComparer(event.startTime) < 0 && !event.isBooked) {
       return this.utils.utcToLocal(event.startTime, 'date');
     }
+    /**
+     * According to requirements.
+     * 1. we are not showing time for multi day event that are middle days (isMiddleDay is true).
+     *  example: event start at 25th and end in 30th.
+     *  - we show time for 25th event item and 30th day event item.
+     *  - we are not showing time for 26th, 27th, 28th, 29th days event items.
+     * 2. If event is all day but not multiday we show 'All Day'.
+     * 3. If event is multiday and it's the starting day we only showing starting time.
+     * 4. If event is multiday and it's the ending day we showing 'Until [end time]'.
+     * 5. For any other condition show both starting time and end time.
+     */
+    if (event.isMultiDay && event.multiDayInfo && event.multiDayInfo.isMiddleDay) {
+      return '';
+    }
+    if (event.allDay) {
+      return 'All Day';
+    }
+    if (event.isMultiDay && (this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
+      return this.utils.utcToLocal(event.startTime, 'time');
+    }
+    if (event.isMultiDay && (this.utils.utcToLocal(event.endTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
+      return `Until ${this.utils.utcToLocal(event.endTime, 'time')}`;
+    }
     // otherwise display time only
-    return this.utils.utcToLocal(event.startTime, 'time') + ' - ' + this.utils.utcToLocal(event.endTime, 'time');
+    return `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
   }
 
   /**
@@ -260,5 +298,66 @@ export class EventListService {
       return true;
     }
     return false;
+  }
+
+  /**
+   * method checking is event single day or multi day.
+   * @param event Formated event object
+   * @returns {boolean} is event single day or not
+   */
+  private _checkIsSingleDay(event) {
+    return this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.endTime, 'date');
+  }
+
+  /**
+   * methos will create duplicate event objects to show in each day for multi day events.
+   * @param event Formated event object
+   * @returns {Array} multi day event object array
+   */
+  private _getMultiDayEvent(event) {
+    const dateDifference = (this.utils.getDateDifference(event.startTime, event.endTime) + 1);
+    const multiDayEvents: Array<Event> = [];
+    let eventObj = null;
+    for (let index = 0; index < dateDifference; index++) {
+      eventObj = {
+        id: event.id,
+        name: event.name,
+        description: event.description,
+        location: event.location,
+        activityId: event.activityId,
+        activityName: event.activityName,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        capacity: event.capacity,
+        remainingCapacity: event.remainingCapacity,
+        isBooked: event.isBooked,
+        singleBooking: event.singleBooking,
+        canBook: event.canBook,
+        isPast: event.isPast,
+        assessment: event.assessment,
+        videoConference: event.videoConference,
+        type: event.type,
+        allDay: true,
+        isMultiDay: true,
+        multiDayInfo: {
+          startTime: this.utils.getFutureDated(event.startTime, index),
+          endTime: event.endTime,
+          dayCount: `(Day ${index + 1}/${dateDifference})`,
+          id: `E${event.id}${index + 1}`,
+          isMiddleDay: true
+        }
+      };
+      if (index === 0) {
+        eventObj.multiDayInfo.startTime = event.startTime;
+        eventObj.multiDayInfo.isMiddleDay = false;
+        eventObj.allDay = event.allDay;
+      }
+      if (index === (dateDifference - 1)) {
+        eventObj.allDay = event.allDay;
+        eventObj.multiDayInfo.isMiddleDay = false;
+      }
+      multiDayEvents.push(eventObj);
+    }
+    return multiDayEvents;
   }
 }
