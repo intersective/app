@@ -21,7 +21,9 @@ export class ListItemComponent {
   @Input() endingIconColor: string;
   // whether hightlight the background or not
   @Input() active: boolean;
+  @Input() isEventItem: boolean;
   @Input() eventExpired: boolean;
-  @Input() eventVideoConference: { provider?: any };
-
+  @Input() eventVideoConference?: { provider?: any };
+  @Input() eventFullyBooked: boolean;
+  @Input() eventDayCount: string;
 }

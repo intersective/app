@@ -56,6 +56,7 @@ export class TestUtils extends SpyObject {
   dateFormatter;
   dueDateFormatter;
   changeThemeColor;
+  getDateDifference;
   changeCardBackgroundImage;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
@@ -82,6 +83,7 @@ export class TestUtils extends SpyObject {
     this.dateFormatter = this.spy('dateFormatter').and.callFake(UtilsService.prototype.dateFormatter);
     this.dueDateFormatter = this.spy('dueDateFormatter').and.callFake(UtilsService.prototype.dueDateFormatter);
     this.addOrRemove = this.spy('addOrRemove').and.callFake(UtilsService.prototype.addOrRemove);
+    this.getDateDifference = this.spy('getDateDifference').and.callFake(UtilsService.prototype.getDateDifference);
     this.clearCache = this.spy('clearCache').and.returnValue(true);
     this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
     this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
