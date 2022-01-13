@@ -47,7 +47,9 @@ export class EventsComponent extends RouterEnter {
     this.currentEvent = null;
     // trigger eventList onEnter() after the element gets generated
     setTimeout(() => {
-      this.eventList.onEnter();
+      if (this.eventList && this.eventList.onEnter) {
+        this.eventList.onEnter();
+      }
     });
   }
 
@@ -69,7 +71,9 @@ export class EventsComponent extends RouterEnter {
     this.contextId = params.contextId;
     // trigger assessment onEnter() after the element gets generated
     setTimeout(() => {
-      this.assessment.onEnter();
+      if (this.assessment && this.assessment.onEnter) {
+        this.assessment.onEnter();
+      }
     });
   }
 }

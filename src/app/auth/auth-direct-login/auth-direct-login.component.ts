@@ -42,7 +42,7 @@ export class AuthDirectLoginComponent implements OnInit {
         this.storage.set('authToken', authToken);
       }
       this.newRelic.createTracer('Processing direct login');
-      return this._redirect();
+      return await this._redirect();
     } catch (err) {
       console.error(err);
       this._error(err);
@@ -197,12 +197,12 @@ export class AuthDirectLoginComponent implements OnInit {
     return this.navigate(route);
   }
 
-  private _error(res?): Promise<any> {
+  private async _error(res?): Promise<any> {
     this.newRelic.noticeError('failed direct login', res ? JSON.stringify(res) : undefined);
     if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
       'User is not registered'
     ].includes(res.data.message)) {
-      this._redirect(true);
+      await this._redirect(true);
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['registration', res.data.user.email, res.data.user.key]);
     }
@@ -220,6 +220,11 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
+  /**
+   * find "one_page_only" parameter in URL to determine user navigation permission in the app
+   *
+   * @return  {boolean} true = has restriction; false = no restriction
+   */
   singlePageRestriction(): boolean {
     // one_page_only: display app limited to one single screen and no other view access are allowed
     const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');

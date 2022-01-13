@@ -1,45 +1,23 @@
 import { isDevMode, enableProdMode } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import {
-  inject,
   fakeAsync,
   tick,
   TestBed,
-  async,
 } from '@angular/core/testing';
-
-import {
-  MockBackend,
-} from '@angular/http/testing';
-
-import {
-  HttpClient,
-  HttpRequest,
-  HttpHeaders
-} from '@angular/common/http';
 
 import {
   HttpTestingController,
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 
-import {
-  Http,
-  ConnectionBackend,
-  BaseRequestOptions,
-  Response,
-  ResponseOptions
-} from '@angular/http';
-
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
+import { ApolloService } from '../apollo/apollo.service';
+import { UtilsService } from '@app/services/utils.service';
 import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
@@ -80,12 +58,14 @@ describe('RequestConfig', () => {
 
   it('should readily accept both appkey & prefixUrl value', () => {
     expect(requestConfig.appkey).toBe('');
-    expect(requestConfig.prefixUrl).toBe('');
+    expect(requestConfig.loginApiUrl).toBe('');
   });
 });
 
 describe('RequestService', () => {
   const PREFIX_URL = 'test.com';
+  const SCHEME_DOMAIN = 'https://test.com';
+  const LOGINAPI = 'login.com';
   const APPKEY = 'TESTAPPKEY';
   const routerSpy = TestUtils.createRouterSpy();
 
@@ -94,30 +74,34 @@ describe('RequestService', () => {
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
   let storageSpy: BrowserStorageService;
-  let httpLink: HttpLink;
-  let apolloSpy: Apollo;
+  let apolloSpy: ApolloService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         {
-          provide: Apollo,
-          useValue: jasmine.createSpyObj('Apollo', [
-            'query',
-            'watchQuery',
-            'mutate',
-            'use',
-          ])
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLFetch',
+            'graphQLWatch',
+            'graphQLMutate',
+            'chatGraphQLQuery',
+            'chatGraphQLMutate',
+          ]),
         },
-        HttpLink,
         RequestService,
         DevModeService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestConfig,
           useValue: {
             appkey: APPKEY,
             prefixUrl: PREFIX_URL,
+            loginApiUrl: LOGINAPI
           }
         },
         {
@@ -136,16 +120,37 @@ describe('RequestService', () => {
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
     storageSpy = TestBed.inject(BrowserStorageService);
-    httpLink = TestBed.inject(HttpLink);
-    apolloSpy = TestBed.inject(Apollo);
+    apolloSpy = TestBed.inject(ApolloService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
+  beforeEach(() => {
+    storageSpy.stackConfig = {
+      uuid: '12345',
+      name: 'Practera Classic App - Stage',
+      description: 'Participate in an experience as a learner or reviewer - Testing',
+      image: 'https://media.intersective.com/img/learners_reviewers.png',
+      url: 'https://test.com',
+      type: 'app',
+      coreApi: 'https://test.com',
+      coreGraphQLApi: 'https://test.com',
+      chatApi: 'https://test.com',
+      filestack: {
+        s3Config: {
+          container: 'files.p1-stage.practera.com',
+          region: 'ap-southeast-2'
+        },
+      },
+      defaultCountryModel: 'AUS',
+      lastLogin: 1619660600368
+    };
+  });
+
   describe('get()', () => {
-    const testURL = 'https://www.test.com';
+    const testURL = 'https://login.com';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
@@ -156,7 +161,24 @@ describe('RequestService', () => {
         con.mockRespond(new Response(response));
       });
 */
-      service.get(testURL, {param: {justFor: 'test'}}).subscribe(_res => {
+      service.get(null, {params: {justFor: 'test'}}, true).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'GET' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(testURL);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform a GET request based on provided URL', fakeAsync(() => {
+      let res = { body: true };
+      service.get('', {params: {justFor: 'test'}}, true).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -173,7 +195,7 @@ describe('RequestService', () => {
 
     it('should update apikey if new apikey exist', () => {
       let res = { body: true, apikey: 'testapikey' };
-      service.get(testURL, {header: {some: 'keys'}}).subscribe(_res => {
+      service.get(testURL, {headers: {some: 'keys'}}).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
@@ -189,7 +211,7 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.get(testURL).subscribe(
+      service.get(null, {}, true).subscribe(
         _res => {
           res = _res;
         },
@@ -205,15 +227,21 @@ describe('RequestService', () => {
   });
 
   describe('post()', () => {
-    const testURL = 'https://www.post-test.com';
+    let testURL = 'post-test';
     const sampleData = {
       sample: 'data'
     };
 
-    it('should perform a GET request based on provided URL', fakeAsync(() => {
+    it('should perform a POST request based on Login API URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.post(testURL, sampleData).subscribe(_res => {
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }
+      ).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'POST' });
@@ -222,7 +250,32 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform a POST request based on provided URL', fakeAsync(() => {
+      testURL = 'login';
+
+      let res = { body: true };
+
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'POST' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -235,7 +288,13 @@ describe('RequestService', () => {
       const err = { success: false, status: 400, statusText: 'Bad Request' };
       let res: any;
       let errRes: any;
-      service.post(testURL, sampleData).subscribe(
+      service.post(
+        {
+          endPoint: testURL,
+          data: sampleData,
+          isLoginAPI: true
+        }
+      ).subscribe(
         _res => {
           res = _res;
         },
@@ -243,7 +302,73 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'POST'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'POST'}).flush(ERR_MESSAGE, err);
+
+      expect(res).toBeUndefined();
+      expect(errRes).toEqual(ERR_MESSAGE);
+    }));
+  });
+
+  describe('put()', () => {
+    let testURL = 'put-test';
+    const sampleData = {
+      sample: 'data'
+    };
+
+    it('should perform a PUT request based on Login API URL', fakeAsync(() => {
+      let res = { body: true };
+
+      service.put(testURL, sampleData, {}, true).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'PUT' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform a PUT request based on provided URL', fakeAsync(() => {
+      testURL = 'login';
+
+      let res = { body: true };
+
+      service.put(testURL, sampleData, {}, true).subscribe(_res => {
+        res = _res;
+      });
+      const req = mockBackend.expectOne({ method: 'PUT' });
+      req.flush(res);
+
+      tick();
+
+      const { body } = res;
+      expect(req.request.url).toBe(`https://login.com/${testURL}`);
+      expect(body).toBe(true);
+
+      mockBackend.verify();
+    }));
+
+    it('should perform error handling when fail', fakeAsync(() => {
+      spyOn(devModeServiceSpy, 'isDevMode').and.returnValue(false);
+
+      const ERR_MESSAGE = 'Invalid PUT Request';
+      const err = { success: false, status: 400, statusText: 'Bad Request' };
+      let res: any;
+      let errRes: any;
+      service.put(testURL, sampleData, {}, true).subscribe(
+        _res => {
+          res = _res;
+        },
+        _err => {
+          errRes = _err;
+        }
+      );
+      const req = mockBackend.expectOne({ url: `https://login.com/${testURL}`, method: 'PUT'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(errRes).toEqual(ERR_MESSAGE);
@@ -251,12 +376,12 @@ describe('RequestService', () => {
   });
 
   describe('delete()', () => {
-    const testURL = 'https://www.delete-test.com';
+    const testURL = 'delete-test';
 
     it('should perform a GET request based on provided URL', fakeAsync(() => {
       let res = { body: true };
 
-      service.delete(testURL).subscribe(_res => {
+      service.delete(`${testURL}`).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'DELETE' });
@@ -265,7 +390,7 @@ describe('RequestService', () => {
       tick();
 
       const { body } = res;
-      expect(req.request.url).toBe(testURL);
+      expect(req.request.url).toBe(`${SCHEME_DOMAIN}/${testURL}`);
       expect(body).toBe(true);
 
       mockBackend.verify();
@@ -287,7 +412,7 @@ describe('RequestService', () => {
           errRes = _err;
         }
       );
-      const req = mockBackend.expectOne({ url: testURL, method: 'DELETE'}).flush(ERR_MESSAGE, err);
+      const req = mockBackend.expectOne({ url: `${SCHEME_DOMAIN}/${testURL}`, method: 'DELETE'}).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
@@ -303,14 +428,6 @@ describe('RequestService', () => {
         two: 2,
       });
       expect(httpParam.toString()).toEqual('test=true&one=1&two=2');
-    });
-  });
-
-  describe('getPrefixUrl()', () => {
-    it('should return prefixUrl from RequestConfig class', () => {
-      const result = service.getPrefixUrl();
-      expect(result).toEqual(PREFIX_URL);
-      expect(result).toEqual(requestConfigSpy.prefixUrl);
     });
   });
 
@@ -340,13 +457,13 @@ describe('RequestService', () => {
     }`;
 
     it('trigger GraphQL API to fetch record once', () => {
-      apolloSpy.query = jasmine.createSpy('query').and.returnValue(of({ data: true }));
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(of({ data: true }));
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
-      expect(apolloSpy.query).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
     });
 
     it('should handle throwed error at error occur', () => {
-      apolloSpy.query = jasmine.createSpy('query').and.returnValue(throwError('error'));
+      apolloSpy.graphQLFetch = jasmine.createSpy('graphQLFetch').and.returnValue(throwError('error'));
       service['handleError'] = jasmine.createSpy('handleError');
 
       service.graphQLFetch(SAMPLE_QUERY).subscribe();
@@ -360,7 +477,7 @@ describe('RequestService', () => {
     let errRes: any;
     let request: any;
     beforeEach(fakeAsync(() => {
-      request = service.get('test.com').subscribe(
+      request = service.get().subscribe(
         _res => _res,
         _err => {
           errRes = _err;
@@ -390,7 +507,7 @@ describe('RequestService', () => {
 
     it('should throw error if static file retrival fail', fakeAsync(() => {
       mockBackend.expectOne({ method: 'GET'}).flush('<!DOCTYPE html>', err);
-      expect(errRes).toEqual('Http failure response for test.comtest.com: 400 Bad Request');
+      expect(errRes).toEqual('Http failure response for https://test.com: 400 Bad Request');
     }));
   });
 });
