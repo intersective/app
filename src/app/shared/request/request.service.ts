@@ -113,8 +113,10 @@ export class RequestService {
     isFullURL?: boolean;
   }): string {
     let endpointUrl = '';
-    if (options.isLoginAPI) {
+    if (options && options.isLoginAPI) {
       endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
+    } else if (options && options.isFullURL) {
+      endpointUrl = endpoint;
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
     } else {
@@ -131,7 +133,8 @@ export class RequestService {
    * @returns {Observable<any>}
    */
   get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
-    isLoginAPI: boolean;
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
     customErrorHandler?: Function;
   }): Observable<any> {
 

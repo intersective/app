@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
