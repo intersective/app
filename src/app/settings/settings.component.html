@@ -105,6 +105,11 @@
 
 <ng-template #supportContentTpl>
   <ion-label class="subtitle-2 gray-2">Support</ion-label>
+  <ion-button class="accessible-btn" role="button" aria-label="Notification Preferences"  tabindex="0" (click)="router.navigate(['/preferences'])" (keydown)="router.navigate(['preferences'])">
+    <ion-icon class="ion-padding-end" color="primary" name="notifications-outline"></ion-icon>
+    <ion-label class="subtitle-1">Notifications</ion-label>
+  </ion-button>
+
   <ion-button class="accessible-btn" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
     <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
     <ion-label class="subtitle-1"> Email Help </ion-label>
