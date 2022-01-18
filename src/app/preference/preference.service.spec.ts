@@ -38,7 +38,7 @@ describe('PreferenceService', () => {
       service['_preferences$'].subscribe(res => {
         expect(res).toBe(TEST_DATA);
       });
-      expect(requestSpy.get).toHaveBeenCalledWith(APIs.preference, {});
+      expect(requestSpy.get).toHaveBeenCalledWith(APIs.preference, {}, { isLoginAPI: false, isFullURL: true });
     });
   });
 });

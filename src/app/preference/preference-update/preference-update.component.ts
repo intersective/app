@@ -5,6 +5,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { IonToggle } from '@ionic/angular';
 
+interface Preference {
+  name: string;
+  description: string;
+  options?: {
+    'locked': boolean;
+    'locked_name': string;
+    'medium': string;
+    'name': string;
+    'value': boolean;
+  }[];
+  remarks: string;
+  key: string;
+}
+
 @Component({
   selector: 'app-preference-update',
   templateUrl: './preference-update.component.html',
@@ -17,13 +31,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
   };
 
   preferenceSubject$: Subscription;
-  currentPreference: {
-    name: string;
-    description: string;
-    options: string;
-    remarks: string;
-    key: string;
-  };
+  currentPreference: Preference;
   private newUpdates: {
     [propName: string]: {
       [propName: string]: boolean;
@@ -50,7 +58,7 @@ export class PreferenceUpdateComponent implements OnInit, OnDestroy {
     this.currentPreference = {
       name: '',
       description: '',
-      options: '',
+      options: [],
       remarks: '',
       key: '',
     };

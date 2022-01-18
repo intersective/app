@@ -163,7 +163,7 @@ describe('PreferenceUpdateComponent', () => {
       key: '',
       name: '',
       description: '',
-      options: '',
+      options: [],
       remarks: '',
     });
   });
