@@ -218,7 +218,17 @@ describe('EventListService', () => {
         }
         multiDayEvents.push(eventObj);
       }
-      expected = [formatted[2], formatted[1], formatted[3], multiDayEvents[0], multiDayEvents[1], multiDayEvents[2], formatted[4], formatted[0], formatted[5]];
+      expected = [
+        formatted[2],
+        formatted[1],
+        formatted[3],
+        multiDayEvents[0],
+        multiDayEvents[1],
+        multiDayEvents[2],
+        formatted[4],
+        formatted[0],
+        formatted[5],
+      ];
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
         console.log('res', res);
