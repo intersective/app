@@ -1,7 +1,5 @@
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
-import { MockBackend } from '@angular/http/testing';
-
 import {
   HttpTestingController,
   HttpClientTestingModule
