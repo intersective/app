@@ -19,7 +19,7 @@ import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
 import { VersionCheckService } from './services/version-check.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { EmbedVideo } from 'ngx-embed-video';
+import { EmbedVideoModule } from 'ngx-embed-video';
 import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
@@ -88,7 +88,9 @@ function initializeApp(
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    EmbedVideo.forRoot(),
+    EmbedVideoModule.forRoot(),
+    // EmbedVideoModule.forRoot(),
+    // EmbedVideo.forRoot(),
     NewRelicModule.forRoot(),
     NotificationModule,
     FastFeedbackModule,
