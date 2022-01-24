@@ -54,8 +54,7 @@ interface POSTParams {
   data: any;
   httpOptions?: any;
   isLoginAPI?: boolean;
-  isFullURL?: boolean;
-  customErrorHandler?: Function; // flag to indicate whether to handle error in different way
+  isFullUrl?: boolean;
 }
 
 @Injectable({
@@ -108,15 +107,10 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint: string, options?: {
-    isLoginAPI?: boolean;
-    isFullURL?: boolean;
-  }): string {
+  private getEndpointUrl(endpoint, isLoginAPI?: boolean) {
     let endpointUrl = '';
-    if (options && options.isLoginAPI) {
+    if (isLoginAPI) {
       endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
-    } else if (options && options.isFullURL) {
-      endpointUrl = endpoint;
     } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
       endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
     } else {
@@ -132,12 +126,7 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
-    isLoginAPI?: boolean;
-    isFullURL?: boolean;
-    customErrorHandler?: Function;
-  }): Observable<any> {
-
+  get(endPoint: string = '', httpOptions?: RequestOptions, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -149,23 +138,24 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    const apiEndpoint = this.getEndpointUrl(endPoint, options);
-    const request = this.http.get<any>(apiEndpoint, {
+    let apiEndpoint = '';
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(endPoint);
+    }
+    return this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-    .pipe(concatMap(response => {
-      this._refreshApikey(response);
-      return of(response);
-    }));
-
-    if (options && typeof options.customErrorHandler == "function") {
-      request.pipe(catchError((error) => options.customErrorHandler(error)));
-    } else {
-      request.pipe(catchError((error) => this.handleError(error)));
-    }
-
-    return request;
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
   post(params: POSTParams): Observable<any> {
@@ -180,33 +170,30 @@ export class RequestService {
       params.httpOptions.params = '';
     }
 
-    let apiEndpoint = this.getEndpointUrl(params.endPoint, {
-      isFullURL: params.isFullURL,
-      isLoginAPI: params.isLoginAPI,
-    });
+    let apiEndpoint = '';
+    // get login API endpoint if need to call login API.
+    if (params.isFullUrl) {
+      apiEndpoint = params.endPoint;
+    } else if (params.isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(params.endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(params.endPoint);
+    }
 
-    const request = this.http.post<any>(apiEndpoint, params.data, {
+    return this.http.post<any>(apiEndpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
     })
-    .pipe(concatMap(response => {
-      this._refreshApikey(response);
-      return of(response);
-    }));
-
-    if (typeof params.customErrorHandler == "function") {
-      request.pipe(catchError((error) => params.customErrorHandler(error)));
-    } else {
-      request.pipe(catchError((error) => this.handleError(error)));
-    }
-
-    return request;
+      .pipe(concatMap(response => {
+        this._refreshApikey(response);
+        return of(response);
+      }))
+      .pipe(
+        catchError((error) => this.handleError(error))
+      );
   }
 
-  put(endPoint: string, data, httpOptions?: any, options?: {
-    isLoginAPI?: boolean;
-    isFullURL?: boolean;
-  }): Observable<any> {
+  put(endPoint: string = '', data, httpOptions?: any, isLoginAPI?: boolean): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -218,7 +205,14 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    const apiEndpoint = this.getEndpointUrl(endPoint, options);
+    let apiEndpoint = '';
+    // get login API endpoint if need to call login API.
+    if (isLoginAPI) {
+      apiEndpoint = this.getEndpointUrl(endPoint, true);
+    } else {
+      apiEndpoint = this.getEndpointUrl(endPoint);
+    }
+
     return this.http.put<any>(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
@@ -316,17 +310,17 @@ export class RequestService {
   /**
    *
    */
-  delete(endPoint: string, httpOptions: RequestOptions = {}, options?: {
-    isFullURL?: boolean;
-  }): Observable<any> {
+  delete(endPoint: string = '', httpOptions?: RequestOptions): Observable<any> {
+    if (!httpOptions) {
+      httpOptions = {};
+    }
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-
-    return this.http.delete<any>(this.getEndpointUrl(endPoint, options), {
+    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
