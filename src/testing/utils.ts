@@ -58,7 +58,6 @@ export class TestUtils extends SpyObject {
   changeThemeColor;
   getDateDifference;
   changeCardBackgroundImage;
-  getFutureDated;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -88,7 +87,6 @@ export class TestUtils extends SpyObject {
     this.clearCache = this.spy('clearCache').and.returnValue(true);
     this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
     this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
-    this.getFutureDated = this.spy('getFutureDated').and.callFake(UtilsService.prototype.getFutureDated);
   }
 
   static createRouterSpy() {
