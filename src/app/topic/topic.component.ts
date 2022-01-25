@@ -1,7 +1,6 @@
 import { TopicService, Topic } from './topic.service';
 import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { EmbedVideoService } from '@trtshen/ngx-embed-video';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -13,6 +12,8 @@ import { SharedService } from '@services/shared.service';
 import { Subscription, Observable } from 'rxjs';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import * as Plyr from 'plyr';
+import { EmbedVideoService } from '@app/shared/ngx-embed-video/embed-video.service';
+import { SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-topic',
@@ -33,7 +34,7 @@ export class TopicComponent extends RouterEnter {
     files: [],
     hasComments: false
   };
-  iframeHtml = '';
+  iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
   loadingMarkedDone = true;
   loadingTopic = true;
@@ -126,7 +127,7 @@ export class TopicComponent extends RouterEnter {
 
   private _setVideoUrlElelemts() {
     if (this.topic.videolink.includes('vimeo') || this.topic.videolink.includes('youtube')) {
-      this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }});
+      this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' }}) || null;
     }
   }
 

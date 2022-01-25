@@ -14,6 +14,7 @@ import { ListItemComponent } from '@shared/components/list-item/list-item.compon
 import { FloatDirective } from './directives/float/float.directive';
 import { ImgComponent } from '@shared/components/img/img.component';
 import { DragAndDropDirective } from './directives/drag-and-drop/drag-and-drop.directive';
+import { EmbedVideoModule } from './ngx-embed-video/embed-video.module';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -37,6 +38,7 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
+    EmbedVideoModule.forRoot(),
   ],
   declarations: [
     ActivityCardComponent,

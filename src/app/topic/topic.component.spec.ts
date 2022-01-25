@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from './topic.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
-import { EmbedVideoService } from '@trtshen/ngx-embed-video';
+
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -16,6 +16,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
 import { ActivityService } from '@app/activity/activity.service';
+import { EmbedVideoService } from '@app/shared/ngx-embed-video/embed-video.service';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
