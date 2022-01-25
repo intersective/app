@@ -54,6 +54,11 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
+    path: 'preferences',
+    loadChildren: () => import('./preference/preference.module').then(m => m.PreferenceModule),
+    canLoad: [AuthGuard],
+  },
+  {
     path: 'device-info',
     component: DeviceInfoComponent,
   },
