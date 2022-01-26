@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { RequestService, DevModeService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService, Stack } from '@services/storage.service';
@@ -9,7 +9,7 @@ import { SharedService } from '@services/shared.service';
 import { ReviewListService } from '@app/review-list/review-list.service';
 import { EventListService } from '@app/event-list/event-list.service';
 import { environment } from '@environments/environment';
-import { HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 
 /**
  * @name api
@@ -95,41 +95,24 @@ export class SwitcherService {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: 'LOGIN'
     };
-
     stackList.forEach(stack => {
-      stackRequests.push(this.request.post({
-        endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
-        data: body,
-        httpOptions: { headers },
-        isFullURL: true
-      }).pipe(
-        catchError(err => {
-          console.log('err:', err);
-          return of(err);
-        }),
-        map(res => {
-          if (res instanceof HttpErrorResponse) {
-            return [];
-          }
-
+      stackRequests.push(this.request.post(
+        {
+          endPoint: this.utils.urlFormatter(stack.coreApi, api.login),
+          data: body,
+          httpOptions: { headers },
+          isFullUrl: true
+        }).pipe(map(res => {
           res.stack = stack;
           return res;
-        })
-      ).toPromise());
+        })));
     });
-
-    return forkJoin(stackRequests).pipe(
-      map(res => this._normaliseAuthResults(res))
-    );
+    return forkJoin(stackRequests).pipe(map(res => this._normaliseAuthResults(res)));
   }
 
   private _normaliseAuthResults(apiResults: any[]): any {
     const programsList = [];
     apiResults.forEach(result => {
-      if (this.utils.isEmpty(result)) {
-        return;
-      }
-
       const data = result.data;
       if (Array.isArray(data.Timelines) && data.Timelines.length > 0) {
         data.Timelines.map(

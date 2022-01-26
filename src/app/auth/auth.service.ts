@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -129,14 +129,8 @@ export class AuthService {
         data: body.toString(),
         httpOptions: {
           headers
-        },
-        customErrorHandler: (err: any) => {
-          console.log('catchError::', err);
-          return of(err);
         }
-      }).pipe(
-        map(res => this._handleLoginResponse(res)),
-      );
+      }).pipe(map(res => this._handleLoginResponse(res)));
   }
 
   /**
@@ -326,9 +320,7 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   resetPassword(data: { password: string }, header: { apikey: string } ): Observable<any> {
-    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, {
-      isLoginAPI: true
-    });
+    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, true);
   }
 
   // Activity ID is no longer used as a parameter,
@@ -444,7 +436,7 @@ export class AuthService {
    * @return  {Observable<Stack>}        observable response of stack endpont
    */
   getStackConfig(uuid: string): Observable<Stack> {
-    return this.request.get(LOGIN_API.stackInfo, { params: { uuid } }, { isLoginAPI: true }).pipe(map(res => {
+    return this.request.get(LOGIN_API.stackInfo, {params: {uuid}}, true).pipe(map(res => {
       if (res) {
         return res;
       }
@@ -478,9 +470,7 @@ export class AuthService {
       };
     }
 
-    return this.request.get(LOGIN_API.multipleStacks, parameters, {
-      isLoginAPI: true
-    }).pipe(
+    return this.request.get(LOGIN_API.multipleStacks, parameters, true).pipe(
       map(res => {
         if (res) {
           this.storage.stacks = res;
