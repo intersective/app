@@ -15,6 +15,7 @@ import { FloatDirective } from './directives/float/float.directive';
 import { ImgComponent } from '@shared/components/img/img.component';
 import { DragAndDropDirective } from './directives/drag-and-drop/drag-and-drop.directive';
 import { EmbedVideoModule } from './ngx-embed-video/embed-video.module';
+import { EmbedVideoService } from './ngx-embed-video/embed-video.service';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -67,7 +68,8 @@ const largeCircleDefaultConfig = {
     ListItemComponent,
     FloatDirective,
     ImgComponent,
-    DragAndDropDirective
+    DragAndDropDirective,
+    EmbedVideoService,
   ],
 })
 export class SharedModule {}
