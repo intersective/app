@@ -42,11 +42,14 @@ export class RequestInterceptor implements HttpInterceptor {
       headers['timelineId'] = timelineId.toString();
     }
 
-    // do not need to pass team id for teams.json
-    // do not need to pass team id for chat api calls
-    if (teamId && !req.url.includes('/teams.json') &&
-    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
-    !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
+    // do not need to pass team id for teams.json/chat api
+    if (teamId &&
+      !req.url.includes('/teams.json') &&
+      !req.url.includes('/message/chat/list.json') &&
+      !req.url.includes('/message/chat/create_message') &&
+      !req.url.includes('/message/chat/edit_message') &&
+      !req.url.includes('/message/chat/list_messages.json')
+    ) {
       headers['teamId'] = teamId.toString();
     }
 
@@ -61,6 +64,10 @@ export class RequestInterceptor implements HttpInterceptor {
     if (req.url.match(/api.login\W*([aA-zZ])*\.practera\.com[\w\W]*/)) {
       delete headers['teamId'];
       delete headers['timelineId'];
+    }
+
+    if (req.url.includes('preferences-api')) {
+      delete headers['teamId'];
     }
 
     return next.handle(req.clone({
