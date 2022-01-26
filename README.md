@@ -4,8 +4,8 @@
 
 ## Requirements
 
-- Ionic 4
-- Angular 7
+- Ionic 6
+- Angular 12.2.15
 
 ## Development Notes
 
