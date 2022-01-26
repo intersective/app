@@ -41,6 +41,9 @@ export const environment = {
   intercom: false,
   newrelic: false,
   goMobile: false,
+  lambdaServices: {
+    preferences: 'https://preferences-api.p2-sandbox.practera.com/',
+  },
 };
 
 /*
