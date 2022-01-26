@@ -47,7 +47,7 @@ export interface Event {
     password: string
   };
   type?: string;
-  allDay: boolean;
+  allDay?: boolean;
   isMultiDay?: boolean;
   multiDayInfo?: {
     startTime: string;

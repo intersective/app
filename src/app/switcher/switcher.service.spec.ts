@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks, waitForAsync } from '@angular/core/testing';
 import { SwitcherService } from './switcher.service';
 import { of, Observable, pipe } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
@@ -262,7 +262,7 @@ describe('SwitcherService', () => {
       const [firstProgram] = ProgramFixture;
       spyOn(service, 'checkIsOneProgram').and.returnValue(true);
       spyOn(Array, 'isArray').and.returnValue(true);
-      spyOn(service, 'switchProgram').and.returnValue(of(res => res(true)));
+      spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of(res => res(true))));
 
       let result;
       service.switchProgramAndNavigate([firstProgram]).then(data => {
@@ -276,7 +276,7 @@ describe('SwitcherService', () => {
     it('should return [app, home] if programs is not an Array and got one program object (direct link)', fakeAsync(() => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+        spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of({})));
 
         // simulate direct-link
         storageSpy.get = jasmine.createSpy('get').and.returnValue(true);
@@ -295,7 +295,7 @@ describe('SwitcherService', () => {
     it('should return [app, home] if programs is not an Array and got one program object (not direct link)', fakeAsync(() => {
         spyOn(utils, 'isEmpty').and.returnValue(false);
         spyOn(Array, 'isArray').and.returnValue(false);
-        spyOn(service, 'switchProgram').and.returnValue(of({}));
+        spyOn(service, 'switchProgram').and.returnValue(Promise.resolve(of({})));
 
         // disable direct-link
         storageSpy.get = jasmine.createSpy('get').and.returnValue(false);
@@ -373,47 +373,54 @@ describe('SwitcherService', () => {
       spyOn(service, 'getEvents').and.returnValue(of());
     });
 
-    it('should collect related data based on selected program', () => {
-      service.switchProgram(ProgramFixture[0]).subscribe();
-      expect(storageSpy.setUser).toHaveBeenCalled();
-      expect(sharedSpy.onPageLoad).toHaveBeenCalled();
-      expect(service.getNewJwt).toHaveBeenCalled();
-      expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
-      expect(service.getMyInfo).toHaveBeenCalled();
-      expect(service.getReviews).toHaveBeenCalled();
-      expect(service.getEvents).toHaveBeenCalled();
-    });
+    it('should collect related data based on selected program', waitForAsync(() => {
+      service.switchProgram(ProgramFixture[0]).then(switchProgram => {
+        switchProgram.subscribe();
+        expect(storageSpy.setUser).toHaveBeenCalled();
+        expect(sharedSpy.onPageLoad).toHaveBeenCalled();
+        expect(service.getNewJwt).toHaveBeenCalled();
+        expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
+        expect(service.getMyInfo).toHaveBeenCalled();
+        expect(service.getReviews).toHaveBeenCalled();
+        expect(service.getEvents).toHaveBeenCalled();
+      });
+    }));
 
-    it('should set the correct user data (1)', () => {
+    it('should set the correct user data (1)', waitForAsync(() => {
       const programObj = ProgramFixture[3];
       delete programObj.program.config.theme_color;
-      service.switchProgram(programObj).subscribe();
-      expect(storageSpy.setUser).toHaveBeenCalledWith({
-        programId: ProgramFixture[3].program.id,
-        programName: ProgramFixture[3].program.name,
-        programImage: ProgramFixture[3].project.lead_image,
-        hasReviewRating: false,
-        truncateDescription: true,
-        experienceId: ProgramFixture[3].program.experience_id,
-        projectId: ProgramFixture[3].project.id,
-        timelineId: ProgramFixture[3].timeline.id,
-        contactNumber: ProgramFixture[3].enrolment.contact_number,
-        colors: {
-          theme: undefined,
-          primary: undefined,
-          secondary: undefined,
-        },
-        activityCardImage: '',
-        enrolment: ProgramFixture[3].enrolment,
-        activityCompleteMessage: null,
-        chatEnabled: true,
-        teamId: null,
-        hasEvents: false,
-        hasReviews: false
-      });
-    });
 
-    it('should set the correct user data (2)', () => {
+      service.switchProgram(programObj).then(switchProgram => {
+        switchProgram.subscribe();
+
+        expect(storageSpy.setUser).toHaveBeenCalledWith({
+          programId: ProgramFixture[3].program.id,
+          programName: ProgramFixture[3].program.name,
+          programImage: ProgramFixture[3].project.lead_image,
+          hasReviewRating: false,
+          truncateDescription: true,
+          experienceId: ProgramFixture[3].program.experience_id,
+          projectId: ProgramFixture[3].project.id,
+          timelineId: ProgramFixture[3].timeline.id,
+          contactNumber: ProgramFixture[3].enrolment.contact_number,
+          colors: {
+            theme: undefined,
+            primary: undefined,
+            secondary: undefined,
+          },
+          activityCardImage: '',
+          enrolment: ProgramFixture[3].enrolment,
+          activityCompleteMessage: null,
+          chatEnabled: true,
+          teamId: null,
+          hasEvents: false,
+          hasReviews: false
+        });
+      });
+    }));
+
+    it('should set the correct user data (2)', waitForAsync(() => {
+
       const programObj = ProgramFixture[2];
       programObj.program.config = {
         theme_color: 'none',
@@ -425,31 +432,33 @@ describe('SwitcherService', () => {
         activity_complete_message: 'completed',
         chat_enable: false,
       };
-      service.switchProgram(programObj).subscribe();
-      expect(storageSpy.setUser).toHaveBeenCalledWith({
-        programId: ProgramFixture[2].program.id,
-        programName: ProgramFixture[2].program.name,
-        programImage: ProgramFixture[2].project.lead_image,
-        hasReviewRating: true,
-        truncateDescription: false,
-        experienceId: ProgramFixture[2].program.experience_id,
-        projectId: ProgramFixture[2].project.id,
-        timelineId: ProgramFixture[2].timeline.id,
-        contactNumber: ProgramFixture[2].enrolment.contact_number,
-        colors: {
-          theme: 'none',
-          primary: undefined,
-          secondary: undefined,
-        },
-        activityCardImage: '/assets/style',
-        enrolment: ProgramFixture[2].enrolment,
-        activityCompleteMessage: 'completed',
-        chatEnabled: false,
-        teamId: null,
-        hasEvents: false,
-        hasReviews: false
+      service.switchProgram(programObj).then(switchProgram => {
+        switchProgram.subscribe();
+        expect(storageSpy.setUser).toHaveBeenCalledWith({
+          programId: ProgramFixture[2].program.id,
+          programName: ProgramFixture[2].program.name,
+          programImage: ProgramFixture[2].project.lead_image,
+          hasReviewRating: true,
+          truncateDescription: false,
+          experienceId: ProgramFixture[2].program.experience_id,
+          projectId: ProgramFixture[2].project.id,
+          timelineId: ProgramFixture[2].timeline.id,
+          contactNumber: ProgramFixture[2].enrolment.contact_number,
+          colors: {
+            theme: 'none',
+            primary: undefined,
+            secondary: undefined,
+          },
+          activityCardImage: '/assets/style',
+          enrolment: ProgramFixture[2].enrolment,
+          activityCompleteMessage: 'completed',
+          chatEnabled: false,
+          teamId: null,
+          hasEvents: false,
+          hasReviews: false
+        });
       });
-    });
+    }));
   });
 
   describe('getMyInfo()', () => {

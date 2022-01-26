@@ -100,7 +100,7 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     authServiceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
-    switcherSpy.switchProgram.and.returnValue(of({}));
+    switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     storageSpy.getConfig.and.returnValue({logo: null});
   });
