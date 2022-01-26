@@ -60,6 +60,7 @@ export class RequestInterceptor implements HttpInterceptor {
     // login-api doesn't accept teamId
     if (req.url.match(/api.login\W*([aA-zZ])*\.practera\.com[\w\W]*/)) {
       delete headers['teamId'];
+      delete headers['timelineId'];
     }
 
     return next.handle(req.clone({
