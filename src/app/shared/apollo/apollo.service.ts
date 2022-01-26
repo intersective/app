@@ -44,7 +44,10 @@ export class ApolloService {
       }),
       link: this.httpLink.create({
         uri: this.storage.stackConfig.coreGraphQLApi
-      })
+      }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
     });
 
     this.apolloInstance = this.apollo;
