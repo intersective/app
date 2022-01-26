@@ -50,11 +50,16 @@ export class RequestInterceptor implements HttpInterceptor {
       headers['teamId'] = teamId.toString();
     }
 
-    // no need to send apikey in hrader for auth.json.
+    // no need to send apikey in header for auth.json.
     // in normal login process we didn't have apikey before login.
     // in direct login/ login with apikey we send apikey in request body.
     if (req.url.includes('/auths.json')) {
       delete headers['apikey'];
+    }
+
+    // login-api doesn't accept teamId
+    if (req.url.match(/api.login\W*([aA-zZ])*\.practera\.com[\w\W]*/)) {
+      delete headers['teamId'];
     }
 
     return next.handle(req.clone({
