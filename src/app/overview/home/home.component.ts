@@ -64,13 +64,13 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.todoItems.push(todoItem);
       }
     });
-    this.utils.getEvent('chat:new-message').subscribe(event => {
+    /* this.utils.getEvent('chat:new-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
         }
       });
-    });
+    }); */
     this.utils.getEvent('event-reminder').subscribe(event => {
       this.homeService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
@@ -111,14 +111,14 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.loadingTodoItems = false;
       })
     );
-    this.subscriptions.push(
+    /* this.subscriptions.push(
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
         }
         this.loadingTodoItems = false;
       })
-    );
+    ); */
 
     this.subscriptions.push(
       this.homeService.getProgress().subscribe(progress => {
