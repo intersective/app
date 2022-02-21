@@ -64,19 +64,22 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.todoItems.push(todoItem);
       }
     });
-    /* this.utils.getEvent('chat:new-message').subscribe(event => {
+    this.utils.getEvent('chat:new-message').subscribe(event => {
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
         }
       });
-    }); */
+    });
     this.utils.getEvent('event-reminder').subscribe(event => {
       this.homeService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
           this.eventReminders.push(session);
         }
       });
+    });
+    this.utils.getEvent('progress:update').subscribe(event => {
+      this.updateProgress(event);
     });
   }
 
@@ -105,26 +108,19 @@ export class HomeComponent implements OnDestroy, OnInit {
       image: this.storage.getUser().programImage,
       name: this.storage.getUser().programName
     };
+    this.updateProgress();
     this.subscriptions.push(
       this.homeService.getTodoItems().subscribe(todoItems => {
         this.todoItems = this.todoItems.concat(todoItems);
         this.loadingTodoItems = false;
       })
     );
-    /* this.subscriptions.push(
+    this.subscriptions.push(
       this.homeService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
         }
         this.loadingTodoItems = false;
-      })
-    ); */
-
-    this.subscriptions.push(
-      this.homeService.getProgress().subscribe(progress => {
-        this.progress = progress;
-        this.progressConfig = {percent: progress};
-        this.loadingProgress = false;
       })
     );
 
@@ -273,6 +269,21 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (['Enter', 'Space'].indexOf(event.code) !== -1) {
 
        this.router.navigate(['achievements']);
+    }
+  }
+
+  updateProgress(data?) {
+    let fullProgressData = data;
+    if (!data) {
+      fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
+    }
+    if (fullProgressData.project) {
+      if (fullProgressData.project.progress > 1) {
+        fullProgressData.project.progress = 1;
+      }
+      this.progress = Math.round(fullProgressData.project.progress * 100);
+      this.progressConfig = {percent: Math.round(fullProgressData.project.progress * 100)};
+      this.loadingProgress = false;
     }
   }
 }
