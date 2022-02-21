@@ -5,7 +5,6 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
-import { Apollo } from 'apollo-angular';
 
 describe('OverviewService', () => {
   let service: OverviewService;
@@ -15,8 +14,10 @@ describe('OverviewService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch'])

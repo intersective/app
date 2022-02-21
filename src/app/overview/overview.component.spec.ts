@@ -87,7 +87,6 @@ describe('OverviewComponent', () => {
 
   describe('ngOnInit', () => {
     it('should get program name and pull fastfeedback', fakeAsync(() => {
-      spyOn(utils, 'broadcastEvent');
       component.ngOnInit();
 
       flushMicrotasks();
