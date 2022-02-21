@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BrowserStorageService } from '@services/storage.service';
-import { interaction, noticeError, setCustomAttribute, setPageViewName } from 'new-relic-browser';
 declare var newrelic: any;
 
 import { environment } from '@environments/environment';

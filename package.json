@@ -39,7 +39,6 @@
     "@ionic/storage": "^2.2.0",
     "angular2-text-mask": "^9.0.0",
     "apollo-angular": "^2.6.0",
-    "@types/new-relic-browser": "^0.1072.4",
     "core-js": "^2.5.4",
     "exif-js": "^2.3.0",
     "filestack-js": "^3.20.0",
