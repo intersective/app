@@ -8,30 +8,24 @@ import { NotificationService } from './notification.service';
 
 
 @NgModule({
-  imports: [
-    SharedModule
-  ],
-  providers: [
-    NotificationService
-  ],
-  declarations: [
-    PopUpComponent,
-    AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent,
-    ActivityCompletePopUpComponent
-  ],
-  exports: [
-    PopUpComponent,
-    AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent,
-    ActivityCompletePopUpComponent
-  ],
-  entryComponents: [
-    PopUpComponent,
-    AchievementPopUpComponent,
-    LockTeamAssessmentPopUpComponent,
-    ActivityCompletePopUpComponent
-  ]
+    imports: [
+        SharedModule
+    ],
+    providers: [
+        NotificationService
+    ],
+    declarations: [
+        PopUpComponent,
+        AchievementPopUpComponent,
+        LockTeamAssessmentPopUpComponent,
+        ActivityCompletePopUpComponent
+    ],
+    exports: [
+        PopUpComponent,
+        AchievementPopUpComponent,
+        LockTeamAssessmentPopUpComponent,
+        ActivityCompletePopUpComponent
+    ]
 })
 
 export class NotificationModule {

@@ -6,17 +6,16 @@ import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from './review-rating.service';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule
-  ],
-  declarations: [
-    ReviewRatingComponent
-  ],
-  providers: [ ReviewRatingService ],
-  exports: [ ReviewRatingComponent ],
-  entryComponents: [ ReviewRatingComponent ]
+    imports: [
+        IonicModule,
+        CommonModule,
+        FormsModule
+    ],
+    declarations: [
+        ReviewRatingComponent
+    ],
+    providers: [ReviewRatingService],
+    exports: [ReviewRatingComponent]
 })
 
 export class ReviewRatingModule {}

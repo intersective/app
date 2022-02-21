@@ -7,25 +7,22 @@ import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
-  imports: [
-    HttpClientModule,
-    SharedModule
-  ],
-  providers: [
-    FilestackService
-  ],
-  declarations: [
-    FilestackComponent,
-    PreviewComponent,
-  ],
-  exports: [
-    FilestackComponent,
-    HttpClientModule,
-    SharedModule
-  ],
-  entryComponents: [
-    PreviewComponent,
-  ]
+    imports: [
+        HttpClientModule,
+        SharedModule
+    ],
+    providers: [
+        FilestackService
+    ],
+    declarations: [
+        FilestackComponent,
+        PreviewComponent,
+    ],
+    exports: [
+        FilestackComponent,
+        HttpClientModule,
+        SharedModule
+    ]
 })
 
 export class FilestackModule {
