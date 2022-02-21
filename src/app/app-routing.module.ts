@@ -63,6 +63,10 @@ const routes: Routes = [
     component: DeviceInfoComponent,
   },
   {
+    path: 'v2',
+    loadChildren: () => import('../../projects/v2/src/app/app.module').then(m => m.AppModule)
+  },
+  {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
     canLoad: [AuthGuard],
@@ -77,11 +81,13 @@ const routes: Routes = [
   { path: '**', component: PageNotFoundComponent },
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    enableTracing: false, // <-- debugging purposes only
-    scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
-  })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      enableTracing: false, // <-- debugging purposes only
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled',
+    }),
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
