@@ -6,7 +6,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RequestModule } from '@shared/request/request.module';
-import { NewRelicModule } from '@shared/new-relic/new-relic.module';
 import { NotificationModule } from '@shared/notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { FastFeedbackModule } from './fast-feedback/fast-feedback.module';
@@ -89,7 +88,6 @@ function initializeApp(
     IonicModule.forRoot(),
     AppRoutingModule,
     EmbedVideoModule.forRoot(),
-    NewRelicModule.forRoot(),
     NotificationModule,
     FastFeedbackModule,
     GoMobileModule,

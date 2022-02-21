@@ -14,28 +14,27 @@ import { ChatViewComponent } from './chat-view/chat-view.component';
 import { ChatInfoComponent } from './chat-info/chat-info.component';
 
 @NgModule({
-  imports: [
-    SharedModule,
-    ChatRoutingModule,
-    FilestackModule,
-    FastFeedbackModule,
-  ],
-  declarations: [
-    ChatComponent,
-    ChatListComponent,
-    ChatPreviewComponent,
-    ChatRoomComponent,
-    AutoresizeDirective,
-    ChatViewComponent,
-    ChatInfoComponent
-  ],
-  entryComponents: [ChatPreviewComponent, ChatInfoComponent],
-  providers: [ChatService],
-  exports: [
-    SharedModule,
-    FilestackModule,
-    ChatRoomComponent,
-    FastFeedbackModule
-  ]
+    imports: [
+        SharedModule,
+        ChatRoutingModule,
+        FilestackModule,
+        FastFeedbackModule,
+    ],
+    declarations: [
+        ChatComponent,
+        ChatListComponent,
+        ChatPreviewComponent,
+        ChatRoomComponent,
+        AutoresizeDirective,
+        ChatViewComponent,
+        ChatInfoComponent
+    ],
+    providers: [ChatService],
+    exports: [
+        SharedModule,
+        FilestackModule,
+        ChatRoomComponent,
+        FastFeedbackModule
+    ]
 })
 export class ChatModule {}
