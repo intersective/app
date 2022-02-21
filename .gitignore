@@ -28,3 +28,7 @@ android/app/google-services.json
 src/environments/environment.alpha-native.ts
 src/environments/environment.p2.ts
 src/environments/environment.production-native.ts
+
+src/environments/environment.ts
+www/*
+.env
