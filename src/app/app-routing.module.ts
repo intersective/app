@@ -63,10 +63,6 @@ const routes: Routes = [
     component: DeviceInfoComponent,
   },
   {
-    path: 'v2',
-    loadChildren: () => import('../../projects/v2/src/app/app.module').then(m => m.AppModule)
-  },
-  {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
     canLoad: [AuthGuard],

@@ -8,6 +8,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "v3": "ng serve --project=v3",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",
     "postlocal": "npm run generate-version",
