@@ -36,6 +36,10 @@
       ],
       "@testing/*": [
         "testing/*"
+      ],
+      "ngx-embed-video": [
+        "../dist/ngx-embed-video/ngx-embed-video",
+        "../dist/ngx-embed-video"
       ]
     },
     "allowSyntheticDefaultImports": true,

@@ -357,6 +357,37 @@
           }
         }
       }
+    },
+    "ngx-embed-video": {
+      "projectType": "library",
+      "root": "projects/ngx-embed-video",
+      "sourceRoot": "projects/ngx-embed-video/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-embed-video/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-embed-video/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-embed-video/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-embed-video/src/test.ts",
+            "tsConfig": "projects/ngx-embed-video/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-embed-video/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "cli": {

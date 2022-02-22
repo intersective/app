@@ -32,3 +32,4 @@ src/environments/environment.production-native.ts
 src/environments/environment.ts
 www/*
 .env
+dist/*

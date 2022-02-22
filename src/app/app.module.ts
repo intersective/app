@@ -13,7 +13,7 @@ import { ReviewRatingModule } from './review-rating/review-rating.module';
 import { EventDetailModule } from './event-detail/event-detail.module';
 import { GoMobileModule } from './go-mobile/go-mobile.module';
 import { ApolloModule } from '@shared/apollo/apollo.module';
-import { EmbedVideoModule } from './shared/ngx-embed-video/embed-video.module';
+import { EmbedVideoModule } from 'ngx-embed-video';
 
 import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';

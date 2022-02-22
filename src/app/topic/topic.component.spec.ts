@@ -15,7 +15,7 @@ import { MockRouter } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
 import { TestUtils } from '@testing/utils';
 import { ActivityService } from '@app/activity/activity.service';
-import { EmbedVideoService } from '@app/shared/ngx-embed-video/embed-video.service';
+import { EmbedVideoService } from 'ngx-embed-video';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
