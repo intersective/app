@@ -48,11 +48,16 @@ describe('AuthDirectLoginComponent', () => {
         },
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['directLogin'])
+          useValue: jasmine.createSpyObj('AuthService', {
+            'directLogin': of(true)
+          })
         },
         {
           provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', ['getMyInfo', 'switchProgram'])
+          useValue: jasmine.createSpyObj('SwitcherService', {
+            'getMyInfo': of(true),
+            'switchProgram': of(true)
+          })
         },
         {
           provide: Router,
@@ -95,7 +100,7 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     authServiceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
-    switcherSpy.switchProgram.and.returnValue(of({}));
+    switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{timeline: {id: 1}}]);
     storageSpy.getConfig.and.returnValue({logo: null});
   });
@@ -121,7 +126,10 @@ describe('AuthDirectLoginComponent', () => {
       tick(50);
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
-      notificationSpy.alert.calls.first().args[0].buttons[0].handler();
+
+      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+      (typeof button == 'string') ? button : button.handler(true);
+
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     }));
 
@@ -152,6 +160,7 @@ describe('AuthDirectLoginComponent', () => {
           timelineId: 2
         });
         utils.find = jasmine.createSpy('find').and.returnValue([]);
+        utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(false);
         routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
         fixture.detectChanges();
         tick(50);
@@ -187,9 +196,8 @@ describe('AuthDirectLoginComponent', () => {
         redirect = ['switcher', 'switcher-program'];
       });
       it('program switcher page if timeline id is not in programs', () => {
-        utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
-
-        tmpParams.redirect = 'home';
+        params.redirect = 'home';
+        params.tl = 999;
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
       });

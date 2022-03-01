@@ -15,32 +15,32 @@ const routes: Routes = [
   },
   {
     path: 'switcher',
-    loadChildren: './switcher/switcher.module#SwitcherModule',
+    loadChildren: () => import('./switcher/switcher.module').then(m => m.SwitcherModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'topic',
-    loadChildren: './topic/topic.module#TopicModule',
+    loadChildren: () => import('./topic/topic.module').then(m => m.TopicModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'assessment',
-    loadChildren: './assessment/assessment.module#AssessmentModule',
+    loadChildren: () => import('./assessment/assessment.module').then(m => m.AssessmentModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'achievements',
-    loadChildren: './achievements/achievements.module#AchievementsModule',
+    loadChildren: () => import('./achievements/achievements.module').then(m => m.AchievementsModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'activity-task',
-    loadChildren: './tasks/tasks.module#TasksModule',
+    loadChildren: () => import('./tasks/tasks.module').then(m => m.TasksModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'settings-embed',
-    loadChildren: './settings-embed/settings-embed.module#SettingsEmbedModule',
+    loadChildren: () => import('./settings-embed/settings-embed.module').then(m => m.SettingsEmbedModule),
     canLoad: [AuthGuard]
   },
   {
@@ -50,16 +50,25 @@ const routes: Routes = [
   },
   {
     path: 'chat',
-    loadChildren: './chat/chat.module#ChatModule',
+    loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule),
     canLoad: [AuthGuard]
+  },
+  {
+    path: 'preferences',
+    loadChildren: () => import('./preference/preference.module').then(m => m.PreferenceModule),
+    canLoad: [AuthGuard],
   },
   {
     path: 'device-info',
     component: DeviceInfoComponent,
   },
   {
+    path: 'v2',
+    loadChildren: () => import('../../projects/v2/src/app/app.module').then(m => m.AppModule)
+  },
+  {
     path: '',
-    loadChildren: './tabs/tabs.module#TabsModule',
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsModule),
     canLoad: [AuthGuard],
     canActivate: [ProgramSelectedGuard],
   },
@@ -72,11 +81,13 @@ const routes: Routes = [
   { path: '**', component: PageNotFoundComponent },
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    enableTracing: false, // <-- debugging purposes only
-    scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled',
-  })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      enableTracing: false, // <-- debugging purposes only
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled',
+    }),
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

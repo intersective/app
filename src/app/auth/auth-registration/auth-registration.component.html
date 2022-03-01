@@ -56,7 +56,13 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        <ion-button *ngIf="submitting; else registerTmp" id="btn-register" shape="round" expand="full" color="primary" disabled>
+          <ion-spinner name="dots"></ion-spinner>
+        </ion-button>
+        <ng-template #registerTmp>
+          <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        </ng-template>
+
       </form>
     </ng-container>
 
@@ -68,7 +74,7 @@
         <div class="div-after-logo directlink">
           <p class="subtitle-1">Please accept the <a (click)="termsAndConditionsPopup()">Terms and Conditions</a> in order to continue.</p>
         </div>
-        <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
+        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
           <ion-list margin lines="none">
             <ion-item>
               <ion-label class="body-2" aria-label="I agree to the terms & conditions">I agree to the Terms and Conditions</ion-label>
@@ -82,7 +88,7 @@
         <div class="title div-after-logo directlink">
           <p class="subtitle-1">Optionally, create an account password as an additional future login option.</p>
         </div>
-        <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
+        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
           <ion-list margin lines="none">
             <ion-item>
               <ion-label class="body-2" position="fixed">Password</ion-label>

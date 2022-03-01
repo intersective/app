@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
+import { Question } from '@app/assessment/assessment.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
 
 @Component({
@@ -16,12 +17,12 @@ import { FilestackService } from '@shared/filestack/filestack.service';
 })
 export class FileComponent implements ControlValueAccessor, OnInit {
 
-  @Input() question = {
+  @Input() question: Partial<Question> = {
     name: '',
     description: '',
     isRequired: false,
     fileType: 'any',
-    audience: []
+    audience: [],
   };
   @Input() submission;
   @Input() review;
@@ -33,8 +34,8 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  // AbstractControl that is passed in from parent component
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer

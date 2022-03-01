@@ -14,7 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TabsComponent } from './tabs.component';
 import { ModalController } from '@ionic/angular';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 import { ChatService } from '@app/chat/chat.service';
 import { ChatsFixture } from '@testing/fixtures';
 
@@ -42,8 +42,10 @@ describe('TabsComponent', () => {
       declarations: [ TabsComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: ModalController,
           useValue: {
@@ -100,6 +102,14 @@ describe('TabsComponent', () => {
           provide: Router,
           useClass: MockRouter
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', [
+            'getTeamInfo',
+            'stopPlayingVideos',
+            'markTopicStopOnNavigating',
+          ])
+        }
       ],
     })
     .compileComponents();
@@ -155,7 +165,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: true,
-        teamId: 'SAMPLE_ID'
+        teamId: 999
       });
       chatSpy.getChatList.and.returnValue(of(ChatsFixture));
       fixture.detectChanges();
@@ -171,7 +181,7 @@ describe('TabsComponent', () => {
       storageSpy.get.and.returnValue(0);
       storageSpy.getUser.and.returnValue({
         chatEnabled: false,
-        teamId: 'SAMPLE_ID'
+        teamId: 9999 // 'SAMPLE_ID'
       });
       chatSpy.getChatList.and.returnValue(of([]));
       fixture.detectChanges();
@@ -189,7 +199,6 @@ describe('TabsComponent', () => {
         teamId: null,
         name: 'Test User',
         email: 'user@test.com',
-        id: 1
       });
       reviewsSpy.getReviews.and.returnValue(of([]));
       eventsSpy.getEvents.and.returnValue(of([]));

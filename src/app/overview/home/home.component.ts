@@ -23,6 +23,9 @@ import { Observable, Subscription } from 'rxjs';
           params: { time: '250ms' }
         })
       ]),
+      transition(':leave', [
+        animate('100ms', style({ opacity: 0 }))
+      ])
     ]),
   ]
 })
@@ -31,7 +34,7 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   progress = 0;
   loadingProgress = true;
-  todoItems: Array<TodoItem> = [];
+  todoItems: any[] = [];
   eventReminders: Array<Event> = [];
   loadingTodoItems = true;
   subscriptions: Subscription[] = [];

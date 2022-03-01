@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
-import * as _ from 'lodash';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import { Apollo } from 'apollo-angular';
+import { ApolloService } from '@shared/apollo/apollo.service';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from '@services/storage.service';
 
@@ -33,7 +33,7 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (_) {
       this.lodash = _;
@@ -214,8 +214,10 @@ export class UtilsService {
 
   // need to clear all Subject for cache
   async clearCache(): Promise<void> {
-    if (this.apollo && typeof this.apollo.getClient === 'function') {
-      await this.apollo.getClient().clearStore();
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      await apolloClient.clearStore();
     }
   //   // initialise the Subject for caches
   //   this.projectSubject.next(null);
@@ -434,6 +436,64 @@ export class UtilsService {
     const { crypto } = window;
     const slugs = crypto.getRandomValues(new Uint32Array(1));
     return slugs[0];
+  }
+
+  /**
+   * Given a domain and endpoint string, return a correctly formatted url string
+   * e.g.
+   * test.practera.com - login => https://test.practera.com/login
+   *
+   */
+  urlFormatter(domain: string, endpoint?: string) {
+    // always need http as prefix
+    let theDomain = !domain.match(/^http/) ? `https://${domain}` : domain;
+    // remove / in suffix
+    theDomain = theDomain.replace(/\/$/, '');
+    if (!endpoint) {
+      return theDomain;
+    }
+    // always have / in prefix
+    let theEndpoint = !endpoint.match(/^\//) ? `/${endpoint}` : endpoint;
+    // remove / in suffix
+    theEndpoint = theEndpoint.replace(/\/$/, '');
+    return `${theDomain}${theEndpoint}`;
+  }
+
+  /* extra query parameters from URL (window.location)
+   *
+   * @return  {URLSearchParams}
+   */
+  getQueryParams(): URLSearchParams {
+    let queryString = '';
+    if (window.location.search) {
+      queryString = window.location.search.substring(1);
+    } else if (window.location.hash) {
+      queryString = window.location.hash.substring(2);
+    } else if (window.location.href.includes(';')) {
+      const url = window.location.href;
+      window.location.href = url.replace(/;/, '?').replace(/;/g, '&');
+    }
+    return new URLSearchParams(queryString);
+  }
+
+  /**
+   * This method check due dates of assessment or activity.
+   * - Check due date is today, tomorrow, upcoming date or overdue date.
+   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
+   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
+   * - If due date is today this will return 'Due Today'.
+   * - If due date is tomorrow this will return 'Due Tomorrow'.
+   * @param dueDate - due date of assessment or activity.
+   */
+  dueDateFormatter(dueDate: string) {
+    if (!dueDate) {
+      return '';
+    }
+    const difference = this.timeComparer(dueDate);
+    if (difference < 0) {
+      return 'Overdue ' + this.utcToLocal(dueDate);
+    }
+    return 'Due ' + this.utcToLocal(dueDate);
   }
 
   getDateDifference(dateOne: string, datetwo: string) {

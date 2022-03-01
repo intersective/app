@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TabsService } from './tabs.service';
-import { Apollo } from 'apollo-angular';
+import { UtilsService } from '@app/services/utils.service';
+import { TestUtils } from '@testing/utils';
 
 describe('TabsService', () => {
   let service: TabsService;
@@ -11,8 +12,11 @@ describe('TabsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        Apollo,
         TabsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError', 'chatGraphQLQuery'])
@@ -42,6 +46,7 @@ describe('TabsService', () => {
          data: {}
        };
        error = true;
+       expected = 0;
     });
     it('should throw error #2', () => {
        response = {
@@ -49,6 +54,7 @@ describe('TabsService', () => {
          data: [{}]
        };
        error = true;
+       expected = 0;
     });
     it('should get correct data', () => {
       response = {
@@ -92,6 +98,7 @@ describe('TabsService', () => {
          }
        };
        error = true;
+       expected = 0;
     });
     it('should get correct data', () => {
       response = {

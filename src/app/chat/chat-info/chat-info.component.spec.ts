@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { ChatInfoComponent } from './chat-info.component';
 import { UtilsService } from '@services/utils.service';
 import { MockRouter } from '@testing/mocked.service';
-import { Apollo } from 'apollo-angular';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
 import { ChatService } from '../chat.service';
 import { of } from 'rxjs';
+import { TestUtils } from '@testing/utils';
+import { mockMembers } from '@testing/fixtures';
 
 describe('ChatInfoComponent', () => {
   let component: ChatInfoComponent;
@@ -28,8 +29,10 @@ describe('ChatInfoComponent', () => {
       declarations: [ ChatInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Router,
           useClass: MockRouter
@@ -60,27 +63,6 @@ describe('ChatInfoComponent', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
-  const mockMembers = [
-    {
-      uuid: '1',
-      name: 'student+01',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '2',
-      name: 'student1',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    },
-    {
-      uuid: '3',
-      name: 'student2',
-      role: 'participant',
-      avatar: 'https://www.gravatar.com/avatar/21b7427270a606e8a3c4413a13bb47c6?d=https://sandbox.practera.com/img/user-512.png&s=50'
-    }
-  ];
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -104,7 +86,7 @@ describe('ChatInfoComponent', () => {
         unreadMessageCount: 0,
         lastMessage: null,
         lastMessageCreated: null,
-        canEdit: false
+        canEdit: false,
       };
       component.ngOnInit();
       expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);
@@ -133,14 +115,14 @@ describe('ChatInfoComponent', () => {
       };
       const keyEvent = new KeyboardEvent('keydown', { key: 'Enter' });
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.close(keyEvent);
       expect(component.navigate.emit).toHaveBeenCalled();
     });
     xit('should not do anything if keybord event not enter or space', () => {
       const keyEvent = new KeyboardEvent('keydown', { key: 'A' });
       spyOn(component.navigate, 'emit');
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.close(keyEvent);
       expect(component.navigate.emit).not.toHaveBeenCalled();
     });

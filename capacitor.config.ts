@@ -1,0 +1,15 @@
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.practera.appv2',
+  appName: 'Practera',
+  webDir: 'www',
+  bundledWebRuntime: false,
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+  }
+};
+
+export default config;

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@services/utils.service';
 
 @Component({
@@ -27,8 +27,8 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
-  @Input() control: FormControl;
+  // AbstractControl that is passed in from parent component
+  @Input() control: AbstractControl;
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
@@ -55,7 +55,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
 
   // event fired when checkbox is selected/unselected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type) {
+  onChange(value: any, type?: string) {
     // innerValue should be either array or object, if it is a string, parse it
     if (typeof this.innerValue === 'string') {
       this.innerValue = JSON.parse(this.innerValue);

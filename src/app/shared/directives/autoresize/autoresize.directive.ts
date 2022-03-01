@@ -4,8 +4,6 @@ import { Directive, ElementRef, Input, HostListener, OnInit } from '@angular/cor
   selector: '[appAutoresize]'
 })
 export class AutoresizeDirective implements OnInit {
-
-  // tslint:disable-next-line:no-input-rename
   @Input('appAutoresize') maxHeight: number;
 
   @HostListener('input', ['$event.target'])

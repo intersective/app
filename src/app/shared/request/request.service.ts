@@ -1,16 +1,23 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse, HttpParameterCodec } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpErrorResponse,
+  HttpParameterCodec,
+} from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, from } from 'rxjs';
-import { catchError, tap, concatMap, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { environment } from '@environments/environment';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import gql from 'graphql-tag';
+import { ApolloService } from '@shared/apollo/apollo.service';
+
+interface RequestOptions {
+  headers?: any;
+  params?: any;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DevModeService {
@@ -21,7 +28,7 @@ export class DevModeService {
 
 export class RequestConfig {
   appkey = '';
-  prefixUrl = '';
+  loginApiUrl = '';
 }
 
 export class QueryEncoder implements HttpParameterCodec {
@@ -42,12 +49,21 @@ export class QueryEncoder implements HttpParameterCodec {
   }
 }
 
+interface POSTParams {
+  endPoint: string;
+  data: any;
+  httpOptions?: any;
+  isLoginAPI?: boolean;
+  isFullURL?: boolean;
+  customErrorHandler?: Function; // flag to indicate whether to handle error in different way
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class RequestService {
   private appkey: string;
-  private prefixUrl: string;
+  private loginApiUrl: string;
   private loggedOut: boolean;
 
   constructor(
@@ -58,11 +74,11 @@ export class RequestService {
     @Optional() config: RequestConfig,
     private newrelic: NewRelicService,
     private devMode: DevModeService,
-    private apollo: Apollo
+    private apolloService: ApolloService
   ) {
     if (config) {
       this.appkey = config.appkey;
-      this.prefixUrl = config.prefixUrl;
+      this.loginApiUrl = config.loginApiUrl;
     }
   }
 
@@ -92,12 +108,20 @@ export class RequestService {
     return params;
   }
 
-  private getEndpointUrl(endpoint) {
-    let endpointUrl = this.prefixUrl + endpoint;
-    if (endpoint.includes('https://') || endpoint.includes('http://')) {
+  private getEndpointUrl(endpoint: string, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): string {
+    let endpointUrl = '';
+    if (options && options.isLoginAPI) {
+      endpointUrl = this.utils.urlFormatter(this.loginApiUrl, endpoint);
+    } else if (options && options.isFullURL) {
       endpointUrl = endpoint;
+    } else if (this.storage.stackConfig && this.storage.stackConfig.coreApi) {
+      endpointUrl = this.utils.urlFormatter(this.storage.stackConfig.coreApi, endpoint);
+    } else {
+      throw new Error('Cannot find API URL.');
     }
-
     return endpointUrl;
   }
 
@@ -108,7 +132,12 @@ export class RequestService {
    * @param headers
    * @returns {Observable<any>}
    */
-  get(endPoint: string = '', httpOptions?: any): Observable<any> {
+  get(endPoint: string = '', httpOptions?: RequestOptions, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+    customErrorHandler?: Function;
+  }): Observable<any> {
+
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -120,20 +149,64 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.get<any>(this.getEndpointUrl(endPoint), {
+    const apiEndpoint = this.getEndpointUrl(endPoint, options);
+    const request = this.http.get<any>(apiEndpoint, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
-      .pipe(concatMap(response => {
-        this._refreshApikey(response);
-        return of(response);
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    .pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }));
+
+    if (options && typeof options.customErrorHandler == "function") {
+      request.pipe(catchError((error) => options.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
   }
 
-  post(endPoint: string = '', data, httpOptions?: any): Observable<any> {
+  post(params: POSTParams): Observable<any> {
+    if (!params.httpOptions) {
+      params.httpOptions = {};
+    }
+
+    if (!this.utils.has(params.httpOptions, 'headers')) {
+      params.httpOptions.headers = '';
+    }
+    if (!this.utils.has(params.httpOptions, 'params')) {
+      params.httpOptions.params = '';
+    }
+
+    let apiEndpoint = this.getEndpointUrl(params.endPoint, {
+      isFullURL: params.isFullURL,
+      isLoginAPI: params.isLoginAPI,
+    });
+
+    const request = this.http.post<any>(apiEndpoint, params.data, {
+      headers: this.appendHeaders(params.httpOptions.headers),
+      params: this.setParams(params.httpOptions.params)
+    })
+    .pipe(concatMap(response => {
+      this._refreshApikey(response);
+      return of(response);
+    }));
+
+    if (typeof params.customErrorHandler == "function") {
+      request.pipe(catchError((error) => params.customErrorHandler(error)));
+    } else {
+      request.pipe(catchError((error) => this.handleError(error)));
+    }
+
+    return request;
+  }
+
+  put(endPoint: string, data, httpOptions?: any, options?: {
+    isLoginAPI?: boolean;
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }
@@ -145,7 +218,8 @@ export class RequestService {
       httpOptions.params = '';
     }
 
-    return this.http.post<any>(this.getEndpointUrl(endPoint), data, {
+    const apiEndpoint = this.getEndpointUrl(endPoint, options);
+    return this.http.put<any>(apiEndpoint, data, {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -164,11 +238,7 @@ export class RequestService {
    */
   graphQLWatch(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.watchQuery({
-      query: gql(query),
-      variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
-    });
+    const watch = this.apolloService.graphQLWatch(query, variables, options);
     return watch.valueChanges
       .pipe(map(response => {
         this._refreshApikey(response);
@@ -189,12 +259,7 @@ export class RequestService {
    * @return  {Observable<any>}
    */
   graphQLFetch(query: string, variables?: any): Observable<any> {
-    const observable = this.apollo.query({
-      query: gql(query),
-      variables: variables || {},
-      fetchPolicy: 'no-cache'
-    });
-    return observable
+    return this.apolloService.graphQLFetch(query, variables)
       .pipe(map(response => {
         this._refreshApikey(response);
         return response;
@@ -206,12 +271,10 @@ export class RequestService {
 
   /**
    *
+   * @todo: graphQLMutate docsblocks
    */
   graphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.mutate({
-      mutation: gql(query),
-      variables: variables
-    })
+    return this.apolloService.graphQLMutate(query, variables)
       .pipe(
         concatMap(response => {
           this._refreshApikey(response);
@@ -227,53 +290,42 @@ export class RequestService {
    */
   chatGraphQLQuery(query: string, variables?: any, options?: any): Observable<any> {
     options = {...{ noCache: false }, ...options};
-    const watch = this.apollo.use('chat').query({
-      query: gql(query),
-      variables: variables || {},
-      fetchPolicy: 'no-cache'
-    });
-    /* const watch = this.apollo.use('chat').fetchQuery({
-      query: gql(query),
-      variables: variables || {},
-      // fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
-    });
-    return watch.valueChanges
-    */
-
-    return watch.pipe(map(response => {
-        this._refreshApikey(response);
-        return response;
-      }))
-      .pipe(
-        catchError((error) => this.handleError(error))
-      );
+    const watch = this.apolloService.chatGraphQLQuery(query, variables, options);
+    return watch.valueChanges.pipe(map(response => {
+      this._refreshApikey(response);
+      return response;
+    }))
+    .pipe(
+      catchError((error) => this.handleError(error))
+    );
   }
 
+  /**
+   *
+   */
   chatGraphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.use('chat').mutate({
-      mutation: gql(query),
-      variables: variables
-    })
-      .pipe(
-        concatMap(response => {
-          // this._refreshApikey(response);
-          return of(response);
-        }),
-        catchError((error) => this.handleError(error))
-      );
+    return this.apolloService.chatGraphQLMutate(query, variables).pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      catchError((error) => this.handleError(error))
+    );
   }
 
-  delete(endPoint: string = '', httpOptions?: any): Observable<any> {
-    if (!httpOptions) {
-      httpOptions = {};
-    }
+  /**
+   *
+   */
+  delete(endPoint: string, httpOptions: RequestOptions = {}, options?: {
+    isFullURL?: boolean;
+  }): Observable<any> {
     if (!this.utils.has(httpOptions, 'headers')) {
       httpOptions.headers = '';
     }
     if (!this.utils.has(httpOptions, 'params')) {
       httpOptions.params = '';
     }
-    return this.http.delete<any>(this.getEndpointUrl(endPoint), {
+
+    return this.http.delete<any>(this.getEndpointUrl(endPoint, options), {
       headers: this.appendHeaders(httpOptions.headers),
       params: this.setParams(httpOptions.params)
     })
@@ -290,15 +342,7 @@ export class RequestService {
    *
    * @returns {string}
    */
-  public getPrefixUrl() {
-    return this.prefixUrl;
-  }
-
-  /**
-   *
-   * @returns {string}
-   */
-  public getAppkey() {
+  public getAppkey(): string {
     return this.appkey;
   }
 

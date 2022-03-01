@@ -65,7 +65,7 @@ const largeCircleDefaultConfig = {
     ListItemComponent,
     FloatDirective,
     ImgComponent,
-    DragAndDropDirective
+    DragAndDropDirective,
   ],
 })
 export class SharedModule {}

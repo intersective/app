@@ -12,12 +12,11 @@ import { EventListService } from '@app/event-list/event-list.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { of } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Apollo } from 'apollo-angular';
+import { TestUtils } from '@testing/utils';
 
 @Directive({
   selector: '[routerLink], [routerLinkActive]'
@@ -81,9 +80,11 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent, DummyRouterLinkDirective],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        Apollo,
-        UtilsService,
         NewRelicService,
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
+        },
         {
           provide: Intercom
         },
@@ -144,7 +145,8 @@ describe('HomeComponent', () => {
   beforeEach(() => {
     component.refresh = of(true);
     homeServiceSpy.getTodoItems.and.returnValue(of([]));
-    homeServiceSpy.getChatMessage.and.returnValue(of([]));
+    // homeServiceSpy.getProgress.and.returnValue(of(10));
+    homeServiceSpy.getChatMessage.and.returnValue(of());
     achieventsServiceSpy.getAchievements.and.returnValue(of([]));
     eventsServiceSpy.getEvents.and.returnValue(of([]));
     fastFeedbackServiceSpy.pullFastFeedback.and.returnValue(of({}));
@@ -276,7 +278,6 @@ describe('HomeComponent', () => {
           teamId: null,
           name: 'Test User',
           email: 'user@test.com',
-          id: 1
         }
       );
       fixture.detectChanges();
@@ -482,13 +483,13 @@ describe('HomeComponent', () => {
 
   describe('goToReview()', () => {
     it('should navigate to the correct review page (desktop)', () => {
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.goToReview(1, 2, 3);
       expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'reviews', 3]);
     });
 
     it('should navigate to the correct review page (mobile)', () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.goToReview(1, 2, 3);
       expect(routerSpy.navigate).toHaveBeenCalledWith(['assessment', 'review', 1, 2, 3]);
     });
@@ -496,7 +497,7 @@ describe('HomeComponent', () => {
 
   describe('when testing goToChat()', () => {
     it('should navigate to the correct chat page if not mobile', () => {
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.goToChat({
         meta: {
           team_id: 2,
@@ -507,7 +508,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to the correct chat page #1', () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.goToChat({
         meta: null
       });
@@ -515,7 +516,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to the correct chat page #2', () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.goToChat({
         meta: {
           team_id: 2,
@@ -526,7 +527,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to the correct chat page #3', () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.goToChat({
         meta: {
           team_id: 2,
@@ -564,12 +565,12 @@ describe('HomeComponent', () => {
 
   describe('when testing showEventDetail()', () => {
     it('should call eventsService eventDetailPopUp if isMobile true', () => {
-      spyOn(utils, 'isMobile').and.returnValue(true);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
       component.showEventDetail({});
       expect(eventsServiceSpy.eventDetailPopUp).toHaveBeenCalled();
     });
     it('should call router navigate if isMobile false', () => {
-      spyOn(utils, 'isMobile').and.returnValue(false);
+      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(false);
       component.showEventDetail({id: 1234});
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'events', {event_id: 1234}]);
     });

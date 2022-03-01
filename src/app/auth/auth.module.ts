@@ -20,31 +20,27 @@ import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.
 import { TermsConditionsPreviewComponent } from './terms-conditions-preview/terms-conditions-preview.component';
 
 @NgModule({
-  imports: [
-    SharedModule,
-    ReactiveFormsModule,
-    AuthRoutingModule,
-  ],
-  declarations: [
-    AuthComponent,
-    AuthLoginComponent,
-    AuthLogoutComponent,
-    AuthForgotPasswordComponent,
-    AuthRegistrationComponent,
-    AuthResetPasswordComponent,
-    AuthDirectLoginComponent,
-    AuthGlobalLoginComponent,
-    TermsConditionsPreviewComponent
-  ],
-  entryComponents: [
-    AuthComponent,
-    TermsConditionsPreviewComponent
-  ],
-  providers: [
-    AuthService,
-    UnauthorizedGuard,
-    ProgramSelectedGuard,
-  ],
-  exports: [SharedModule]
+    imports: [
+        SharedModule,
+        ReactiveFormsModule,
+        AuthRoutingModule,
+    ],
+    declarations: [
+        AuthComponent,
+        AuthLoginComponent,
+        AuthLogoutComponent,
+        AuthForgotPasswordComponent,
+        AuthRegistrationComponent,
+        AuthResetPasswordComponent,
+        AuthDirectLoginComponent,
+        AuthGlobalLoginComponent,
+        TermsConditionsPreviewComponent
+    ],
+    providers: [
+        AuthService,
+        UnauthorizedGuard,
+        ProgramSelectedGuard,
+    ],
+    exports: [SharedModule]
 })
 export class AuthModule {}

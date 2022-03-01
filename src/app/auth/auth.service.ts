@@ -1,27 +1,39 @@
 import { Injectable } from '@angular/core';
-import { RequestService, QueryEncoder } from '@shared/request/request.service';
+import { RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService, Stack } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
+
+// Available flags to identify which origin of API call is from
+enum SERVICES {
+  practera= 'PRACTERA',
+  login= 'LOGIN',
+}
 
 /**
  * @name api
  * @description list of api endpoint involved in this service
  * @type {Object}
  */
-const api = {
+const API = {
   getConfig: 'api/v2/plan/experience/list',
   login: 'api/auths.json',
   setProfile: 'api/v2/user/enrolment/edit.json',
   verifyRegistration: 'api/verification_codes.json',
   register: 'api/registration_details.json',
-  forgotPassword: 'api/auths.json?action=forgot_password',
-  verifyResetPassword: 'api/auths.json?action=verify_reset_password',
-  resetPassword: 'api/auths.json?action=reset_password'
+};
+
+const LOGIN_API = {
+  stackInfo: 'stack',
+  multipleStacks: 'stacks',
+  login: 'login',
+  forgotPassword: 'forgotPassword',
+  resetPassword: 'user'
 };
 
 interface VerifyParams {
@@ -59,6 +71,12 @@ interface ExperienceConfig {
   logo: string;
 }
 
+interface LoginRequParams {
+  username?: string;
+  password?: string;
+  from?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -76,7 +94,28 @@ export class AuthService {
     // do clear user cache here
   }
 
-  private _login(body: HttpParams, serviceHeader?: string) {
+  /**
+   * @name _loginFromLoginAPI
+   * @description Calling login API to login the user and save stacks in local storage.
+   * @param body Json Object - request parameter need to pass to login api.
+   */
+  private _loginFromLoginAPI(body: LoginRequParams): Observable<any> {
+    body.from = 'App';
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.login,
+        data: body,
+        isLoginAPI: true
+      });
+  }
+
+  /**
+   * @name _loginFromCore
+   * @description Calling core API to login the user.
+   * @param body HttpParams Onject - request parameter need to pass to core api.
+   * @param serviceHeader header to pass to core API to mention data comming from Login API.
+   */
+  private _loginFromCore(body: HttpParams, serviceHeader?: string): Observable<any> {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       service: serviceHeader
@@ -84,9 +123,20 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    return this.request.post(api.login, body.toString(), {
-      headers
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    return this.request.post(
+      {
+        endPoint: API.login,
+        data: body.toString(),
+        httpOptions: {
+          headers
+        },
+        customErrorHandler: (err: any) => {
+          console.log('catchError::', err);
+          return of(err);
+        }
+      }).pipe(
+        map(res => this._handleLoginResponse(res)),
+      );
   }
 
   /**
@@ -95,15 +145,12 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { email, password } in string for each of the value
    */
-  login({ email, password }): Observable<any> {
-    const body = new HttpParams({
-        encoder: new QueryEncoder()
-      })
-      .set('data[User][email]', email)
-      .set('data[User][password]', password)
-      .set('domain', this.getDomain());
-
-    return this._login(body);
+  login({ username, password }): Observable<any> {
+    const body = {
+      username,
+      password
+    };
+    return this._loginFromLoginAPI(body);
   }
 
   /**
@@ -115,26 +162,46 @@ export class AuthService {
   directLogin({ authToken }): Observable<any> {
     const body = new HttpParams()
       .set('auth_token', authToken);
-    this.logout({}, false);
-    return this._login(body);
+    this._logoutButRetainCachedStack();
+    return this._loginFromCore(body);
   }
 
   /**
-   * @name globalLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { apikey } in string
+   * Inherited Logout() but retain app stack cache, so global-app login still work
+   * @return  {void}
    */
-  globalLogin({ apikey, service }): Observable<any> {
+  private _logoutButRetainCachedStack(): void {
+    const cachedStack = this.storage.stackConfig;
+    this.logout({}, false);
+    this.storage.stackConfig = cachedStack;
+  }
+
+  /**
+   * @name directLoginWithApikey
+   * @description need to login user to core API if user by using apikey that login API return.
+   *              if user came from global login or after user login to login API,
+   *              there is apikey login API return, we need to use that to login to core API.
+   * @param {object} { apikey, service } in string
+   */
+  directLoginWithApikey({ apikey, service }): Observable<any> {
     const body = new HttpParams()
       .set('apikey', apikey);
+    const cachedStack = this.storage.stackConfig;
+    const cachedLoginApiKey = this.storage.loginApiKey;
     this.logout({}, false);
-    return this._login(body, service);
+    if (cachedStack) {
+      this.storage.stackConfig = cachedStack;
+    }
+
+    if (cachedLoginApiKey) {
+      this.storage.loginApiKey = cachedLoginApiKey;
+    }
+    return this._loginFromCore(body, service);
   }
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-    this.storage.setUser({apikey: norm.apikey});
+    this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
     return norm;
@@ -188,9 +255,17 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
+
+    const fromGlobalLogin = this.storage.get('fromGlobalLogin');
+
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+
+    // redirect user to global login if user came from it.
+    if (fromGlobalLogin) {
+      return this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
+    }
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }
@@ -202,10 +277,36 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any>  {
-    return this.request.post(api.forgotPassword, {
-      email: email,
-      domain: this.getDomain()
-    });
+    const body = {
+      email,
+      resetLink: this._createLinks('reset'),
+      directLink: this._createLinks('direct')
+    };
+    return this.request.post(
+      {
+        endPoint: LOGIN_API.forgotPassword,
+        data: body,
+        isLoginAPI: true
+      });
+  }
+
+  /**
+   * method will create direct and rest links need for forget password.
+   * for reset password, follow the same format all the appv2 links follows.
+   *  *.com?do=resetpassword&apikey=
+   * for direct link, follow the format of link that use to redirect users from global login app to appv2.
+   * with this can use same auth global login component to login in user to stack my apikey.
+   *  *.com?service=LOGIN&apikey=
+   * @param type string - 'direct' to create direct link or 'reset' for password reset link
+   * @returns string
+   */
+  private _createLinks(type?) {
+    switch (type) {
+      case 'reset':
+        return `${this.getDomain()}?do=resetpassword&apikey=`;
+      case 'direct':
+        return `${this.getDomain()}?service=LOGIN&apikey=`;
+    }
   }
 
   getDomain() {
@@ -224,8 +325,10 @@ export class AuthService {
    * @param {[type]} data [description]
    * @return {Observable<any>}      [description]
    */
-  resetPassword(data): Observable<any> {
-    return this.request.post(api.resetPassword, data);
+  resetPassword(data: { password: string }, header: { apikey: string } ): Observable<any> {
+    return this.request.put(LOGIN_API.resetPassword, data, { headers: header}, {
+      isLoginAPI: true
+    });
   }
 
   // Activity ID is no longer used as a parameter,
@@ -244,9 +347,13 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
-    return this.request.post(api.login, {
-      contact_number: data.contactNumber, // API accepts contact_numebr
-    }).pipe(map(response => {
+    return this.request.post(
+      {
+        endPoint: API.login,
+        data: {
+          contact_number: data.contactNumber,
+        }
+      }).pipe(map(response => {
       if (response.data) {
         this.storage.setUser({apikey: response.data.apikey});
         this.storage.set('tutorial', response.data.tutorial);
@@ -259,7 +366,7 @@ export class AuthService {
   }
 
   getConfig(data: ConfigParams): Observable<{data: ExperienceConfig[]}> {
-    return this.request.get(api.getConfig, {
+    return this.request.get(API.getConfig, {
       params: data
     });
   }
@@ -278,34 +385,34 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
-    return this.request.post(api.setProfile, data);
+    return this.request.post(
+      {
+        endPoint: API.setProfile,
+        data
+      }
+    );
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
-    return this.request
-    .post(api.register, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.register,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyRegistration, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  /**
-   * @name verifyResetPassword
-   * @description make request to server to verity that user's email and key are valid
-   * @param {[type]} data [description]
-   * @return {Observable<any>}      [description]
-  */
-  verifyResetPassword(data: VerifyParams): Observable<any> {
-    return this.request
-    .post(api.verifyResetPassword, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return this.request.post(
+      {
+        endPoint: API.verifyRegistration,
+        data,
+        httpOptions: {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
   }
 
   /**
@@ -322,10 +429,65 @@ export class AuthService {
       }`
     )
     .pipe(map(res => {
-      if (res.data) {
+      if (res && res.data) {
         return res.data.user.uuid;
       }
       return null;
     }));
+  }
+
+  /**
+   * get stack information by uuid through LoginAPI
+   * according postman and swagger file need to pass uuid as query param
+   * also need to call login API.
+   * @param   {string}      uuid
+   * @return  {Observable<Stack>}        observable response of stack endpont
+   */
+  getStackConfig(uuid: string): Observable<Stack> {
+    return this.request.get(LOGIN_API.stackInfo, { params: { uuid } }, { isLoginAPI: true }).pipe(map(res => {
+      if (res) {
+        return res;
+      }
+      return null;
+    }));
+  }
+
+  /**
+   * get multiple stacks from endpoint
+   * Purpose: allow user to switching from one stack to another stack
+   *
+   * @return  {Observable<Stack>[]} multiple stacks
+   */
+  getStacks(apikey?: string): Observable<Stack[]> {
+    const parameters = {
+      params: {
+        type: 'app'
+      },
+      headers: {}
+    };
+
+    if (apikey) {
+      parameters.headers = {
+        apikey
+      };
+    } else {
+      // if no apikey set, inform API server the origin of API call, so
+      // that server can process apikey according to the origin standard
+      parameters.headers = {
+        service: SERVICES.practera
+      };
+    }
+
+    return this.request.get(LOGIN_API.multipleStacks, parameters, {
+      isLoginAPI: true
+    }).pipe(
+      map(res => {
+        if (res) {
+          this.storage.stacks = res;
+          return res;
+        }
+        return [];
+      })
+    );
   }
 }

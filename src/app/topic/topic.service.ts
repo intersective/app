@@ -5,12 +5,17 @@ import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
+interface TopicAttachment {
+  name: string;
+  url: string;
+}
+
 export interface Topic {
   id: number;
   title: string;
   content: any;
   videolink?: string;
-  files: Array<object>;
+  files: TopicAttachment[];
   hasComments: boolean;
 }
 
@@ -92,7 +97,11 @@ export class TopicService {
       model_id: id,
       state: state
     };
-    return this.request.post(api.post.updateProgress, postData);
+    return this.request.post(
+      {
+        endPoint: api.post.updateProgress,
+        data: postData
+      });
   }
 
   getTopicProgress(activityId, topicId): Observable<any> {

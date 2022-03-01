@@ -136,9 +136,9 @@
           placeholder="Enter your message"
           required="true"
           name="message"
-          [(ngModel)]="message"
+          [(ngModel)]="typingMessage"
           (ngModelChange)="typing()"
-          appAutoresize="100"
+          [appAutoresize]="100"
           rows="1"
           (ionFocus)="showBottomAttachmentButtons = true;"
         ></ion-textarea>

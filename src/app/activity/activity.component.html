@@ -22,8 +22,8 @@
     </div>
     <ion-card class="practera-card">
       <ion-list>
-        <app-list-item loading="true"></app-list-item>
-        <app-list-item loading="true" lines="none"></app-list-item>
+        <app-list-item [loading]="true"></app-list-item>
+        <app-list-item [loading]="true" lines="none"></app-list-item>
       </ion-list>
     </ion-card>
   </ng-container>
@@ -35,7 +35,6 @@
     </div>
     <div class="ion-text-left ion-margin-top">
       <ion-label color="medium" class="subtitle-2 gray-2" aria-label="tasks" tabindex="0">Tasks</ion-label>
-      <ion-button style="display: none;" (click)="getNextTask()">Get Next</ion-button>
     </div>
 
     <ion-card class="practera-card" id="tasks-card">
@@ -45,7 +44,7 @@
           [leadingIcon]="taskLeadingIcon(task)"
           [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
           [title]="task.name"
-          [subtitle1]="assessmentNotSubmitted(task) ? sharedService.dueDateFormatter(task.dueDate) : ''"
+          [subtitle1]="assessmentNotSubmitted(task) ? dueDateFormatter(task.dueDate) : ''"
           [subtitle1Color]="task.isOverdue ? 'danger' : ''"
           [subtitle2]="taskSubtitle2(task)"
           [endingIcon]="taskEndingIcon(task)"

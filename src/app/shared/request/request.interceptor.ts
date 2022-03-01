@@ -3,6 +3,7 @@ import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, Http
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from './request.service';
 import { BrowserStorageService } from '@services/storage.service';
+import { environment } from '@environments/environment';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -28,11 +29,12 @@ export class RequestInterceptor implements HttpInterceptor {
     const paramsInject = req.params;
 
     // inject appkey
-    if (this.currenConfig.appkey) {
+    if (!this.isLoginAPIURL(req) && this.currenConfig.appkey) {
       const appkey = this.currenConfig.appkey;
       headers['appkey'] = appkey;
     }
-    if (apikey) {
+
+    if (apikey && !headers['apikey']) {
       headers['apikey'] = apikey;
     }
     if (timelineId) {
@@ -40,17 +42,51 @@ export class RequestInterceptor implements HttpInterceptor {
       headers['timelineId'] = timelineId.toString();
     }
 
-    // do not need to pass team id for teams.json
-    // do not need to pass team id for chat api calls
-    if (teamId && !req.url.includes('/teams.json') &&
-    !req.url.includes('/message/chat/list.json') && !req.url.includes('/message/chat/create_message') &&
-    !req.url.includes('/message/chat/edit_message') && !req.url.includes('/message/chat/list_messages.json')) {
+    // do not need to pass team id for teams.json/chat api
+    if (teamId &&
+      !req.url.includes('/teams.json') &&
+      !req.url.includes('/message/chat/list.json') &&
+      !req.url.includes('/message/chat/create_message') &&
+      !req.url.includes('/message/chat/edit_message') &&
+      !req.url.includes('/message/chat/list_messages.json')
+    ) {
       headers['teamId'] = teamId.toString();
+    }
+
+    // no need to send apikey in header for auth.json.
+    // in normal login process we didn't have apikey before login.
+    // in direct login/ login with apikey we send apikey in request body.
+    if (req.url.includes('/auths.json')) {
+      delete headers['apikey'];
+    }
+
+    // login-api doesn't accept teamId
+    if (req.url.match(/api.login\W*([aA-zZ])*\.practera\.com[\w\W]*/)) {
+      delete headers['teamId'];
+      delete headers['timelineId'];
+    }
+
+    if (req.url.includes('preferences-api')) {
+      delete headers['teamId'];
     }
 
     return next.handle(req.clone({
       headers: new HttpHeaders(headers),
       params: paramsInject,
     }));
+  }
+
+  /**
+   * sometimes we don't need the automated injected headers/params in the
+   *
+   * @param   {HttpRequest<any>}  req  [req description]
+   *
+   * @return  {<any>}                  [return description]
+   */
+  isLoginAPIURL(req: HttpRequest<any>) {
+    if (req.url.includes(environment.loginAPIUrl)) {
+      return true;
+    }
+    return false;
   }
 }
