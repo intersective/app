@@ -10,7 +10,6 @@ name: Deploy to p2-sandbox-global-app environment
 on:
   workflow_dispatch:
   push:
-    # branches: [ 'task/ngv13' ]
     branches: [ 'global-appv2-ionic6' ]
 
 ################################################
