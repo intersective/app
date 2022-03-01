@@ -388,6 +388,37 @@
           }
         }
       }
+    },
+    "ngx-practera": {
+      "projectType": "library",
+      "root": "projects/ngx-practera",
+      "sourceRoot": "projects/ngx-practera/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-practera/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-practera/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-practera/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-practera/src/test.ts",
+            "tsConfig": "projects/ngx-practera/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-practera/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "cli": {
