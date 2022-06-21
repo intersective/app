@@ -14,6 +14,7 @@
             inputmode="email"
             type="email"
             placeholder="Email"
+            [attr.aria-label]="'Email'"
             ></ion-input>
         </ion-item>
         <ion-item lines="none">
@@ -25,6 +26,7 @@
             required
             [type]="showPassword ? 'text' : 'password'"
             placeholder="Password"
+            [attr.aria-label]="'Password'"
             ></ion-input>
             <ion-button (click)="showPassword = !showPassword" fill="clear">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
