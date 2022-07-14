@@ -6,6 +6,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -96,18 +97,21 @@ export class ActivityDesktopPage implements OnInit {
   async saveAssessment(event, task: Task) {
     this.loading = true;
     this.savingText = 'Saving...';
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
-    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
-    if (!event.assessment.inProgress) {
-      this.notificationsService.assessmentSubmittedToast();
-      // get the latest activity tasks and navigate to the next task
-      this.activityService.getActivity(this.activity.id, false, task, () => {
+    this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck)
+    .pipe(debounceTime(3000))
+    .subscribe(_res => {
+      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
+      if (!event.assessment.inProgress) {
+        this.notificationsService.assessmentSubmittedToast();
+        // get the latest activity tasks and navigate to the next task
+        this.activityService.getActivity(this.activity.id, false, task, () => {
+          this.loading = false;
+        });
+        return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
+      } else {
         this.loading = false;
-      });
-      return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
-    } else {
-      this.loading = false;
-    }
+      }
+    });
   }
 
   async readFeedback(event, task: Task) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { debounceTime, map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -442,7 +442,7 @@ export class AssessmentService {
     return answer;
   }
 
-  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
+  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean): Observable<any> {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
     }
@@ -470,15 +470,18 @@ export class AssessmentService {
         variables[item.key] = assessment[item.key];
       }
     });
-    return this.apolloService.graphQLMutate(
+    return this.apolloService.graphQLFetch(
       `mutation saveAnswers(${paramsFormat}){
         ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
       }`,
       variables
-    ).pipe(map(res => {
-      this._afterSubmit(assessment, answers, action, hasPulseCheck);
-      return res;
-    }));
+    ).pipe(
+      map(res => {
+        this._afterSubmit(assessment, answers, action, hasPulseCheck);
+        return res;
+      }),
+      debounceTime(3000)
+    );
   }
 
   private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {

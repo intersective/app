@@ -155,7 +155,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-text>
+                (saveProgress)="btnSaveClicked($event)"></app-text>
 
               <app-oneof *ngSwitchCase="'oneof'"
                 [question]="question"
@@ -167,7 +167,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-oneof>
+                (saveProgress)="btnSaveClicked($event)"></app-oneof>
 
               <app-multiple *ngSwitchCase="'multiple'"
                 [question]="question"
@@ -179,7 +179,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-multiple>
+                (saveProgress)="btnSaveClicked($event)"></app-multiple>
 
               <app-file *ngSwitchCase="'video'"
                 [question]="question"
@@ -192,7 +192,7 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                (saveProgress)="btnSaveClicked()"></app-file>
+                (saveProgress)="btnSaveClicked($event)"></app-file>
 
               <app-file *ngSwitchCase="'file'"
                 [question]="question"
@@ -204,7 +204,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-file>
+                (saveProgress)="btnSaveClicked($event)"></app-file>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
                 [question]="question"
@@ -216,7 +216,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-team-member-selector>
+                (saveProgress)="btnSaveClicked($event)"></app-team-member-selector>
 
               <app-multi-team-member-selector *ngSwitchCase="'multi team member selector'"
                 [question]="question"
@@ -228,7 +228,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-multi-team-member-selector>
+                (saveProgress)="btnSaveClicked($event)"></app-multi-team-member-selector>
 
               <div *ngSwitchDefault>
                 <p class="ion-padding-horizontal" style="color:red;">Unsupported question type: {{ question.type }}</p>

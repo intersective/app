@@ -6,6 +6,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { bindNodeCallback, from, observable, Observable, of } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 3000;
 
@@ -65,6 +67,7 @@ export class AssessmentComponent implements OnChanges {
 
   questionsForm: FormGroup;
 
+  bilipala = bindNodeCallback(this.operateSaving)();
 
   constructor(
     readonly utils: UtilsService,
@@ -74,6 +77,7 @@ export class AssessmentComponent implements OnChanges {
     @Inject(DOCUMENT) private readonly document: Document,
     private scroller: ViewportScroller,
   ) {}
+
 
   ngOnChanges() {
     if (!this.assessment) {
@@ -253,7 +257,8 @@ export class AssessmentComponent implements OnChanges {
   }
 
   // When user click the save button
-  btnSaveClicked() {
+  btnSaveClicked(event) {
+    console.log('Event:', event);
     return this._submit(true);
   }
 
@@ -268,7 +273,7 @@ export class AssessmentComponent implements OnChanges {
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    */
   _submit(saveInProgress = false, goBack = false) {
-
+    this.bilipala.pipe(debounceTime(3000)).subscribe();
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
@@ -283,7 +288,10 @@ export class AssessmentComponent implements OnChanges {
      *      - do nothing
      */
     // allow submitting/saving after a few seconds
-    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
+    setTimeout(() => {
+      this.btnDisabled = false;
+      this.operateSaving();
+    }, SAVE_PROGRESS_TIMEOUT);
 
     this.btnDisabled = true;
 
@@ -374,12 +382,19 @@ export class AssessmentComponent implements OnChanges {
       });
     }
 
-    this.save.emit({
+    const saveIT = of(() => this.save.emit({
       assessment,
       answers,
       action: this.action
-    });
+    })).pipe(debounceTime(3000));
 
+    saveIT.subscribe(res => {
+      return res();
+    });
+  }
+
+  operateSaving() {
+    console.log('executed!!!');
   }
 
   // /**
