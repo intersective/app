@@ -159,7 +159,6 @@ export class AuthService {
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
-    this.getUUID().subscribe();
     return norm;
   }
 
@@ -373,29 +372,6 @@ export class AuthService {
         headers: { 'Content-Type': 'application/json' }
       }
     });
-  }
-
-  /**
-   * @name getUUID
-   * @description retrieve user UUID of current requester (user)
-   * @return {Observable<string>} UUID in string
-   */
-  getUUID(): Observable<string> {
-    return this.apolloService.graphQLWatch(
-      `query user {
-        user {
-          uuid
-        }
-      }`
-    ).pipe(map(res => {
-      if (res && res.data) {
-        this.storage.setUser({
-          uuid: res.data.user.uuid
-        });
-        return res.data.user.uuid;
-      }
-      return null;
-    }));
   }
 
   updateProfileImage(data) {
