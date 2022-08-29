@@ -159,6 +159,7 @@ export class AuthService {
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
+    this.getUUID().subscribe();
     return norm;
   }
 
@@ -388,6 +389,9 @@ export class AuthService {
       }`
     ).pipe(map(res => {
       if (res && res.data) {
+        this.storage.setUser({
+          uuid: res.data.user.uuid
+        });
         return res.data.user.uuid;
       }
       return null;
