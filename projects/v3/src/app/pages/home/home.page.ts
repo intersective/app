@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { Activity, ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -34,7 +35,8 @@ export class HomePage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notification: NotificationsService
+    private notification: NotificationsService,
+    private fastFeedbackService: FastFeedbackService,
   ) { }
 
   ngOnInit() {
@@ -48,6 +50,10 @@ export class HomePage implements OnInit, OnDestroy {
       this.homeService.getProjectProgress();
       this.achievementService.getAchievements();
     }));
+
+    const abc = this.notification.fastFeedbackModal(
+      {},
+    );
   }
 
   ngOnDestroy(): void {

@@ -272,9 +272,6 @@ export class ExperienceService {
           userHash
         }
       }`,
-      {
-        noCache: true
-      }
     ).pipe(map(response => {
       if (response.data && response.data.user) {
         const thisUser = response.data.user;
