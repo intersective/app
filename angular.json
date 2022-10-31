@@ -290,6 +290,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": true,
+            "i18nMissingTranslation": "error",
+            "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
             "main": "projects/v3/src/main.ts",
