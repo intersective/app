@@ -3,6 +3,7 @@ export const environment = {
   skipGlobalLogin: '<CUSTOMPLAIN_SKIPGLOBALLOGINFLAG>',
   appkey: '<CUSTOM_APPKEY>',
   pusherKey: '<CUSTOM_PUSHERKEY>',
+  pusherCluster: '<CUSTOM_PUSHER_CLUSTER>',
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
@@ -37,4 +38,5 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  appv3URL: '<CUSTOM_APPV3_URL>',
 };
