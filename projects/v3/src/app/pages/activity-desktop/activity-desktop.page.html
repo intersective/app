@@ -10,10 +10,10 @@
     </ion-buttons>
     <ion-title class="ion-no-padding headline-4 grey-75">Activity</ion-title>
     <ion-buttons slot="end">
+      <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
-  <ion-progress-bar type="indeterminate" *ngIf="loading === true"></ion-progress-bar>
 </ion-header>
 
 <ion-content>
