@@ -253,7 +253,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!this.typingMessage) {
+    if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
       return;
     }
     const message = this.typingMessage;
@@ -311,7 +311,6 @@ export class ChatRoomComponent implements OnInit {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
     this.typingMessage = '';
-    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
   }
 
   private _afterSendMessage() {
@@ -570,9 +569,11 @@ export class ChatRoomComponent implements OnInit {
       return;
     }
     this.sendingMessage = true;
+    const message = this.typingMessage;
+    this._beforeSenMessages();
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
-      message: this.typingMessage,
+      message: message,
       file: JSON.stringify(file)
     }).subscribe(
       response => {
@@ -775,4 +776,5 @@ export class ChatRoomComponent implements OnInit {
       await modal.present();
     }
   }
+
 }
