@@ -12,7 +12,6 @@ describe('AssessmentService', () => {
   let service: AssessmentService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let apolloSpy: jasmine.SpyObj<ApolloService>;
-  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -57,7 +56,6 @@ describe('AssessmentService', () => {
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
-    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utils = TestBed.inject(UtilsService);
   });
 
@@ -565,17 +563,6 @@ describe('AssessmentService', () => {
         project_id: 1,
         identifier: 'AssessmentSubmission-11',
         is_done: true
-      });
-    });
-  });
-
-  describe('when testing popUpReviewRating()', () => {
-    it('should pass the correct data to notification modal', () => {
-      service.popUpReviewRating(1, ['home']);
-      expect(notificationSpy.modal.calls.count()).toBe(1);
-      expect(notificationSpy.modal.calls.first().args[1]).toEqual({
-        reviewId: 1,
-        redirect: ['home']
       });
     });
   });
