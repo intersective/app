@@ -133,7 +133,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
+        this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
         this.btnDisabled = false;
       }
       return;
@@ -154,7 +154,7 @@ export class AssessmentComponent implements OnChanges {
 
   private _handleReviewData() {
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
+      this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled = false;
     }
   }
@@ -403,13 +403,13 @@ export class AssessmentComponent implements OnChanges {
     switch (this._btnAction) {
       case 'submit':
         if (this.action === 'review') {
-          return 'submit review';
+          return $localize`submit review`;
         }
-        return 'submit answers';
+        return $localize`submit answers`;
       case 'readFeedback':
-        return 'mark feedback as reviewed';
+        return $localize`mark feedback as reviewed`;
       default:
-        return 'continue';
+        return $localize`continue`;
     }
   }
 
@@ -442,11 +442,11 @@ export class AssessmentComponent implements OnChanges {
     }
     // for locked team assessment
     if (this.assessment.isForTeam && this.submission?.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!this.submission?.status || this.submission?.status === 'in progress') {
       if (this.assessment.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }

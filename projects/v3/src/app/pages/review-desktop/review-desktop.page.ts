@@ -101,7 +101,7 @@ export class ReviewDesktopPage implements OnInit {
     }
 
     this.loading = false;
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
   }
 
 }

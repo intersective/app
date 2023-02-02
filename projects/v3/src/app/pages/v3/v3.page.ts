@@ -66,6 +66,11 @@ export class V3Page implements OnInit, OnDestroy {
   showReviews: boolean = false;
   directionIcon: string = this.direction();
 
+  i18nText = {
+    'setting': $localize`Settings`,
+    'myExperience': $localize`My Experiences`
+  };
+
   constructor(
     private modalController: ModalController,
     private animationService: AnimationsService,
@@ -84,22 +89,22 @@ export class V3Page implements OnInit, OnDestroy {
   private _initMenuItems() {
     this.appPages = [
       {
-        title: 'Home',
+        title: $localize`Home`,
         url: '/v3/home',
         icon: 'home'
       },
       {
-        title: 'Events',
+        title: $localize`Events`,
         url: '/v3/events',
         icon: 'today'
       },
       {
-        title: 'Reviews',
+        title: $localize`Reviews`,
         url: '/v3/review-desktop',
         icon: 'eye'
       },
       {
-        title: 'Messages',
+        title: $localize`Messages`,
         url: '/v3/messages',
         icon: 'mail'
       }

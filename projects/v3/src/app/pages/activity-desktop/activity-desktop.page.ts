@@ -105,7 +105,7 @@ export class ActivityDesktopPage implements OnInit {
     this.loading = true;
     this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
