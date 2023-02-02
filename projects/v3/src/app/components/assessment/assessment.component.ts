@@ -247,7 +247,7 @@ export class AssessmentComponent implements OnChanges {
           message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel',
             }
           ],
@@ -342,7 +342,7 @@ export class AssessmentComponent implements OnChanges {
         // Please fill out the required fields.
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
             /*
               // doesn't work on iOS device, disable now to visit back later when it has cross-browser support

@@ -28,9 +28,11 @@
               [(ngModel)]="password"
               inputmode="password"
               formControlName="password"
-              autocomplete="on" required [type]="showPassword ? 'text' : 'password'"
-              placeholder="Set up Practera password*">
-              <p id="setup-password" class="for-accessibility">setup practera password</p>
+              autocomplete="on" required
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Set up Practera password*"
+              i18n-placeholder>
+              <p id="setup-password" class="for-accessibility" i18n>setup practera password</p>
             </ion-input>
             <ion-button mode="ios" (click)="showPassword = !showPassword" fill="clear">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
