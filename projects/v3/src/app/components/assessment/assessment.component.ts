@@ -365,9 +365,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.utils.each(this.questionsForm.value, (answer, key) => {
         questionId = +key.replace('q-', '');
         answers.push({
-          questionId,
-          answer: answer?.answer,
-          comment: answer?.comment,
+          questionId: questionId,
+          answer: answer.answer,
+          comment: answer.comment
         });
       });
     }
