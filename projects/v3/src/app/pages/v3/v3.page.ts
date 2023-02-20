@@ -162,9 +162,6 @@ export class V3Page implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
-      this.experienceService.getLocale().subscribe(expInfo => {
-        this.utils.moveToNewLocale(expInfo.locale);
-      });
       this.reviewService.getReviews();
       this.homeService.getExperience();
 
