@@ -150,7 +150,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // user is trying to do the assessment if
     // - there is no submission or
     // - submission is in progress
-    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+    if (this.action !== 'review'
+      && (
+        this.utils.isEmpty(this.submission)
+        || this.submission.status === 'in progress'
+      )
+    ) {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
@@ -492,6 +497,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       }
       return '';
     }
+
+    // for i18n
+    if (this.submission?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+    if (this.submission?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
     return this.submission?.status;
   }
 
