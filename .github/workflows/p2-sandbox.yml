@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'feature/sandbox-workflow-migrate' ]
+    branches: [ 'develop' ]
     
 
 ################################################
