@@ -250,7 +250,7 @@ export class AssessmentComponent extends RouterEnter {
     // get assessment structure and populate the question form
     this.assessmentService.getAssessment(this.id, this.action, this.activityId, this.contextId, this.submissionId)
       .subscribe(
-        result => {
+        async result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
           this.populateQuestionsForm();
@@ -730,7 +730,7 @@ export class AssessmentComponent extends RouterEnter {
     } catch (err) {
       const msg = 'Can not get review rating information';
       this.newRelic.noticeError(msg);
-      const toasted = await this.notificationService.alert({
+      await this.notificationService.alert({
         header: msg,
         message: err.msg || JSON.stringify(err)
       });
