@@ -8,6 +8,7 @@ import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { NotificationsService } from '../services/notifications.service';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
+import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 
 @Component({
   selector: 'app-personalised-header',
