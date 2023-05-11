@@ -54,6 +54,14 @@
   --highlight-background: var(--ion-color-primary);
 }
 
+.form-field {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--practera-grey-50);
+  border-radius: 5px;
+  --highlight-background: var(--ion-color-primary);
+}
+
 .file-container {
   display: flex;
   align-items: center;
