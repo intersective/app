@@ -101,7 +101,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
             return this.saveQuestionAnswer(request.questionSave);
           }
           return of(request);
-        }),
+        })
       ).subscribe(
         (data: {
           saveInProgress: boolean;
