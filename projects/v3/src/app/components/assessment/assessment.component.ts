@@ -26,11 +26,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
-  @Input() assessment: Assessment = null;
+  @Input() assessment: Assessment;
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean = false;
+  @Input() isMobile?: boolean;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -46,7 +46,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   @Output() continue = new EventEmitter();
 
   submitActions = new Subject<{
-    autoSave: boolean;
+    saveInProgress: boolean;
     goBack: boolean;
     questionSave?: {
       submissionId: number;
@@ -169,7 +169,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(800)
+      delay(1000)
     );
   }
 
@@ -189,7 +189,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(800),
+      delay(1000),
       tap((res) => { console.log(res) })
     );
   }
@@ -346,15 +346,30 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       case 'submit':
         this.btnDisabled$.next(true);
         return this.submitActions.next({
-          autoSave: false,
+          saveInProgress: false,
           goBack: false,
         });
       case 'readFeedback':
-        this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
     }
+  }
+
+  // When user click the save button
+  btnSaveClicked() {
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: false,
+    });
+  }
+
+  // When user click the back tutton
+  btnBackClicked() {
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: true,
+    });
   }
 
   /**
@@ -434,12 +449,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return answers;
   }
 
-  async _submitAnswer({autoSave = false, goBack = false}) {
+  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
-
-    if (!autoSave && requiredQuestions.length > 0) {
+    if (!saveInProgress && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
@@ -480,7 +494,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     return this.save.emit({
-      autoSave,
+      saveInProgress,
       goBack,
       answers,
       assessmentId: this.assessment.id,
@@ -489,8 +503,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
-<<<<<<< HEAD
-=======
   /**
    * handle submission and autosave
    * @param saveInProgress whether it is for save in progress or submit
@@ -636,7 +648,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
->>>>>>> trunk-v3
   showQuestionInfo(info, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
