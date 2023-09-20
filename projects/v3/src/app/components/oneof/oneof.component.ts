@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-oneof',
@@ -43,10 +44,20 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  autosave$ = new Subject<any>();
+
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  ngAfterViewInit() {
+    this.autosave$.pipe(
+      debounceTime(800),
+    ).subscribe(() => {
+      this.triggerSave();
+    });
   }
 
   // propagate changes into the form control
@@ -83,6 +94,10 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
       }
     }
 
+    this.autosave$.next();
+  }
+
+  triggerSave(): void {
     const action: {
       autoSave?: boolean;
       goBack?: boolean;
