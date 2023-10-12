@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { delay, filter, tap } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -49,7 +49,11 @@ export class ActivityDesktopPage {
 
   ionViewWillEnter() {
     this.subscriptions.push(
-      this.activityService.activity$.subscribe(res => this.activity = res)
+      this.activityService.activity$
+      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
+      .subscribe(res => {
+        this.activity = res;
+      })
     );
     this.subscriptions.push(
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
@@ -145,10 +149,10 @@ export class ActivityDesktopPage {
    * @return  {any}
    */
   async saveAssessment(event, task: Task) {
-    // autoSave must be false to submit the assessment
+    // autoSave must be false to fire submit assessment API request
     // loading is mainly for cosmetic purpose
-    // this is made to mainly capture autoSave = true & loading = true
-    // to prevent double submission
+    // below if-statement is made to prevent double submission
+    // condition: autoSave = true & loading = true
     if (event.autoSave && this.loading) {
       return;
     }
@@ -207,6 +211,7 @@ export class ActivityDesktopPage {
         delay(400)
       ).toPromise();
       await this.reviewRatingPopUp();
+      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       this.loading = false;
       this.btnDisabled$.next(false);
