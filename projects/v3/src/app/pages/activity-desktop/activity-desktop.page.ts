@@ -129,7 +129,8 @@ export class ActivityDesktopPage {
   async topicComplete(task: Task) {
     if (task.status === 'done') {
       // just go to the next task without any other action
-      return this.activityService.goToNextTask(this.activity.tasks, task);
+      this.btnDisabled$.next(false);
+      return this.activityService.goToNextTask(task);
     }
     // mark the topic as complete
     this.loading = true;
@@ -149,10 +150,10 @@ export class ActivityDesktopPage {
    * @return  {any}
    */
   async saveAssessment(event, task: Task) {
-    // autoSave must be false to submit the assessment
+    // autoSave must be false to fire submit assessment API request
     // loading is mainly for cosmetic purpose
-    // this is made to mainly capture autoSave = true & loading = true
-    // to prevent double submission
+    // below if-statement is made to prevent double submission
+    // condition: autoSave = true & loading = true
     if (event.autoSave && this.loading) {
       return;
     }
@@ -224,7 +225,7 @@ export class ActivityDesktopPage {
   }
 
   nextTask(task: Task) {
-    this.activityService.goToNextTask(this.activity.tasks, task);
+    this.activityService.goToNextTask(task);
   }
 
   async reviewRatingPopUp(): Promise<void> {
