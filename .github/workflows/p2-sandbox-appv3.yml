@@ -189,8 +189,6 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
 
         env:
-
-          CUSTOM_PUBLICZONE_NAME: ${{ env.PUBLICZONENAME }}
           CUSTOM_PATH_IMAGE: /appv3/dev/images/
           CUSTOM_PATH_VIDEO: /appv3/dev/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
