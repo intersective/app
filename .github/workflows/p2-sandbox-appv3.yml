@@ -303,7 +303,7 @@ jobs:
         run: |
           echo "Serverless Deploying appv3"
           node_modules/.bin/serverless deploy
-          rm serverless.yml .env
+          rm serverless.yml
         env:
           AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
@@ -338,7 +338,7 @@ jobs:
           mv serverless-redirect.yml serverless.yml
           node_modules/.bin/serverless deploy
 
-          rm serverless.yml
+          rm serverless.yml .env
           mv serverless.yml.bak serverless.yml
 
 ##########################################################
