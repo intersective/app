@@ -1,5 +1,6 @@
 service: ${env:STACK_NAME}-appv3-redirect-${env:ENV}
 functions:
+useDotenv: true
 provider: aws
 
 resources:
