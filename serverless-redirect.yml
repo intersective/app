@@ -28,6 +28,30 @@ resources:
           IgnorePublicAcls: true
           RestrictPublicBuckets: true
 
+    RedirectBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: RedirectBucket
+        PolicyDocument:
+          Statement:
+            - Sid: S3-Bucket-Accesible via CDN OAI only
+              Action: "s3:GetObject"
+              Effect: Allow
+              Resource: "arn:aws:s3:::${env:STACK_NAME}-appv3-redirect-${env:ENV}/*"
+              Principal:
+                CanonicalUser: !GetAtt RedirectCDNOriginAccessIdentity.S3CanonicalUserId
+            - Sid: AllowSSLRequestsOnly
+              Effect: Deny
+              Principal: "*"
+              Action: "s3:*"
+              Resource:
+                - !Sub "arn:aws:s3:::${env:STACK_NAME}-appv3-redirect-${env:ENV}"
+                - !Sub "arn:aws:s3:::${env:STACK_NAME}-appv3-redirect-${env:ENV}/*"
+              Condition:
+                Bool:
+                  "aws:SecureTransport": false
+
     RedirectCDNOriginAccessIdentity:
       Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
       Properties:
