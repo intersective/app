@@ -341,7 +341,7 @@ jobs:
           rm serverless.yml .env
           mv serverless.yml.bak serverless.yml
         env:
-          APPV3_ALIAS: appv3.${{ env.PUBLICZONENAME }}
+          APPV3_ALIAS: appv4.${{ env.PUBLICZONENAME }}
 
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
