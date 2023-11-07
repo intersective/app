@@ -303,7 +303,7 @@ jobs:
         run: |
           echo "Serverless Deploying appv3"
           node_modules/.bin/serverless deploy
-          rm serverless.yml
+          rm serverless.yml .env
         env:
           AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
@@ -321,27 +321,7 @@ jobs:
           APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
           aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
 
-###############################################################
-#  SERVERLESS DEPLOYMENT
-##############################################################
-      - name: Serverless deployment Redirect CDN
-        run: |
-          echo "Serverless Deploying appv3 redirect"
-          mv serverless-redirect.yml serverless.yml
-          node_modules/.bin/serverless deploy
 
-          rm serverless.yml .env
-        env:
-          APPV3_ALIAS: appv4.${{ env.PUBLICZONENAME }}
-
-##########################################################
-#  Generate redirect html file
-##########################################################
-      - name: Generate redirect html file
-        run: bash scripts/redirect-page.sh
-        env:
-          REDIRECT_URL: https://app.${{ env.PUBLICZONENAME }}/
-          REDIRECT_BUCKET: ${{ env.STACK_NAME }}-appv3-redirect-${{ env.ENV }}
 
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
