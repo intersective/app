@@ -64,7 +64,7 @@ resources:
       Properties:
         DistributionConfig:
           Aliases:
-            - !Ref RedirectBucket
+            - ${env:APPV3_ALIAS}
           DefaultRootObject: index.html
           Comment: "Cloudfront Origin identity for ${env:STACK_NAME}-appv3-redirect-${env:ENV}"
           DefaultCacheBehavior:
