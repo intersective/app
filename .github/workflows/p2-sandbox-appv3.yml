@@ -335,7 +335,6 @@ jobs:
       - name: Serverless deployment Redirect CDN
         run: |
           echo "Serverless Deploying appv3 redirect"
-          mv serverless.yml serverless.yml.bak
           mv serverless-redirect.yml serverless.yml
           node_modules/.bin/serverless deploy
 
