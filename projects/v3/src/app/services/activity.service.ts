@@ -126,9 +126,9 @@ export class ActivityService {
     }
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
-    ).subscribe(_res => {
+    ).subscribe(res => {
       if (callback instanceof Function) {
-        return callback(_res);
+        return callback(res);
       }
       return;
     });
@@ -247,7 +247,7 @@ export class ActivityService {
     }
 
     // if there is no next task
-    if (!nextTask) {
+    if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
         this.assessment.getAssessment(
           afterTask.id,
@@ -259,7 +259,10 @@ export class ActivityService {
       }
       nextTask = tasks[0]; // go to the first task
     }
-    this.goToTask(nextTask);
+
+    if (!this.utils.isEmpty(nextTask)) {
+      return this.goToTask(nextTask);
+    }
   }
 
   // obtain latest activity to decide next task
