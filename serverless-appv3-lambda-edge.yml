@@ -26,6 +26,10 @@ provider:
     Env: ${env:ENV}
     RootStack: ${env:ROOTSTACK}
 
+	
+plugins:
+  - serverless-deployment-bucket
+
 resources:
   Resources:
     LambdaFunction:
