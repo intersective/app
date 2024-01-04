@@ -209,7 +209,6 @@ jobs:
       - name: AWS S3 Sync operation
         run: |
           mv serverless-appv3.yml serverless.yml
-          aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless-appv3-lambda-edge.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -226,25 +225,6 @@ jobs:
           EOF
 
 ################################################
-#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT LAMBDA@EDGE
-################################################
-      - name: Configure AWS Credentials from P2SANDBOX Account
-        uses: ./.github/actions/aws-oidc
-        with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
-          region: us-east-1
-
-##########################################################
-#  CLOUDFORMATION EXPORT VARIABLES
-##########################################################
-      - name: Cloudformation Export variables
-        run: |
-          cat >> .env <<EOF
-          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
-          Nonce=$GITHUB_SHA
-          EOF
-
-################################################
 #  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
 ################################################
       - name: Configure AWS Credentials from P2SANDBOX Account
@@ -252,25 +232,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
-
-###############################################################
-#  SERVERLESS DEPLOYMENT
-##############################################################
-      - name: Serverless deployment Lambda Function
-        run: |
-          echo "Serverless Deploying appv3 lambda@edge fn"
-          mv serverless.yml serverless.yml.bak
-          mv serverless-appv3-lambda-edge.yml serverless.yml
-          node_modules/.bin/serverless deploy
-
-          rm serverless.yml
-          mv serverless.yml.bak serverless.yml
-        env:
-          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
