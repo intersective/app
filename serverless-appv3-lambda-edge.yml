@@ -11,6 +11,7 @@ provider:
   deploymentBucket:
     maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
     blockPublicAccess: true
+    name: ${env:ROOTSTACK}-forwarders3-${env:ENV}
     serverSideEncryption: AES256
     tags:
       StackName: ${env:STACK_NAME}
