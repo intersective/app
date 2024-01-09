@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 import { FilestackService } from '@v3/services/filestack.service';
 
@@ -12,7 +13,8 @@ export class AttachmentPopoverComponent{
 
   constructor(
     private popoverController: PopoverController,
-    private filestackService: FilestackService
+    private filestackService: FilestackService,
+    private notificationsService: NotificationsService,
   ) { }
 
     /**
@@ -37,8 +39,17 @@ export class AttachmentPopoverComponent{
           this.close(res);
           return;
         },
-        err => {
-          console.log(err);
+        async err => {
+          console.error(err);
+          await this.notificationsService.alert({
+            message: $localize`File upload failed. Please try again.`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel'
+              }
+            ],
+          });
         }
       );
     }

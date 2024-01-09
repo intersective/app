@@ -210,6 +210,8 @@ export class FilestackService {
       onUploadDone: (res) => res,
       supportEmail: 'help@practera.com',
       lang: currentLocale != 'en-US' ? currentLocale : 'en',
+      allowManualRetry: true,
+      errorsTimeout: 10000,
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
