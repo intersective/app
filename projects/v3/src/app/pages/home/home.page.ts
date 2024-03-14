@@ -3,10 +3,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
-import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
@@ -33,6 +33,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
+  hasUnlockedTasks: Object = {};
 
   constructor(
     private router: Router,
@@ -43,9 +44,11 @@ export class HomePage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
-    private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
-  ) { }
+    private unlockIndicatorService: UnlockIndicatorService
+  ) {
+    this.activityCount$ = homeService.activityCount$;
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
@@ -85,6 +88,13 @@ export class HomePage implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.hasUnlockedTasks = {}; // reset
+      unlockedTasks.forEach(task => {
+        this.hasUnlockedTasks[task.activityId] = true;
+      });
+    });
   }
 
   ngOnDestroy(): void {
@@ -97,9 +107,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
-
-    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
-    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+    // this.utils.setPageTitle(this.experience?.name || 'Practera'); // set page title [CORE-6308]
   }
 
   goBack() {
@@ -107,6 +115,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 
