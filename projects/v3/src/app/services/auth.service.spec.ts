@@ -95,7 +95,7 @@ describe('AuthService', () => {
       storageSpy.getConfig.and.returnValue(true);
       utilsSpy.has.and.returnValue(true);
 
-      service.login({ email: 'test@test.com', password: '123' }).subscribe();
+      service.authenticate({ authToken: 'test@test.com', apikey: '123' }).subscribe();
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
       expect(requestSpy.post.calls.first().args[0].data).toContain('123');
@@ -124,7 +124,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.directLogin({ authToken: 'abcd' }).subscribe();
+    service.authenticate({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
@@ -151,7 +151,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
+    service.authenticate({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });

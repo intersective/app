@@ -66,7 +66,7 @@ describe('AuthGlobalLoginComponent', () => {
   });
 
   beforeEach(() => {
-    serviceSpy.globalLogin.and.returnValue(of({}));
+    serviceSpy.authenticate.and.returnValue(of({} as any));
     switcherSpy.getMyInfo.and.returnValue(of({}));
   });
 
@@ -85,7 +85,7 @@ describe('AuthGlobalLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { apikey: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      serviceSpy.globalLogin.and.throwError('');
+      serviceSpy.authenticate.and.throwError('');
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
@@ -111,7 +111,7 @@ describe('AuthGlobalLoginComponent', () => {
         fixture.detectChanges();
         tick(50);
         fixture.detectChanges();
-        expect(serviceSpy.globalLogin.calls.count()).toBe(1);
+        expect(serviceSpy.authenticate.calls.count()).toBe(1);
         expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
       }));
     });
