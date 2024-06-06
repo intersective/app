@@ -1,11 +1,10 @@
 service: ${env:STACK_NAME}-lambda-edge-${env:ROOTSTACK}
-frameworkVersion: "2"
+frameworkVersion: "3"
 useDotenv: true
 
 provider:
   logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
-  runtime: nodejs14.x
   region: us-east-1
   stage: ${env:ENV}
   deploymentBucket:
@@ -33,7 +32,7 @@ resources:
       Properties:
         FunctionName: ${env:ROOTSTACK}-forwarder-${env:ENV}
         Handler: index.handler
-        Runtime: nodejs14.x
+        Runtime: nodejs18.x
         Role: !GetAtt LambdaFunctionRole.Arn
         MemorySize: 1024
         Code:
@@ -99,7 +98,7 @@ resources:
       Type: AWS::Lambda::Function
       Properties:
         Handler: index.handler
-        Runtime: nodejs14.x
+        Runtime: nodejs18.x
         Role: !GetAtt PublishLambdaVersionRole.Arn
         Code:
           ZipFile: |
