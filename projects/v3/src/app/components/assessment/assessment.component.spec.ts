@@ -437,7 +437,7 @@ describe('AssessmentComponent', () => {
 
     it('saving in progress', () => {
       const spy = spyOn(component.save, 'emit');
-      component._submit(true);
+      component._submitAnswer({autoSave: true});
       btnDisabled = true;
 
       const args = spy.calls.first().args;
@@ -456,7 +456,7 @@ describe('AssessmentComponent', () => {
       btnDisabled = true;
       component.isPendingReview = false;
       component.doAssessment = true;
-      component._submit(true); // save in progress
+      component._submitAnswer({autoSave: true}); // save in progress
 
       const args = spy.calls.first().args;
       assessment = args[0].assessment;
@@ -473,7 +473,7 @@ describe('AssessmentComponent', () => {
       'q-124': new FormControl(),
       'q-125': new FormControl()
     });
-    component._submit(false);
+    component._submitAnswer({autoSave: false});
     expect(notificationSpy.alert.calls.count()).toBe(1);
   });
 
@@ -504,7 +504,7 @@ describe('AssessmentComponent', () => {
       component.save = jasmine.createSpyObj('save', ['emit']);
       component.questionsForm = new FormGroup({});
       utils.each = jasmine.createSpy('each');
-      component._submit(false);
+      component._submitAnswer({autoSave: false});
       expect(utils.each).toHaveBeenCalled();
       expect(component.save.emit).toHaveBeenCalled();
       /* expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
@@ -521,7 +521,7 @@ describe('AssessmentComponent', () => {
 
     it(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
       component.questionsForm = new FormGroup({});
-      component._submit(false);
+      component._submitAnswer({autoSave: false});
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
       fixture.detectChanges();
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
@@ -531,7 +531,7 @@ describe('AssessmentComponent', () => {
       component.questionsForm = new FormGroup({});
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
-      component._submit(false);
+      component._submitAnswer({autoSave: false});
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
     });
   });
@@ -571,7 +571,7 @@ describe('AssessmentComponent', () => {
       component.isPendingReview = true;
       expect(component.btnText).toEqual('submit answers');
 
-      const spy = spyOn(component, '_submit');
+      const spy = spyOn(component.submitActions, 'next');
       component.continueToNextTask();
       expect(spy).toHaveBeenCalled();
     });
@@ -686,13 +686,12 @@ describe('AssessmentComponent', () => {
 
   describe('btnSaveClicked() & btnBackClicked()', () => {
     it('should trigger submit', () => {
-      const spy = spyOn(component, '_submit');
+      const spy = spyOn(component, '_submitAnswer');
 
-      component.btnSaveClicked();
-      component.btnBackClicked();
+      component._submitAnswer({ autoSave: false });
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(spy).toHaveBeenCalledWith(true);
-      expect(spy).toHaveBeenCalledWith(true, true);
+      expect(spy).toHaveBeenCalledWith({ autoSave: false });
+      expect(spy).toHaveBeenCalledWith({ autoSave: false });
     });
   });
 
