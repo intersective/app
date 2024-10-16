@@ -1,11 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, Renderer2, ChangeDetectorRef, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, QueryList } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -13,7 +11,8 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, finalize, first, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { MessagingService } from '../../services/messaging.service';
 
 @Component({
   selector: 'app-home',
@@ -53,14 +52,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
-    private renderer: Renderer2,
+    private messagingService: MessagingService,
     private cdr: ChangeDetectorRef,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -75,6 +72,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
+    this.messagingService.requestPermission();
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(

@@ -43,6 +43,13 @@ export const environment = {
   intercom: false,
   newrelic: true,
   goMobile: false,
+  firebase: {
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    messagingSenderId: '',
+    appId: '',
+  },
 };
 
 /*

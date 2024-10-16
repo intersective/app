@@ -11,6 +11,9 @@ import { AppComponent } from './app.component';
 import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 @NgModule({
   declarations: [
@@ -19,6 +22,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     AppRoutingModule,
     IonicModule.forRoot({
       innerHTMLTemplatesEnabled: true,
@@ -28,6 +33,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       prefixUrl: environment.APIEndpoint,
     }),
     ApolloModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     {
