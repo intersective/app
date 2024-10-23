@@ -1,5 +1,9 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
+interface LastVisited {
+  [key: string]: string | number | number[];
+}
+
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
   factory: () => localStorage
@@ -39,9 +43,13 @@ export interface User {
   squareLogo?: string; // for collapsed sidemenu
   app_locale?: string;
 
-  // we handle nested assessment component differently, url may not reflect the focused/active assessment
-  lastVisitedAssessmentUrl?: string; // last visited assessment url
-  lastVisitedUrl?: string; // last visited url (non-assessment)
+  lastVisited?: {
+    // we handle nested assessment component differently, url may not reflect the focused/active assessment
+    assessmentUrl: string;  // last visited assessment url
+    url: string; // last visited url (non-assessment)
+    activityId: number; // last visited activity id
+    homeBookmarks: number[]; // last visited home bookmarks (activity ids)
+  },
 }
 
 export interface Referrer {
@@ -197,5 +205,52 @@ export class BrowserStorageService {
 
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
+  }
+
+  /**
+   * get/set last visited url/activityId/assessmentUrl
+   *
+   * @param   {string}  name   [name description]
+   * @param   {string | number}  value
+   *
+   * @return  {string | number}
+   */
+  lastVisited(name: string, value?: string | number): string | number | number[] | null {
+    let lastVisited: LastVisited = this.get('lastVisited') || {};
+
+    if (value !== undefined) {
+      if (name === "homeBookmarks" && typeof value === "number") {
+        const existingArray = (lastVisited["homeBookmarks"] as number[]) || [];
+        let updatedArray: number[];
+
+        if (existingArray.includes(value)) {
+          // Remove the value if it exists
+          updatedArray = existingArray.filter((item) => item !== value);
+          if (lastVisited["activityId"] === value) {
+            delete lastVisited["activityId"];
+          }
+        } else {
+          // Add the value if it doesn't exist
+          updatedArray = [...existingArray, value];
+          lastVisited = { ...lastVisited, activityId: value };
+        }
+
+        lastVisited = { ...lastVisited, [name]: updatedArray };
+      } else if (name === "activityId" && typeof value === "number") {
+        if (lastVisited["activityId"] === value) {
+          // Remove the activityId if it exists and is the same
+          delete lastVisited["activityId"];
+        } else {
+          // Update the activityId with the new value
+          lastVisited = { ...lastVisited, [name]: value };
+        }
+      } else {
+        lastVisited = { ...lastVisited, [name]: value };
+      }
+
+      this.append("lastVisited", lastVisited);
+    }
+
+    return lastVisited[name] || null;
   }
 }
