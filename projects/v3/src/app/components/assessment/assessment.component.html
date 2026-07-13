@@ -451,8 +451,8 @@
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
       <!-- team 360 progress: show how many members have been reviewed -->
-      <div class="team360-progress" *ngIf="team360MemberCount > 0 && doAssessment">
-        <span i18n>{{ team360PagesVisited }} of {{ team360MemberCount }} member{{ team360MemberCount > 1 ? 's' : '' }} reviewed</span>
+      <div class="team360-progress" *ngIf="team360MemberReviewCount > 0 && doAssessment">
+        <span i18n>{{ team360PagesVisited }} of {{ team360MemberReviewCount }} member{{ team360MemberReviewCount > 1 ? 's' : '' }} reviewed</span>
       </div>
 
       <!-- PAGINATION MOVED BACK INTO BOTTOM BAR -->
@@ -463,7 +463,7 @@
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
-          [disabled]="pageIndex === 0">
+          [disabled]="!hasPreviousAccessiblePage">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>Prev</span>
         </ion-button>
@@ -499,7 +499,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= maxAccessiblePageIndex">
+          [disabled]="!hasNextAccessiblePage">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
@@ -521,7 +521,7 @@
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
-          [disabled]="pageIndex === 0">
+          [disabled]="!hasPreviousAccessiblePage">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>Prev</span>
         </ion-button>
@@ -557,7 +557,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= maxAccessiblePageIndex">
+          [disabled]="!hasNextAccessiblePage">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
