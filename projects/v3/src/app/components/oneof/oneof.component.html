@@ -6,17 +6,23 @@
       @for (choice of displayChoices; track choice) {
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
-            <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
-            @if (submission?.answer === choice.id) {
-              <ion-chip class="label orange"
-                i18n
-              >Learner's Answer</ion-chip>
+            @if (!isReviewerFeedbackContext) {
+              @if (submission?.answer === choice.id) {
+                <ion-chip class="label orange">
+                  @if (viewerRole === 'learner') {
+                    <span i18n>Your Answer</span>
+                  } @else {
+                    <span i18n>Learner's Answer</span>
+                  }
+                </ion-chip>
+              }
+              @if (review?.answer === choice.id) {
+                <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
+              }
             }
-            @if (review?.answer === choice.id) {
-              <ion-chip class="label yellow black"
-                i18n
-              >Reviewer's Answer</ion-chip>
-            }
+            <div class="answer-content"
+              [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}"
+              [innerHTML]="choice.name | detectLanguage"></div>
           </ion-label>
         </ion-item>
         @if (choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id) {
