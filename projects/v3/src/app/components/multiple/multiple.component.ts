@@ -250,8 +250,15 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get isReviewerOnlyLearnerFeedback(): boolean {
+    return this.isDisplayOnly
+      && this.question?.reviewerOnly === true
+      && this.question?.canAnswer === false
+      && this.submissionStatus === 'feedback available';
+  }
+
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyLearnerFeedback) {
       return this.question?.choices || [];
     }
 
@@ -262,7 +269,7 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     return (this.question?.choices || []).filter(choice => selectedChoiceIds.has(choice.id));
   }
 
-  isReviewerChoiceSelected(choiceId: string | number): boolean {
+  isReviewChoiceSelected(choiceId: string | number): boolean {
     return this._answerIncludesChoice(this.review?.answer, choiceId);
   }
 
