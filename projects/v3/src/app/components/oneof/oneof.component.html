@@ -6,11 +6,11 @@
       @for (choice of displayChoices; track choice) {
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3"
-            [class.reviewer-feedback-choice]="isReviewerOnlyLearnerFeedback">
-            <div [class.reviewer-feedback-choice-text]="isReviewerOnlyLearnerFeedback"
+            [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
+            <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
               [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}"
               [innerHTML]="choice.name | detectLanguage"></div>
-            @if (isReviewerOnlyLearnerFeedback) {
+            @if (isReviewerOnlyChoiceFeedback) {
               @if (isReviewChoiceSelected(choice.id)) {
                 <span class="reviewer-choice-status reviewer-choice-status-selected">
                   <ion-icon name="checkmark" aria-hidden="true"></ion-icon>

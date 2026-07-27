@@ -5,11 +5,11 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3"
-          [class.reviewer-feedback-choice]="isReviewerOnlyLearnerFeedback">
-          <div [class.reviewer-feedback-choice-text]="isReviewerOnlyLearnerFeedback"
+          [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
+          <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
             [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}"
             [innerHTML]="choice.name | detectLanguage"></div>
-          @if (isReviewerOnlyLearnerFeedback) {
+          @if (isReviewerOnlyChoiceFeedback) {
             @if (isReviewChoiceSelected(choice.id)) {
               <span class="reviewer-choice-status reviewer-choice-status-selected">
                 <ion-icon name="checkmark" aria-hidden="true"></ion-icon>
