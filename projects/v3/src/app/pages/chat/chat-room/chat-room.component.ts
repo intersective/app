@@ -586,7 +586,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe(
           (response) => {
-            this.afterEventEmission(response, attachment);
+            this.afterEventEmission(response);
             this.removeSelectAttachment(attachment);
           },
           (error) => {
@@ -599,8 +599,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // series of after event emission actions (triggered after sending message)
-  afterEventEmission(response, attachment?) {
-    this.triggerPusherEvent(response, attachment);
+  afterEventEmission(response) {
+    this.triggerPusherEvent(response);
     this.updateListData(response);
     this.utils.broadcastEvent("chat:info-update", true);
     this._scrollToBottom();
@@ -608,13 +608,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // trigger pusher event with file response
-  triggerPusherEvent(response, file?: FileResponse) {
+  triggerPusherEvent(response) {
     const pusherData: SendMessageParam = {
       channelUuid: this.channelUuid,
       uuid: response.uuid,
       isSender: response.isSender,
       message: response.message,
-      file: file || response.file,
+      file: response.file,
       created: response.created,
       senderUuid: response.senderUuid,
       senderName: response.senderName,
@@ -1086,7 +1086,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       // tusd custom fields
       bucket: uppyRes.bucket,
       path: uppyRes.path,
-      preview: uppyRes.url || uppyRes.tus.uploadUrl,
+      preview: uppyRes.directUrl || uppyRes.url || uppyRes.tus.uploadUrl,
     });
   }
 
