@@ -3,6 +3,7 @@
 import { ModalController } from '@ionic/angular';
 import { Injectable, NgZone } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
+import type {} from '@uppy/dashboard';
 import Tus from '@uppy/tus';
 import { BrowserStorageService } from '../../services/storage.service';
 import { environment } from '../../../environments/environment';

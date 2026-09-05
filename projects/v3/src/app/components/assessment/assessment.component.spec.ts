@@ -2963,7 +2963,10 @@ describe('AssessmentComponent', () => {
         scrollToTop: (duration?: number) => Promise<void>;
       };
       const scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
-      scrollContainer.scrollToTop = scrollToTopSpy;
+      Object.defineProperty(scrollContainer, 'scrollToTop', {
+        configurable: true,
+        value: scrollToTopSpy,
+      });
       scrollContainer.appendChild(fixture.nativeElement);
 
       component.goToPage(2);
