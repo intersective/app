@@ -32,7 +32,11 @@ describe('FileUploadComponent', () => {
     // make .on() chainable properly
     mockUppy.on.and.returnValue(mockUppy);
 
-    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance', 'cancelCompression'], {
+    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', [
+      'createUppyInstance',
+      'parseTusUploadResponse',
+      'cancelCompression',
+    ], {
       compressionProgress$,
       uppyProps: {
         inline: true,
@@ -49,6 +53,7 @@ describe('FileUploadComponent', () => {
       },
     });
     uppyServiceSpy.createUppyInstance.and.returnValue(mockUppy);
+    uppyServiceSpy.parseTusUploadResponse.and.callFake((body) => JSON.parse(body));
 
     await TestBed.configureTestingModule({
       declarations: [FileUploadComponent],
@@ -77,6 +82,27 @@ describe('FileUploadComponent', () => {
 
   it('should have compressionProgress 0 initially', () => {
     expect(component.compressionProgress).toBe(0);
+  });
+
+  it('should parse the TUS response body through the shared validator', () => {
+    const response = {
+      getBody: () => JSON.stringify({
+        path: '/uploads/a',
+        bucket: 'b',
+        cdnUrl: 'c',
+        directUrl: 'd',
+      }),
+    };
+
+    component.onAfterResponse({}, response);
+
+    expect(uppyServiceSpy.parseTusUploadResponse).toHaveBeenCalledWith(response.getBody());
+    expect(component.tusResponse).toEqual({
+      path: '/uploads/a',
+      bucket: 'b',
+      cdnUrl: 'c',
+      directUrl: 'd',
+    });
   });
 
   describe('compression progress subscription', () => {

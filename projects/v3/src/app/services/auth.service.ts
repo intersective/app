@@ -45,6 +45,12 @@ interface ProfileAvatar {
   size: number;
 }
 
+interface UpdateUserProfileResponse {
+  data?: {
+    updateUserProfile?: Response;
+  };
+}
+
 interface RegisterData {
   password?: string;
   user_id: number;
@@ -359,8 +365,7 @@ export class AuthService {
    * @param redirect         Whether redirect the user to login page or not
    */
   logout(navigationParams = {}, redirect: boolean | string[] = true) {
-    this.pusherService.unsubscribeChannels();
-    this.pusherService.disconnect();
+    this.pusherService.reset();
     const config = this.storage.getConfig();
     const stackUuid = this.storage.get('stackUuid');
     const hasMultipleStacks = this.storage.get('hasMultipleStacks');
@@ -669,8 +674,8 @@ export class AuthService {
    *
    * @return  {}          [return description]
    */
-  updateUserProfile(avatar: ProfileAvatar): Observable<Response> {
-    return this.apolloService.graphQLFetch(`
+  updateUserProfile(avatar: ProfileAvatar): Observable<UpdateUserProfileResponse> {
+    return this.apolloService.graphQLMutate(`
       mutation updateUserProfile($avatar: FileInput) {
         updateUserProfile(avatar: $avatar) {
           success
@@ -678,9 +683,7 @@ export class AuthService {
         }
       }
     `, {
-      variables: {
-        avatar
-      }
+      avatar
     });
   }
 }

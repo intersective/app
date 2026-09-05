@@ -19,7 +19,8 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
-import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBriefModalComponent } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBrief } from '../../models/project-brief.model';
 import { ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
@@ -716,7 +717,12 @@ Best regards`;
   private _handleReviewData() {
     if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
-      this.btnDisabled$.next(false);
+      // An intermediate status-check fetch republishes the same in-progress review while the
+      // submit request is still running. Keep the action disabled until the parent submission
+      // workflow explicitly reports completion or failure.
+      if (!this.submitting) {
+        this.btnDisabled$.next(false);
+      }
     }
   }
 
@@ -990,6 +996,10 @@ Best regards`;
     }
 
     return 'continue';
+  }
+
+  get showSubmitLoadingOnClick(): boolean {
+    return this._btnAction === 'submit';
   }
 
   // the text of the button

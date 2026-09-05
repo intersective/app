@@ -45,6 +45,7 @@ describe('AuthService', () => {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
             'graphQLFetch': of(),
+            'graphQLMutate': of(),
             'graphQLWatch': of(),
             'getClient': function () {
               return {
@@ -76,7 +77,7 @@ describe('AuthService', () => {
         },
         {
           provide: PusherService,
-          useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
+          useValue: jasmine.createSpyObj('PusherService', ['reset'])
         },
         { provide: NotificationsService, useValue: notificationsSpy },
         {
@@ -101,6 +102,27 @@ describe('AuthService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should execute updateUserProfile as a mutation with the avatar variables', () => {
+    const apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+    const avatar = {
+      bucket: 'profile-images',
+      path: '/users/profile.png',
+      name: 'profile.png',
+      url: 'https://cdn.example.com/users/profile.png',
+      extension: 'png',
+      type: 'image/png',
+      size: 10,
+    };
+
+    service.updateUserProfile(avatar).subscribe();
+
+    expect(apolloSpy.graphQLMutate).toHaveBeenCalledWith(
+      jasmine.stringMatching(/mutation updateUserProfile/),
+      { avatar }
+    );
+    expect(apolloSpy.graphQLFetch).not.toHaveBeenCalled();
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -210,8 +232,7 @@ describe('AuthService', () => {
     it('should navigate to login by default', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({});
-      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
-      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(pusherSpy.reset.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/']);
     });
@@ -219,8 +240,7 @@ describe('AuthService', () => {
     it('should pass navigation data', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({ data: 'data' });
-      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
-      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(pusherSpy.reset.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/'], { data: 'data' });
     });
