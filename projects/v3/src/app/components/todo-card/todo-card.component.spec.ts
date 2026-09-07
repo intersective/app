@@ -74,4 +74,74 @@ describe('TodoCardComponent', () => {
     expect(page.todoCard).toBeFalsy();
   });
 
+  describe('gotoAction', () => {
+    beforeEach(() => {
+      component.todoItem = DUMMY_TODOITEM as any;
+      spyOn(component.clickAction, 'emit');
+    });
+
+    it('should emit the todo item when activated without a keyboard event', () => {
+      component.gotoAction();
+
+      expect(component.clickAction.emit).toHaveBeenCalledWith(DUMMY_TODOITEM as any);
+    });
+
+    ['Enter', 'Space'].forEach(code => {
+      it(`should prevent the default action and emit for ${code}`, () => {
+        const event = {
+          code,
+          preventDefault: jasmine.createSpy('preventDefault'),
+        } as any;
+
+        component.gotoAction(event);
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(component.clickAction.emit).toHaveBeenCalledWith(DUMMY_TODOITEM as any);
+      });
+    });
+
+    it('should ignore unrelated keyboard events', () => {
+      const event = {
+        code: 'Escape',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      } as any;
+
+      component.gotoAction(event);
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(component.clickAction.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('todoTitle', () => {
+    [
+      ['review_submission', 'Review submission'],
+      ['feedback_available', 'Check feedback'],
+      ['assessment_submission_reminder', 'Check task'],
+      ['chat', 'Check the message'],
+      ['custom_notification', 'custom_notification'],
+    ].forEach(([type, expectedTitle]) => {
+      it(`should return the action title for ${type}`, () => {
+        component.todoItem = { type } as any;
+
+        expect(component.todoTitle).toBe(expectedTitle);
+      });
+    });
+  });
+
+  describe('icon', () => {
+    [
+      ['review_submission', 'eye'],
+      ['feedback_available', 'notifications'],
+      ['assessment_submission_reminder', 'document-text'],
+      ['chat', 'mail'],
+      ['event', 'calendar'],
+    ].forEach(([type, expectedIcon]) => {
+      it(`should return the icon for ${type}`, () => {
+        component.todoItem = { type } as any;
+
+        expect(component.icon).toBe(expectedIcon);
+      });
+    });
+  });
 });
