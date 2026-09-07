@@ -31,6 +31,9 @@ export class MeetingPollPage implements OnInit, OnDestroy {
   // active view mode
   mode: UiMode = 'list';
 
+  // minimum date for date pickers — today in ISO format (YYYY-MM-DD)
+  readonly today = new Date().toISOString().slice(0, 10);
+
   // create mode fields
   createTitle = '';
   createDescription = '';
