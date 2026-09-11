@@ -11,7 +11,7 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers, F
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { EditMessagePopupComponent } from '../edit-message-popup/edit-message-popup.component';
-import { Subject, timer } from 'rxjs';
+import { Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
 import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
@@ -147,6 +147,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
   private scrollSubject = new Subject<void>();
+  private typingSubscription: Subscription;
 
   constructor(
     private chatService: ChatService,
@@ -284,6 +285,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.typingSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -315,8 +317,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
-    // subscribe to typing event
-    this.utils
+    this.typingSubscription?.unsubscribe();
+    this.typingSubscription = this.utils
       .getEvent("typing-" + this.chatChannel.pusherChannel)
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => this._showTyping(event));
@@ -584,7 +586,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe(
           (response) => {
-            this.afterEventEmission(response, attachment);
+            this.afterEventEmission(response);
             this.removeSelectAttachment(attachment);
           },
           (error) => {
@@ -597,8 +599,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // series of after event emission actions (triggered after sending message)
-  afterEventEmission(response, attachment?) {
-    this.triggerPusherEvent(response, attachment);
+  afterEventEmission(response) {
+    this.triggerPusherEvent(response);
     this.updateListData(response);
     this.utils.broadcastEvent("chat:info-update", true);
     this._scrollToBottom();
@@ -606,13 +608,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // trigger pusher event with file response
-  triggerPusherEvent(response, file?: FileResponse) {
+  triggerPusherEvent(response) {
     const pusherData: SendMessageParam = {
       channelUuid: this.channelUuid,
       uuid: response.uuid,
       isSender: response.isSender,
       message: response.message,
-      file: file || response.file,
+      file: response.file,
       created: response.created,
       senderUuid: response.senderUuid,
       senderName: response.senderName,
@@ -1084,7 +1086,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       // tusd custom fields
       bucket: uppyRes.bucket,
       path: uppyRes.path,
-      preview: uppyRes.url || uppyRes.tus.uploadUrl,
+      preview: uppyRes.directUrl || uppyRes.url || uppyRes.tus.uploadUrl,
     });
   }
 
