@@ -85,7 +85,7 @@ await modal.present();
 
 Assessment opens the same component with only `projectBrief`; it supplies no download command and retains the default `allowPdfDownload: false`.
 
-The modal renders organisation metadata when supplied, then the centralized accordion sections. Header icons and all chips use Ionic `color="primary"`; chips are outlined. During export, the download control is disabled and displays `Preparing PDF...`. Duplicate selections are ignored while the promise is pending. Both successful and failed downloads keep the modal open. Failures show an extractable localized danger toast through `NotificationsService.presentToast`.
+The modal renders organisation metadata when supplied, then the centralized accordion sections. Header icons use Ionic `color="primary"`. Industry, Technical Skills, and Professional Skills chips use Ionic `color="dark"` with `outline="true"` for readable labels and outlines regardless of customer branding. During export, the download control is disabled and displays `Preparing PDF...`. Duplicate selections are ignored while the promise is pending. Both successful and failed downloads keep the modal open. Failures show an extractable localized danger toast through `NotificationsService.presentToast`.
 
 ## Markdown And Link Security
 
