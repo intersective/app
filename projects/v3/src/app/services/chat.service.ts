@@ -75,6 +75,10 @@ export interface Message {
   created: string;
   scheduled: string;
   sentAt?: string;
+  // Thread support
+  replyCount?: number;
+  latestReplyAt?: string | null;
+  threadRootUuid?: string | null;
 
   // TBC
   preview?: string;
@@ -99,6 +103,7 @@ export interface EditMessageParam {
 interface NewMessageParam {
   channelUuid: string;
   message: string;
+  parentMessageUuid?: string; // optional: creates a thread reply when set
   file?: {
     path: string;
     bucket: string;
@@ -217,6 +222,8 @@ export class ChatService {
               uuid
               isSender
               message
+              replyCount
+              latestReplyAt
               file {
                 name
                 type
@@ -285,6 +292,8 @@ export class ChatService {
         created: message.created,
         scheduled: message.scheduled,
         sentAt: message.sentAt,
+        replyCount: message.replyCount ?? 0,
+        latestReplyAt: message.latestReplyAt ?? null,
 
         senderUuid: message.sender.uuid,
         senderName: message.sender.name,
@@ -408,6 +417,8 @@ export class ChatService {
           uuid
           isSender
           message
+          replyCount
+          latestReplyAt
           file {
             name
             type
@@ -428,6 +439,7 @@ export class ChatService {
           channelUuid: data.channelUuid,
           message: data.message,
           fileObj: data.file,
+          ...(data.parentMessageUuid ? { parentMessageUuid: data.parentMessageUuid } : {}),
         },
       }
     ).pipe(
@@ -435,6 +447,66 @@ export class ChatService {
         if (response.data) {
           return this._normalisePostMessageResponse(response.data);
         }
+      })
+    );
+  }
+
+  /**
+   * @name getThreadReplies
+   * @description fetch replies for a specific thread root message
+   */
+  getThreadReplies(rootMessageUuid: string, size = 50, cursor?: string): Observable<{ rootMessage: Message | null; replies: Message[]; cursor: string | null }> {
+    return this.apolloService.graphQLFetch(
+      `query getThreadReplies($rootMessageUuid: ID!, $size: Int, $cursor: String) {
+        threadReplies(rootMessageUuid: $rootMessageUuid, size: $size, cursor: $cursor) {
+          cursor
+          rootMessage {
+            uuid
+            message
+            isSender
+            created
+            replyCount
+            latestReplyAt
+            sender { uuid name role avatar }
+            file { name type url }
+          }
+          replies {
+            uuid
+            message
+            isSender
+            created
+            sentAt
+            sender { uuid name role avatar }
+            file { name type url }
+          }
+        }
+      }`,
+      { variables: { rootMessageUuid, size, cursor } }
+    ).pipe(
+      map(response => {
+        const conn = response?.data?.threadReplies;
+        if (!conn) return { rootMessage: null, replies: [], cursor: null };
+        const normaliseMsg = (r: any): Message => ({
+          uuid: r.uuid,
+          sender: r.sender,
+          isSender: r.isSender,
+          message: r.message,
+          file: r.file,
+          created: r.created,
+          scheduled: null,
+          sentAt: r.sentAt ?? r.created,
+          replyCount: r.replyCount ?? 0,
+          latestReplyAt: r.latestReplyAt ?? null,
+          senderUuid: r.sender?.uuid,
+          senderName: r.sender?.name,
+          senderRole: r.sender?.role,
+          senderAvatar: r.sender?.avatar,
+        });
+        return {
+          rootMessage: conn.rootMessage ? normaliseMsg(conn.rootMessage) : null,
+          replies: (conn.replies ?? []).map(normaliseMsg),
+          cursor: conn.cursor ?? null,
+        };
       })
     );
   }
@@ -469,6 +541,8 @@ export class ChatService {
       created: result.created,
       scheduled: result.scheduled,
       sentAt: result.sentAt,
+      replyCount: result.replyCount ?? 0,
+      latestReplyAt: result.latestReplyAt ?? null,
 
       // TBC
       senderUuid: result.sender.uuid,
@@ -517,5 +591,40 @@ export class ChatService {
 
   logChatError(data) {
     return this.apolloService.logError(JSON.stringify(data)).subscribe();
+  }
+
+  /**
+   * @name getAvailableThreadExperts
+   * @description Fetch AI experts available for team chat threads in an experience.
+   */
+  getAvailableThreadExperts(experienceId: number): Observable<Array<{ id: number; name: string; description: string | null }>> {
+    return this.apolloService.graphQLFetch(
+      `query getAvailableThreadExperts($experienceId: Int!) {
+        availableThreadExperts(experienceId: $experienceId) {
+          id
+          name
+          description
+          availableForTeamChat
+        }
+      }`,
+      { variables: { experienceId } }
+    ).pipe(
+      map(response => response?.data?.availableThreadExperts ?? [])
+    );
+  }
+
+  /**
+   * @name inviteAiToThread
+   * @description Invite an AI expert to participate in a thread.
+   */
+  inviteAiToThread(threadRootUuid: string, expertId: number): Observable<boolean> {
+    return this.apolloService.graphQLMutate(
+      `mutation inviteAiToThread($threadRootUuid: String!, $expertId: Int!) {
+        inviteAiToThread(threadRootUuid: $threadRootUuid, expertId: $expertId)
+      }`,
+      { threadRootUuid, expertId }
+    ).pipe(
+      map(response => response?.data?.inviteAiToThread ?? false)
+    );
   }
 }

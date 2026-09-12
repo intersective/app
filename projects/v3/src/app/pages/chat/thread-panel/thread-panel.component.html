@@ -1,0 +1,130 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="close()" aria-label="Close thread">
+        <ion-icon name="arrow-back" color="primary" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">
+      <span i18n>Thread</span>
+      <div class="subtitle-2 caption gray-1">{{ channelName }}</div>
+    </ion-title>
+    <!-- AI invite picker — only shown when available experts exist -->
+    @if (availableExperts.length > 0 && !channelReadonly) {
+      <ion-buttons slot="end">
+        <ion-button id="ai-invite-trigger" fill="clear" (click)="toggleAiPicker()" [disabled]="invitingExpert" aria-label="Invite AI expert">
+          <ion-icon name="sparkles-outline" slot="icon-only" color="secondary"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+
+  <!-- AI picker popover -->
+  @if (showAiPicker && availableExperts.length > 0) {
+    <div class="ai-picker-overlay" (click)="showAiPicker = false">
+      <div class="ai-picker-panel" (click)="$event.stopPropagation()">
+        <p class="ai-picker-title caption" i18n>Invite AI Expert</p>
+        @for (expert of availableExperts; track expert.id) {
+          <button class="ai-picker-item" (click)="inviteAiExpert(expert.id)">
+            <ion-icon name="sparkles-outline" color="secondary"></ion-icon>
+            <span>{{ expert.name }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+</ion-header>
+
+<ion-content color="light" [scrollEvents]="true">
+
+  <!-- Root message -->
+  @if (rootMessage) {
+    <div class="root-message-wrapper">
+      <ion-item color="light" lines="none">
+        <ion-avatar slot="start" class="small-avatar">
+          <img [src]="rootMessage.senderAvatar || 'assets/default-avatar.png'" [alt]="rootMessage.senderName">
+        </ion-avatar>
+        <ion-label text-wrap>
+          <p class="sender-name caption">{{ rootMessage.senderName }}</p>
+          <quill-view-html [content]="rootMessage.message" [sanitize]="true"></quill-view-html>
+          <p class="time-label caption gray-2">{{ getMessageDate(rootMessage.created) }}</p>
+        </ion-label>
+      </ion-item>
+      <div class="reply-count-bar">
+        <span class="caption gray-1">{{ replies.length }} {{ replies.length === 1 ? 'reply' : 'replies' }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Replies -->
+  <ion-list lines="none" color="light" class="replies-list">
+    @for (reply of replies; track reply.uuid) {
+      <ion-item color="light">
+        <ion-avatar slot="start" class="small-avatar">
+          <img [src]="reply.senderAvatar || 'assets/default-avatar.png'" [alt]="reply.senderName">
+        </ion-avatar>
+        <ion-label [class.own-reply]="reply.isSender" text-wrap>
+          <p class="sender-name caption">{{ reply.senderName }}</p>
+          <div class="reply-bubble" [class.own-bubble]="reply.isSender">
+            <quill-view-html [content]="reply.message" [sanitize]="true"></quill-view-html>
+            @if (reply.file?.url) {
+              <a [href]="reply.file.url" target="_blank" rel="noopener" class="file-link caption">
+                📎 {{ reply.file.name }}
+              </a>
+            }
+          </div>
+          <p class="time-label caption gray-2">{{ getMessageDate(reply.created) }}</p>
+        </ion-label>
+      </ion-item>
+    }
+
+    @if (loadingReplies) {
+      <ion-item color="light" lines="none">
+        <ion-spinner name="bubbles" class="ion-margin-start"></ion-spinner>
+      </ion-item>
+    }
+
+    @if (replies.length === 0 && !loadingReplies) {
+      <div class="empty-state ion-text-center ion-padding">
+        <ion-icon name="chatbubbles-outline" class="empty-icon" color="medium"></ion-icon>
+        <p class="caption gray-1" i18n>No replies yet. Be the first to reply.</p>
+      </div>
+    }
+  </ion-list>
+
+</ion-content>
+
+@if (!channelReadonly) {
+  <ion-footer>
+    <ion-grid class="white-bg">
+      <ion-row nowrap class="ion-no-padding ion-align-items-center">
+        <ion-col class="ion-no-padding">
+          <quill-editor
+            aria-label="Reply in thread"
+            [modules]="editorModules"
+            [classes]="'editor-class'"
+            [trimOnValidation]="true"
+            class="message-text-editor"
+            placeholder="Reply in thread…"
+            [(ngModel)]="replyText"
+            i18n-placeholder
+          ></quill-editor>
+        </ion-col>
+        <ion-col size="auto" class="ion-no-padding">
+          <ion-button
+            fill="clear"
+            (click)="sendReply()"
+            [disabled]="!replyText || utils.isQuillContentEmpty(replyText) || sendingReply"
+            aria-label="Send reply"
+          >
+            @if (sendingReply) {
+              <ion-spinner name="dots" slot="icon-only"></ion-spinner>
+            } @else {
+              <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            }
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-footer>
+}

@@ -140,6 +140,20 @@
               }
             </div>
           }
+          <!-- Thread reply indicator -->
+          @if (message.uuid) {
+            <div class="thread-reply-indicator">
+              <button class="thread-btn" (click)="openThread(message)" type="button"
+                [attr.aria-label]="(message.replyCount ?? 0) > 0 ? (message.replyCount + ' replies') : 'Reply in thread'">
+                <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+                @if ((message.replyCount ?? 0) > 0) {
+                  <span class="reply-count caption">{{ message.replyCount }} {{ message.replyCount === 1 ? 'reply' : 'replies' }}</span>
+                } @else {
+                  <span class="reply-thread-label caption">Reply in thread</span>
+                }
+              </button>
+            </div>
+          }
         </ion-label>
       </ion-item>
     }
@@ -296,4 +310,19 @@
       </ion-row>
     </ion-grid>
   </ion-footer>
+}
+
+<!-- Thread panel — slides in over the chat when a message is clicked for threading -->
+@if (activeThread) {
+  <div class="thread-overlay">
+    <app-thread-panel
+      [rootMessage]="activeThread"
+      [channelUuid]="chatChannel.uuid"
+      [channelName]="chatChannel.name"
+      [channelReadonly]="chatChannel.readonly"
+      [experienceId]="experienceId"
+      (closed)="closeThread()"
+      (replyCountChanged)="onReplyCountChanged($event)"
+    ></app-thread-panel>
+  </div>
 }

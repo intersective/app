@@ -70,6 +70,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   loadingChatMessages = false;
   sendingMessage = false;
 
+  // Thread panel state
+  activeThread: Message | null = null;
+  /** Experience ID from user profile — passed to thread panel for AI invite picker */
+  readonly experienceId: number | null = this.storage.getUser()?.experienceId ?? null;
+
   // display "someone is typing" when received a typing event
   typingSubject: Subject<string> = new Subject<string>();
   whoIsTyping: string = "";
@@ -516,6 +521,30 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.postTextOnlyMessage();
     }
+  }
+
+  /** Open the Slack-style thread panel for a root message */
+  openThread(message: Message): void {
+    this.activeThread = message;
+  }
+
+  /** Close the thread panel */
+  closeThread(): void {
+    this.activeThread = null;
+  }
+
+  /** Update reply count on root message when a reply is added via the thread panel */
+  onReplyCountChanged(event: { rootUuid: string; count: number }): void {
+    this.ngZone.run(() => {
+      const msg = this.messageList.find(m => m.uuid === event.rootUuid);
+      if (msg) {
+        msg.replyCount = event.count;
+      }
+      if (this.activeThread?.uuid === event.rootUuid) {
+        this.activeThread = { ...this.activeThread, replyCount: event.count };
+      }
+      this.cdr.markForCheck();
+    });
   }
 
   private getPostMessageParams(type: 'text' | 'file', file?: UppyUploaderResponse) {

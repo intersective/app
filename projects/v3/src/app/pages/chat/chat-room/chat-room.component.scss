@@ -581,3 +581,74 @@ ion-fab.scroll-to-bottom {
     }
   }
 }
+
+// Thread reply indicator
+.thread-reply-indicator {
+  margin-top: 2px;
+  padding: 0 4px;
+}
+
+.thread-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: var(--ion-color-primary);
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  ion-icon {
+    font-size: 13px;
+  }
+
+  .reply-count {
+    font-weight: 600;
+    color: var(--ion-color-primary);
+  }
+
+  .reply-thread-label {
+    color: var(--ion-color-medium);
+  }
+}
+
+ion-item:hover .thread-btn,
+ion-item:focus-within .thread-btn {
+  opacity: 1;
+}
+
+// Always show when there are replies
+.thread-btn:has(.reply-count) {
+  opacity: 1;
+  background: rgba(0, 130, 150, 0.08);
+}
+
+// Thread overlay panel — slides in on the right (desktop) or over full (mobile)
+.thread-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  z-index: 200;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.12);
+  background: var(--ion-background-color, #fff);
+  display: flex;
+  flex-direction: column;
+
+  app-thread-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    left: 0;
+  }
+}
